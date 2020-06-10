@@ -1,0 +1,19 @@
+{{define "top-of-menu"}}
+    {{if hasRole "inventory" .Auth.ID}}
+        <li id="inventory" {{if eq .CurrentSegment "inventory"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-car fa-fw"></i> <span class="nav-label">Vehicles</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/inventory/all-vehicles">All Vehicles</a></li>
+                <li><a href="/admin/inventory/all-vehicles-for-sale">For Sale</a></li>
+                <li><a href="/admin/inventory/all-powersports-for-sale">For Sale PowerSports</a></li>
+                <li><a href="/admin/inventory/all-vehicles-sold">Sold (this month)</a></li>
+                <li><a href="/admin/inventory/all-vehicles-pending">Pending</a></li>
+                <li><a href="/admin/inventory/all-vehicles-trade-in">Trade-ins</a></li>
+                <li><a href="/admin/inventory/options-all">Options</a></li>
+                <li><a href="/admin/inventory/options/0">Add Option</a></li>
+                <li><a href="/admin/inventory/refresh-from-pbs">Force PBS Update</a></li>
+            </ul>
+        </li>
+    {{end}}
+{{end}}
