@@ -18,3 +18,14 @@ func CustomShowHome(w http.ResponseWriter, r *http.Request) {
 	// do something interesting here, and then render the template
 	helpers.Render(w, r, "client-sample.page.tmpl", &templates.TemplateData{})
 }
+
+func AllVehicles(w http.ResponseWriter, r *http.Request) {
+	v, err := vehicleModel.GetAllVehicles()
+	if err != nil {
+		errorLog.Println(err)
+	}
+
+	for _, x := range v {
+		infoLog.Println(x.Make.Make)
+	}
+}

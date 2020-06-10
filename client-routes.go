@@ -24,5 +24,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	fileServer := http.FileServer(http.Dir("./client/clienthandlers/public/"))
 	mux.Get("/client/static/", http.StripPrefix("/client/static", fileServer))
 
+	mux.Get("/all-vehicles", dynamicMiddleware.ThenFunc(AllVehicles))
+
 	return mux, nil
 }

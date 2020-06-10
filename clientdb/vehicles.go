@@ -9,12 +9,12 @@ import (
 )
 
 // VehicleModel holds the db connection
-type VehicleModel struct {
+type DBModel struct {
 	DB *sql.DB
 }
 
-// GetVehiclesForSaleByType returns slice of vehicles by type
-func (m *VehicleModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels.Vehicle, error) {
+// GetAllVehicles returns slice of vehicles by type
+func (m *DBModel) GetAllVehicles() ([]clientmodels.Vehicle, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -50,7 +50,243 @@ func (m *VehicleModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels
 		       created_at,
 		       updated_at
 		from 
-		     wheelsanddeals.vehicles v 
+		     vehicles v 
+		
+
+		order by year desc
+		limit 100`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		fmt.Println(err)
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Vehicle{}
+		err = rows.Scan(
+			&c.ID,
+			&c.StockNo,
+			&c.Cost,
+			&c.Vin,
+			&c.Odometer,
+			&c.Year,
+			&c.Trim,
+			&c.VehicleType,
+			&c.Body,
+			&c.SeatingCapacity,
+			&c.DriveTrain,
+			&c.Engine,
+			&c.ExteriorColour,
+			&c.InteriorColour,
+			&c.Transmission,
+			&c.Options,
+			&c.ModelNumber,
+			&c.TotalMSR,
+			&c.Status,
+			&c.Description,
+			&c.VehicleMakesID,
+			&c.VehicleModelsID,
+			&c.HandPicked,
+			&c.Used,
+			&c.PriceForDisplay,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+
+		// get make
+		vehicleMake := clientmodels.Make{}
+
+		query = `
+			SELECT 
+				id, 
+				make, 
+				created_at, 
+				updated_at 
+			FROM 
+				wheelsanddeals.vehicle_makes 
+			WHERE 
+				id = ?`
+		makeRow := m.DB.QueryRowContext(ctx, query, c.VehicleMakesID)
+
+		err = makeRow.Scan(
+			&vehicleMake.ID,
+			&vehicleMake.Make,
+			&vehicleMake.CreatedAt,
+			&vehicleMake.UpdatedAt)
+		if err != nil {
+			fmt.Println("*** Error getting make:", err)
+			//return v, err
+		}
+		c.Make = vehicleMake
+
+		// get model
+		model := clientmodels.Model{}
+
+		query = `
+			SELECT 
+				id, 
+				model, 
+				vehicle_makes_id,
+				created_at, 
+				updated_at 
+			FROM 
+				wheelsanddeals.vehicle_models 
+			WHERE 
+				id = ?`
+		modelRow := m.DB.QueryRowContext(ctx, query, c.VehicleModelsID)
+
+		err = modelRow.Scan(
+			&model.ID,
+			&model.Model,
+			&model.MakeID,
+			&model.CreatedAt,
+			&model.UpdatedAt)
+		if err != nil {
+			fmt.Println("*** Error getting model:", err)
+			//return v, err
+		}
+		c.Model = model
+
+		// get options
+		query = `
+			select 
+				vo.id, 
+				vo.vehicle_id,
+				vo.option_id,
+				vo.created_at,
+				vo.updated_at,
+				o.option_name
+			from 
+				wheelsanddeals.vehicle_options vo
+				left join wheelsanddeals.options o on (vo.option_id = o.id)
+			where
+				vo.vehicle_id = ?
+				and o.active = 1
+			order by 
+				o.option_name`
+		oRows, err := m.DB.QueryContext(ctx, query, c.ID)
+		if err != nil {
+			fmt.Println("*** Error getting options:", err)
+		}
+
+		var vehicleOptions []*clientmodels.VehicleOption
+		for oRows.Next() {
+			o := &clientmodels.VehicleOption{}
+			err = oRows.Scan(
+				&o.ID,
+				&o.VehicleID,
+				&o.OptionID,
+				&o.CreatedAt,
+				&o.UpdatedAt,
+				&o.OptionName,
+			)
+
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				vehicleOptions = append(vehicleOptions, o)
+			}
+		}
+		c.VehicleOptions = vehicleOptions
+		oRows.Close()
+
+		// get images
+		query = `
+			select 
+				id, 
+				vehicle_id,
+				image,
+				created_at,
+				updated_at,
+				sort_order
+			from 
+				wheelsanddeals.vehicle_images 
+			where
+				vehicle_id = ?
+			order by 
+				sort_order`
+		iRows, err := m.DB.QueryContext(ctx, query, c.ID)
+		if err != nil {
+			iRows.Close()
+			fmt.Println(err)
+		}
+
+		var vehicleImages []*clientmodels.Image
+		for iRows.Next() {
+			o := &clientmodels.Image{}
+			err = iRows.Scan(
+				&o.ID,
+				&o.VehicleID,
+				&o.Image,
+				&o.CreatedAt,
+				&o.UpdatedAt,
+				&o.SortOrder,
+			)
+
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				vehicleImages = append(vehicleImages, o)
+			}
+		}
+		c.Images = vehicleImages
+		iRows.Close()
+
+		current := *c
+		v = append(v, current)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
+// GetVehiclesForSaleByType returns slice of vehicles by type
+func (m *DBModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels.Vehicle, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Vehicle
+
+	query := `
+		select 
+		       id, 
+		       stock_no, 
+		       coalesce(cost, 0),
+		       vin, 
+		       coalesce(odometer, 0),
+		       coalesce(year, 0),
+		       coalesce(trim, ''),
+		       vehicle_type,
+		       coalesce(body, ''),
+		       coalesce(seating_capacity,''),
+		       coalesce(drive_train,''),
+		       coalesce(engine,''),
+		       coalesce(exterior_color,''),
+		       coalesce(interior_color,''),
+		       coalesce(transmission,''),
+		       coalesce(options,''),
+		       coalesce(model_number, ''),
+		       coalesce(total_msr,0.0),
+		       v.status,
+		       coalesce(description, ''),
+		       vehicle_makes_id,
+		       vehicle_models_id,
+		       hand_picked,
+		       used,
+		       coalesce(price_for_display,''),
+		       created_at,
+		       updated_at
+		from 
+		     vehicles v 
 		where
 			vehicle_type = ?
 			and status = 1
@@ -252,7 +488,7 @@ func (m *VehicleModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels
 }
 
 // AllVehiclesPaginated returns paginated slice of vehicles, by type
-func (m *VehicleModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, make, model, price int) ([]clientmodels.Vehicle, int, error) {
+func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, make, model, price int) ([]clientmodels.Vehicle, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -654,7 +890,7 @@ func (m *VehicleModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year
 }
 
 // GetYearsForVehicleType gets years for vehicle type
-func (m *VehicleModel) GetYearsForVehicleType(id int) ([]int, error) {
+func (m *DBModel) GetYearsForVehicleType(id int) ([]int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -692,7 +928,7 @@ func (m *VehicleModel) GetYearsForVehicleType(id int) ([]int, error) {
 }
 
 // GetMakesForVehicleType gets makes for vehicle type
-func (m *VehicleModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
+func (m *DBModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -761,7 +997,7 @@ func (m *VehicleModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, erro
 }
 
 // GetModelsForVehicleType gets models for vehicle type
-func (m *VehicleModel) GetModelsForVehicleType(id int) ([]clientmodels.Model, error) {
+func (m *DBModel) GetModelsForVehicleType(id int) ([]clientmodels.Model, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -802,7 +1038,7 @@ func (m *VehicleModel) GetModelsForVehicleType(id int) ([]clientmodels.Model, er
 }
 
 // GetPowerSportItem gets a complete record for a power sports item
-func (m *VehicleModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
+func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -1052,7 +1288,7 @@ func (m *VehicleModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 }
 
 // GetSales gets max six sales people
-func (m *VehicleModel) GetSales() ([]clientmodels.SalesStaff, error) {
+func (m *DBModel) GetSales() ([]clientmodels.SalesStaff, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -1104,7 +1340,7 @@ func (m *VehicleModel) GetSales() ([]clientmodels.SalesStaff, error) {
 }
 
 // InsertCreditApp saves a credit application
-func (m *VehicleModel) InsertCreditApp(a clientmodels.CreditApp) error {
+func (m *DBModel) InsertCreditApp(a clientmodels.CreditApp) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -1137,7 +1373,7 @@ func (m *VehicleModel) InsertCreditApp(a clientmodels.CreditApp) error {
 }
 
 // InsertTestDrive saves a test drive application
-func (m *VehicleModel) InsertTestDrive(a clientmodels.TestDrive) error {
+func (m *DBModel) InsertTestDrive(a clientmodels.TestDrive) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -1166,7 +1402,7 @@ func (m *VehicleModel) InsertTestDrive(a clientmodels.TestDrive) error {
 }
 
 // InsertQuickQuote saves a quick quote to remote dataabase
-func (m *VehicleModel) InsertQuickQuote(a clientmodels.QuickQuote) error {
+func (m *DBModel) InsertQuickQuote(a clientmodels.QuickQuote) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -1193,7 +1429,7 @@ func (m *VehicleModel) InsertQuickQuote(a clientmodels.QuickQuote) error {
 }
 
 // GetAllVehiclesForSale returns slice of all Vehicles for sale
-func (m *VehicleModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
+func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
