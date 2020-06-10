@@ -25,11 +25,89 @@ func NewClientMiddleware(app config.AppConfig) {
 	inProduction = app.InProduction
 }
 
-// SomeRole is a sample role
-func SomeRole(next http.Handler) http.Handler {
+// InventoryRole checks role
+func InventoryRole(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userId := session.GetInt(r.Context(), "userID")
-		ok := checkRole("some-role", userId)
+		ok := checkRole("inventory", userId)
+		if ok {
+			next.ServeHTTP(w, r)
+		} else {
+			helpers.ClientError(w, http.StatusUnauthorized)
+		}
+	})
+}
+
+// CreditRole checks role
+func CreditRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userId := session.GetInt(r.Context(), "userID")
+		ok := checkRole("credit", userId)
+		if ok {
+			next.ServeHTTP(w, r)
+		} else {
+			helpers.ClientError(w, http.StatusUnauthorized)
+		}
+	})
+}
+
+// FinderRole checks role
+func FinderRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userId := session.GetInt(r.Context(), "userID")
+		ok := checkRole("finder", userId)
+		if ok {
+			next.ServeHTTP(w, r)
+		} else {
+			helpers.ClientError(w, http.StatusUnauthorized)
+		}
+	})
+}
+
+// StaffRole checks role
+func StaffRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userId := session.GetInt(r.Context(), "userID")
+		ok := checkRole("staff", userId)
+		if ok {
+			next.ServeHTTP(w, r)
+		} else {
+			helpers.ClientError(w, http.StatusUnauthorized)
+		}
+	})
+}
+
+// EmailRole checks role
+func EmailRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userId := session.GetInt(r.Context(), "userID")
+		ok := checkRole("email", userId)
+		if ok {
+			next.ServeHTTP(w, r)
+		} else {
+			helpers.ClientError(w, http.StatusUnauthorized)
+		}
+	})
+}
+
+// TestDriveRole checks role
+func TestDriveRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userId := session.GetInt(r.Context(), "userID")
+		ok := checkRole("test_drive", userId)
+		if ok {
+			next.ServeHTTP(w, r)
+		} else {
+			helpers.ClientError(w, http.StatusUnauthorized)
+		}
+	})
+}
+
+// WordRole checks role
+func WordRole(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userId := session.GetInt(r.Context(), "userID")
+		ok := checkRole("word", userId)
 		if ok {
 			next.ServeHTTP(w, r)
 		} else {

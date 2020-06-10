@@ -1,0 +1,7 @@
+sql("insert into roles (role_name, role, active, created_at, updated_at) values ('Manage vehicle inventory', 'inventory', 1, '2020-06-02 00:00:00', '2020-06-02 00:00:00')")
+sql("insert into roles (role_name, role, active, created_at, updated_at) values ('Manage credit applications', 'credit', 1, '2020-06-02 00:00:00', '2020-06-02 00:00:00')")
+sql("insert into roles (role_name, role, active, created_at, updated_at) values ('Manage vehicle finder', 'finder', 1, '2020-06-02 00:00:00', '2020-06-02 00:00:00')")
+sql("insert into roles (role_name, role, active, created_at, updated_at) values ('Manage staff', 'staff', 1, '2020-06-02 00:00:00', '2020-06-02 00:00:00')")
+sql("insert into roles (role_name, role, active, created_at, updated_at) values ('Manage email', 'email', 1, '2020-06-02 00:00:00', '2020-06-02 00:00:00')")
+sql("insert into roles (role_name, role, active, created_at, updated_at) values ('Manage test drive requests', 'test_drive', 1, '2020-06-02 00:00:00', '2020-06-02 00:00:00')")
+sql("insert into roles (role_name, role, active, created_at, updated_at) values ('Manage huggable word of mouth', 'word', 1, '2020-06-02 00:00:00', '2020-06-02 00:00:00')")

@@ -1,0 +1,7 @@
+sql("delete from roles where role_name = 'inventory'");
+sql("delete from roles where role_name = 'credit'");
+sql("delete from roles where role_name = 'finder'");
+sql("delete from roles where role_name = 'staff'");
+sql("delete from roles where role_name = 'email'");
+sql("delete from roles where role_name = 'test_drive'");
+sql("delete from roles where role_name = 'word'");
