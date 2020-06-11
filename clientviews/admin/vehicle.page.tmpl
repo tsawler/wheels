@@ -46,6 +46,7 @@
         <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="general-tab"
              id="general-tab-content">
             <div class="row">
+
                 <div class="col-md-6 col-xs-12">
 
                     <div class="form-group mt-4">
@@ -102,15 +103,102 @@
                         </select>
                     </div>
 
-                    <div class="form-group mt-4">
+                    <div class="form-group">
+                        <label>Trim:</label>
+                        {{with .Form.Errors.Get "trim"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="trim" autocomplete="off" type='text' name='trim'
+                               value='{{$v.Trim}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label>New or Used?</label>
                         <select class="custom-select" name="used"
                                 id="used">
-                                <option value="1" {{if eq $v.Used 1}} selected {{end}}>Used</option>
-                                <option value="0" {{if eq $v.Used 0}} selected {{end}}>New</option>
+                            <option value="1" {{if eq $v.Used 1}} selected {{end}}>Used</option>
+                            <option value="0" {{if eq $v.Used 0}} selected {{end}}>New</option>
                         </select>
                     </div>
 
+                    <div class="form-group">
+                        <label>Hand picked local vehicle?</label>
+                        <select class="custom-select" name="hand_picked"
+                                id="hand_picked">
+                            <option value="1" {{if eq $v.HandPicked 1}} selected {{end}}>Yes</option>
+                            <option value="0" {{if eq $v.HandPicked 0}} selected {{end}}>No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Stock Number:</label>
+                        {{with .Form.Errors.Get "stock_no"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="stock_no" autocomplete="off" type='text' name='stock_no'
+                               value='{{$v.StockNo}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>VIN:</label>
+                        {{with .Form.Errors.Get "vin"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="vin" autocomplete="off" type='text' name='vin'
+                               value='{{$v.Vin}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+
+                    <div class="form-group mt-4">
+                        <label>Odometer:</label>
+                        {{with .Form.Errors.Get "odometer"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="odometer" autocomplete="off" type='text' name='odometer'
+                               value='{{$v.Odometer}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Interior Colour:</label>
+                        {{with .Form.Errors.Get "interior_color"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="interior_color" autocomplete="off" type='text'
+                               name='interior_color'
+                               value='{{$v.InteriorColour}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Exterior Colour:</label>
+                        {{with .Form.Errors.Get "exterior_color"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="exterior_color" autocomplete="off" type='text'
+                               name='exterior_color'
+                               value='{{$v.ExteriorColour}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,8 +222,6 @@
              id="video-tab-content">
             e
         </div>
-
-
     </div>
 
 
