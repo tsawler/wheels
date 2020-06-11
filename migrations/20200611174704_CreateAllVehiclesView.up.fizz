@@ -3,10 +3,12 @@ create or replace view v_all_vehicles as
 
 select
        id,
+       vehicle_type,
        stock_no,
        vin,
        coalesce(trim, '') as trim,
-        year,
+       year,
+       status as vehicle_status,
        case
             when status = 1 then '<span class="badge badge-primary">For Sale</span>'
             when status = 0 then '<span class="badge badge-danger">Sold</span>'

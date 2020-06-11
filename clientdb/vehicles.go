@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
+	"strings"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type DBModel struct {
 	DB *sql.DB
 }
 
+// AllActiveOptions returns slice of all active options
 func (m *DBModel) AllActiveOptions() ([]clientmodels.Option, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -45,12 +47,20 @@ func (m *DBModel) AllActiveOptions() ([]clientmodels.Option, error) {
 }
 
 // VehicleJSON generates JSON for searching vehicles in admin tool
-func (m *DBModel) VehicleJSON(query, baseQuery string) ([]*clientmodels.VehicleJSON, int, int, error) {
+func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clientmodels.VehicleJSON, int, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	rowCount := 0
 	filterCount := 0
+
+	if len(extra) > 0 {
+		query = strings.Replace(query, "ORDER BY", fmt.Sprintf("%s ORDER BY", extra[0]), 1)
+		baseQuery = strings.Replace(baseQuery, "ORDER BY", fmt.Sprintf("%s ORDER BY", extra[0]), 1)
+	}
+
+	fmt.Println(query)
+	fmt.Println(baseQuery)
 
 	// count all rows
 	allRows, err := m.DB.QueryContext(ctx, "select count(id) as all_rows from v_all_vehicles")
