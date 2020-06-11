@@ -327,7 +327,11 @@
 
                     {{range $options}}
                         <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="option_{{.ID}}">
+                            <input type="checkbox"
+                                    {{if eq (index $.IntMap (printf "option_%d" .ID)) 1}}
+                                    checked
+                                   {{end}}
+                                   class="custom-control-input" id="option_{{.ID}}">
                             <label class="custom-control-label" name="option_{{.ID}}" for="option_{{.ID}}">{{.OptionName}}</label>
                         </div>
                     {{end}}

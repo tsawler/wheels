@@ -2,6 +2,7 @@ package clienthandlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tsawler/goblender/pkg/datatables"
 	"github.com/tsawler/goblender/pkg/forms"
@@ -121,15 +122,14 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	rowSets["options"] = options
 
 	// add map of options
-	optionMap := make(map[int]int)
+	intMap := make(map[string]int)
 	for _, x := range vehicle.VehicleOptions {
-		optionMap[x.ID] = 1
+		intMap[fmt.Sprintf("option_%d", x.OptionID)] = 1
 	}
-
-	vehicle.VehicleOptionMap = optionMap
 
 	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
+		IntMap:  intMap,
 		Form:    forms.New(nil),
 	})
 
