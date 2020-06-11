@@ -13,6 +13,62 @@ type DBModel struct {
 	DB *sql.DB
 }
 
+func (m *DBModel) VehicleJSON(query, baseQuery string) ([]*clientmodels.VehicleJSON, int, int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rowCount := 0
+	filterCount := 0
+
+	// count all rows
+	allRows, err := m.DB.QueryContext(ctx, "select count(id) as all_rows from v_all_vehicles")
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	defer allRows.Close()
+	for allRows.Next() {
+		err = allRows.Scan(&rowCount)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	// count filtered rows
+	filteredRows, err := m.DB.QueryContext(ctx, baseQuery)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	defer filteredRows.Close()
+
+	for filteredRows.Next() {
+		_ = filteredRows.Scan(&filterCount)
+	}
+
+	rows, err := m.DB.Query(query)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	defer rows.Close()
+
+	v := []*clientmodels.VehicleJSON{}
+
+	for rows.Next() {
+		s := &clientmodels.VehicleJSON{}
+		err = rows.Scan(&s.ID, &s.Year, &s.Make, &s.Model, &s.Trim, &s.StockNo, &s.Vin, &s.Status, &s.CreatedAt, &s.UpdatedAt)
+		if err != nil {
+			return nil, 0, 0, err
+		}
+		// Append it to the slice of .
+		v = append(v, s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, 0, 0, err
+	}
+
+	return v, rowCount, filterCount, nil
+}
+
 // GetAllVehicles returns slice of vehicles by type
 func (m *DBModel) GetAllVehicles() ([]clientmodels.Vehicle, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -54,7 +110,7 @@ func (m *DBModel) GetAllVehicles() ([]clientmodels.Vehicle, error) {
 		
 
 		order by year desc
-		limit 100`
+		`
 
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {

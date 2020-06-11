@@ -3,6 +3,7 @@ package clienthandlers
 import (
 	"github.com/bmizerany/pat"
 	"github.com/justinas/alice"
+	mw "github.com/tsawler/goblender/pkg/middleware"
 	"net/http"
 )
 
@@ -24,7 +25,8 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	fileServer := http.FileServer(http.Dir("./client/clienthandlers/public/"))
 	mux.Get("/client/static/", http.StripPrefix("/client/static", fileServer))
 
-	mux.Get("/all-vehicles", dynamicMiddleware.ThenFunc(AllVehicles))
+	mux.Get("/admin/inventory/all-vehicles", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AllVehicles))
+	mux.Post("/admin/inventory/all-vehicles-json", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AllVehiclesJSON))
 
 	return mux, nil
 }

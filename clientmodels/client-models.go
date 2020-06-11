@@ -2,6 +2,19 @@ package clientmodels
 
 import "time"
 
+type VehicleJSON struct {
+	ID        int       `json:"id"`
+	StockNo   string    `json:"stock_no"`
+	Vin       string    `json:"vin"`
+	Year      int       `json:"year"`
+	Trim      string    `json:"trim"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Make      string    `json:"make"`
+	Model     string    `json:"model"`
+}
+
 // Vehicle holds a vehicle
 type Vehicle struct {
 	ID                int              `xml:"-"`

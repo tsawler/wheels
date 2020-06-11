@@ -1,31 +1,69 @@
 package clienthandlers
 
 import (
+	"encoding/json"
+	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
+	"github.com/tsawler/goblender/pkg/datatables"
 	"github.com/tsawler/goblender/pkg/helpers"
 	"github.com/tsawler/goblender/pkg/templates"
 	"net/http"
 )
 
-// SomeHandler is an example handler
-func SomeHandler(w http.ResponseWriter, r *http.Request) {
-	helpers.Render(w, r, "client-sample.page.tmpl", &templates.TemplateData{})
-}
-
-// CustomShowHome is a sample handler which returns the home page using our local page template for the client,
-// and is called from client-routes.go using a route that overrides the one in goBlender. This allows us
-// to build custom functionality without having to use non-standard routes.
-func CustomShowHome(w http.ResponseWriter, r *http.Request) {
-	// do something interesting here, and then render the template
-	helpers.Render(w, r, "client-sample.page.tmpl", &templates.TemplateData{})
+// DataTablesJSON holds the json for datatables
+type DataTablesJSON struct {
+	Draw            int64                       `json:"draw"`
+	RecordsTotal    int64                       `json:"recordsTotal"`
+	RecordsFiltered int64                       `json:"recordsFiltered"`
+	DataRows        []*clientmodels.VehicleJSON `json:"data"`
 }
 
 func AllVehicles(w http.ResponseWriter, r *http.Request) {
-	v, err := vehicleModel.GetAllVehicles()
+	helpers.Render(w, r, "all-vehicles.page.tmpl", &templates.TemplateData{})
+}
+
+// AuditJson returns audit json
+func AllVehiclesJSON(w http.ResponseWriter, r *http.Request) {
+	infoLog.Println("hit json")
+	err := r.ParseForm()
 	if err != nil {
-		errorLog.Println(err)
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
 	}
 
-	for _, x := range v {
-		infoLog.Println(x.Make.Make)
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
 	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("v_all_vehicles")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := DataTablesJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
 }
