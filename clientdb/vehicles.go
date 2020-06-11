@@ -13,6 +13,37 @@ type DBModel struct {
 	DB *sql.DB
 }
 
+func (m *DBModel) AllActiveOptions() ([]clientmodels.Option, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o []clientmodels.Option
+
+	query := `select id, option_name, active, created_at, updated_at from options where active = 1 order by option_name`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		s := &clientmodels.Option{}
+		err = rows.Scan(&s.ID, &s.OptionName, &s.Active, &s.CreatedAt, &s.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		// Append it to the slice of .
+		o = append(o, *s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return o, nil
+}
+
 // VehicleJSON generates JSON for searching vehicles in admin tool
 func (m *DBModel) VehicleJSON(query, baseQuery string) ([]*clientmodels.VehicleJSON, int, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

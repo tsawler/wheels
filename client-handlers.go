@@ -112,6 +112,14 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 	rowSets["models"] = models
 
+	options, err := vehicleModel.AllActiveOptions()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["options"] = options
+
 	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
 		Form:    forms.New(nil),
