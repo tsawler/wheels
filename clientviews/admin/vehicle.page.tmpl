@@ -335,14 +335,15 @@
                             <label class="custom-control-label" name="option_{{.ID}}" for="option_{{.ID}}">{{.OptionName}}</label>
                         </div>
                     {{end}}
-
                 </div>
 
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="images-tab"
                  id="images-tab-content">
-                c
+                <div class="mt-4">
+                <a href="javascript:" onclick="uploadFile()" class="btn btn-outline-secondary">Upload Images...</a>
+                </div>
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="sticker-tab"
@@ -368,7 +369,10 @@
 {{end}}
 
 {{define "js"}}
+    {{$v := index .RowSets "vehicle"}}
+    <script src="/static/js/tus.min.js"></script>
     <script>
+
         (function () {
             'use strict';
             window.addEventListener('load', function () {
@@ -384,5 +388,147 @@
                 });
             }, false);
         })();
+
+        let progressWindow;
+        let listView = false;
+        let uploadWindow;
+        let totalUploaded = 0;
+        let uploadInProgress = false;
+
+        let uploadForm = `
+<form method="post" id="uploadForm" enctype="multipart/form-data">
+    <div class="controls text-center">
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" multiple name="uploaded_files"
+                   id="uploaded_files" accept=".png, .jpg, .jpeg, .gif">
+            <label class="custom-file-label" for="uploaded_files">
+                <span class="d-inline-block text-truncate w-75" style="overflow:hidden">Choose image(s)</span>
+            </label>
+        </div>
+    </div>
+</form>
+`
+
+        let progressBarHtml = `
+<div class="progress">
+    <div id="progress" class="progress-bar progress-bar-striped progress-bar-animated"
+         role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
+         style="width: 100%"></div>
+</div>`
+
+        async function uploadFile() {
+            totalUploaded = 0;
+            uploadInProgress = true;
+
+            const {value: formValues} = await Swal.fire({
+                html: uploadForm,
+                icon: 'info',
+                showConfirmButton: true,
+                showCancelButton: true,
+                preConfirm: () => {
+                    bsCustomFileInput.init();
+                    var itm = document.getElementById("uploaded_files");
+                    var cln = itm.cloneNode(true);
+                    document.getElementById("hidden_data").appendChild(cln);
+                    return [
+                        document.getElementById('uploaded_files').files,
+                    ]
+                }
+            });
+
+            if (formValues) {
+
+                let files = document.getElementById("uploaded_files").files;
+                if (document.getElementById("uploaded_files")) {
+                    document.getElementById("uploaded_files").outerHTML = "";
+                }
+
+                let totalSize = 0;
+
+                for (let i = 0; i < files.length; i++) {
+                    totalSize = totalSize + files[i].size;
+                }
+                console.log("Total size to upload is", totalSize);
+
+                for (let file of files) {
+                    console.log("uploading", file.name);
+                    await uploadAFile(file, files.length, totalSize).catch(e => {
+                    });
+                    console.log("past await for", file.name);
+                }
+
+                refreshFolders();
+                refreshFiles();
+            }
+        }
+
+        function uploadAFile(file, num, totalSize) {
+            progressWindow = Swal.fire({
+                icon: 'info',
+                title: "Uploading...",
+                html: progressBarHtml,
+                showConfirmButton: false,
+                showCancelButton: false,
+            })
+
+            return new Promise(function (resolve, reject) {
+                let url = "/files/";
+                if (location.protocol !== 'https:') {
+                    url = 'http://localhost:1080/files/';
+                }
+
+                let nextUpload = new tus.Upload(file, {
+                    endpoint: url,
+                    metadata: {
+                        filename: file.name,
+                        filetype: file.type,
+                        "upload_type": "inventory",
+                        "user_id": {{.Auth.ID}},
+                        "token": '{{.Auth.Email}}',
+                        "upload_to": "./ui/static/site-content/inventory/{{$v.ID}}",
+                        "endpoint": 'http://{{.TusHost}}/tusd/hook',
+                    },
+                    onError: function (error) {
+                        progressWindow.close();
+                        errorAlert(error)
+                    },
+                    onChunkComplete: function () {
+                    },
+                    onProgress: function (bytesUploaded, bytesTotal) {
+                        if (document.getElementById("progress")) {
+                            console.log("total uploaded:", totalUploaded);
+                            console.log("bytes uploaded", bytesUploaded);
+
+                            var progressBar = document.getElementById("progress");
+                            var percentage = ((totalUploaded + bytesUploaded) / totalSize * 100).toFixed(2);
+
+                            progressBar.setAttribute("aria-valuenow", percentage.toString());
+                            progressBar.setAttribute("style", 'width: ' + percentage + '%;');
+                            if (percentage >= 100) {
+                                progressWindow.close();
+                            }
+                        }
+                        console.log(file.name, totalUploaded, totalSize, percentage + "%")
+                    },
+                    onSuccess: function () {
+                        uploadInProgress = false;
+                        totalUploaded = totalUploaded + file.size;
+                        refreshFiles();
+                        setTimeout(function () {
+                            refreshFiles();
+                        }, 1000);
+                    }
+                })
+                nextUpload.start();
+
+                if (uploadInProgress === true) {
+                    console.log("rejecting");
+                    reject();
+                }
+
+                uploadInProgress = true;
+                resolve("Done");
+            });
+        }
     </script>
 {{end}}
