@@ -25,10 +25,6 @@ func AllVehicles(w http.ResponseWriter, r *http.Request) {
 	helpers.Render(w, r, "all-vehicles.page.tmpl", &templates.TemplateData{})
 }
 
-func AllVehiclesForSale(w http.ResponseWriter, r *http.Request) {
-	helpers.Render(w, r, "all-vehicles-for-sale.page.tmpl", &templates.TemplateData{})
-}
-
 // AllVehiclesJSON returns  json for all vehicles regardless of status
 func AllVehiclesJSON(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -75,6 +71,11 @@ func AllVehiclesJSON(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 }
 
+// AllVehiclesForSale displays table of all cars/trucks for sale
+func AllVehiclesForSale(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-vehicles-for-sale.page.tmpl", &templates.TemplateData{})
+}
+
 // AllVehiclesForSaleJSON returns json for cars/trucks for sale
 func AllVehiclesForSaleJSON(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -100,6 +101,57 @@ func AllVehiclesForSaleJSON(w http.ResponseWriter, r *http.Request) {
 
 	// Do the queries and get back our data, the row count, and the filtered row count
 	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "where vehicle_status = 1 and vehicle_type <  7")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := DataTablesJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
+// AllPowerSportsForSale displays table of all powersports for sale
+func AllPowerSportsForSale(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-powersports-for-sale.page.tmpl", &templates.TemplateData{})
+}
+
+// AllPowerSportsForSaleJSON returns json for powersports for sale
+func AllPowerSportsForSaleJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("v_all_vehicles")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "where vehicle_status = 1 and vehicle_type >=  7")
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
