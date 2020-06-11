@@ -984,6 +984,45 @@ func (m *DBModel) GetYearsForVehicleType(id int) ([]int, error) {
 	return years, nil
 }
 
+// GetMakes gets makes
+func (m *DBModel) GetMakes() ([]clientmodels.Make, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var makes []clientmodels.Make
+	query := `
+			select  
+				m.id, m.make
+			from 
+				vehicle_makes m
+			order by m.make`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		rows.Close()
+		fmt.Println(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var y clientmodels.Make
+		err = rows.Scan(
+			&y.ID,
+			&y.Make)
+		if err != nil {
+			fmt.Println(err)
+		}
+		makes = append(makes, y)
+	}
+
+	if err = rows.Err(); err != nil {
+		return makes, err
+	}
+
+	return makes, nil
+}
+
 // GetMakesForVehicleType gets makes for vehicle type
 func (m *DBModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -1066,6 +1105,47 @@ func (m *DBModel) GetModelsForVehicleType(id int) ([]clientmodels.Model, error) 
 				wheelsanddeals.vehicle_models m
 			where
 				m.id in (select v.vehicle_models_id from wheelsanddeals.vehicles v where status = 1 and vehicle_type = ?)
+			order by 
+				m.model`
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil {
+		rows.Close()
+		fmt.Println(err)
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var y clientmodels.Model
+		err = rows.Scan(
+			&y.ID,
+			&y.Model)
+		if err != nil {
+			fmt.Println(err)
+		}
+		models = append(models, y)
+	}
+
+	if err = rows.Err(); err != nil {
+		return models, err
+	}
+
+	return models, nil
+}
+
+// GetModelsForMakeID gets models for vehicle type
+func (m *DBModel) GetModelsForMakeID(id int) ([]clientmodels.Model, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var models []clientmodels.Model
+	query := `
+			select  
+				m.id, m.model
+			from 
+				vehicle_models m
+			where
+				m.vehicle_makes_id = ?
 			order by 
 				m.model`
 	rows, err := m.DB.QueryContext(ctx, query, id)

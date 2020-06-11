@@ -96,6 +96,22 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 
 	rowSets["years"] = years
 
+	makes, err := vehicleModel.GetMakes()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["makes"] = makes
+
+	models, err := vehicleModel.GetModelsForMakeID(vehicle.VehicleMakesID)
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["models"] = models
+
 	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
 		Form:    forms.New(nil),
