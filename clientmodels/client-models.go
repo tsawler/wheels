@@ -17,41 +17,41 @@ type VehicleJSON struct {
 
 // Vehicle holds a vehicle
 type Vehicle struct {
-	ID                int              `xml:"-"`
-	StockNo           string           `xml:"StockNo"`
-	Cost              float32          `xml:"Price"`
-	Vin               string           `xml:"Vin"`
-	Odometer          int              `xml:"odometer"`
-	Year              int              `xml:"Year"`
-	Trim              string           `xml:"-"`
-	VehicleType       int              `xml:"-"`
-	VehicleTypeString string           `xml:"vehicle_type"`
 	Body              string           `xml:"-"`
-	SeatingCapacity   string           `xml:"-"`
+	Cost              float32          `xml:"Price"`
+	CreatedAt         time.Time        `xml:"-"`
+	Description       string           `xml:"Description"`
 	DriveTrain        string           `xml:"-"`
 	Engine            string           `xml:"-"`
 	ExteriorColour    string           `xml:"exterior_color"`
-	InteriorColour    string           `xml:"interior_color"`
-	Transmission      string           `xml:"-"`
-	Options           string           `xml:"-"`
-	ModelNumber       string           `xml:"-"`
-	TotalMSR          float32          `xml:"-"`
-	Status            int              `xml:"-"`
-	Description       string           `xml:"Description"`
-	VehicleMakesID    int              `xml:"-"`
-	VehicleModelsID   int              `xml:"-"`
 	HandPicked        int              `xml:"-"`
-	Used              int              `xml:"-"`
-	PriceForDisplay   string           `xml:"-"`
-	CreatedAt         time.Time        `xml:"-"`
-	UpdatedAt         time.Time        `xml:"-"`
+	ID                int              `xml:"-"`
+	Images            []*Image         `xml:"Images"`
+	InteriorColour    string           `xml:"interior_color"`
 	Make              Make             `xml:"-"`
 	Model             Model            `xml:"-"`
-	Video             Video            `xml:"-"`
-	Images            []*Image         `xml:"Images"`
-	VehicleOptions    []*VehicleOption `xml:"-"`
+	ModelNumber       string           `xml:"-"`
+	Odometer          int              `xml:"odometer"`
+	Options           string           `xml:"-"`
+	PriceForDisplay   string           `xml:"-"`
+	SeatingCapacity   string           `xml:"-"`
+	Status            int              `xml:"-"`
+	StockNo           string           `xml:"StockNo"`
+	TotalMSR          float32          `xml:"-"`
+	Transmission      string           `xml:"-"`
+	Trim              string           `xml:"-"`
+	UpdatedAt         time.Time        `xml:"-"`
+	Used              int              `xml:"-"`
 	VehicleMake       string           `xml:"Make"`
+	VehicleMakesID    int              `xml:"-"`
 	VehicleModel      string           `xml:"Model"`
+	VehicleModelsID   int              `xml:"-"`
+	VehicleOptions    []*VehicleOption `xml:"-"`
+	VehicleType       int              `xml:"-"`
+	VehicleTypeString string           `xml:"vehicle_type"`
+	Video             Video            `xml:"-"`
+	Vin               string           `xml:"Vin"`
+	Year              int              `xml:"Year"`
 }
 
 // Option holds vehicle options

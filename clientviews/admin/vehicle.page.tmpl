@@ -83,7 +83,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group mt-4">
+                    <div class="form-group">
                         <label>Make:</label>
                         <select class="custom-select" name="vehicle_makes_id"
                                 id="vehicle_makes_id">
@@ -93,7 +93,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group mt-4">
+                    <div class="form-group">
                         <label>Model:</label>
                         <select class="custom-select" name="vehicle_models_id"
                                 id="vehicle_models_id">
@@ -157,6 +157,45 @@
                         </div>
                     </div>
 
+                    <div class="form-group pt-1">
+                        <label>Price:</label>
+                        {{with .Form.Errors.Get "price"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="cost" autocomplete="off" type='text'
+                               name='cost'
+                               value='{{$v.Cost}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group pt-1">
+                        <label>MSRP:</label>
+                        {{with .Form.Errors.Get "total_msr"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="total_msr" autocomplete="off" type='text'
+                               name='total_msr'
+                               value='{{$v.TotalMSR}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group pt-1">
+                        <label>Price for Display:</label>
+                        {{with .Form.Errors.Get "price_for_display"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="price_for_display" autocomplete="off" type='text'
+                               name='price_for_display'
+                               value='{{$v.PriceForDisplay}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="col-md-6 col-xs-12">
@@ -173,8 +212,7 @@
                         </div>
                     </div>
 
-
-                    <div class="form-group">
+                    <div class="form-group pt-1">
                         <label>Interior Colour:</label>
                         {{with .Form.Errors.Get "interior_color"}}
                             <label class='text-danger'>{{.}}</label>
@@ -187,7 +225,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group pt-1">
                         <label>Exterior Colour:</label>
                         {{with .Form.Errors.Get "exterior_color"}}
                             <label class='text-danger'>{{.}}</label>
@@ -199,6 +237,72 @@
                             Please enter a value
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>Body:</label>
+                        {{with .Form.Errors.Get "body"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="body" autocomplete="off" type='text'
+                               name='body'
+                               value='{{$v.Body}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Engine:</label>
+                        {{with .Form.Errors.Get "engine"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="engine" autocomplete="off" type='text'
+                               name='engine'
+                               value='{{$v.Engine}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Transmission:</label>
+                        {{with .Form.Errors.Get "transmission"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="transmission" autocomplete="off" type='text'
+                               name='transmission'
+                               value='{{$v.Transmission}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+
+                    <div class="form-group pt-1">
+                        <label>Drivetrain:</label>
+                        {{with .Form.Errors.Get "drive_train"}}
+                            <label class='text-danger'>{{.}}</label>
+                        {{end}}
+                        <input class="form-control" id="drive_train" autocomplete="off" type='text'
+                               name='drive_train'
+                               value='{{$v.DriveTrain}}' required>
+                        <div class="invalid-feedback">
+                            Please enter a value
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select class="custom-select" name="used"
+                                id="used">
+                            <option value="0" {{if eq $v.Status 0}} selected {{end}}>Sold</option>
+                            <option value="1" {{if eq $v.Status 1}} selected {{end}}>For Sale</option>
+                            <option value="3" {{if eq $v.Status 3}} selected {{end}}>Trade In</option>
+                            <option value="2" {{if eq $v.Status 2}} selected {{end}}>Pending</option>
+                        </select>
+                    </div>
+
+
                 </div>
             </div>
         </div>
