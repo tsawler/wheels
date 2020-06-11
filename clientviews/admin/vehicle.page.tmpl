@@ -454,17 +454,18 @@
                 }
                 console.log("Total size to upload is", totalSize);
 
+                var sortOrder = 1;
                 for (let file of files) {
                     console.log("uploading", file.name);
-                    await uploadAFile(file, files.length, totalSize).catch(e => {
+                    await uploadAFile(file, files.length, sortOrder, totalSize).catch(e => {
                     });
-                    console.log("past await for", file.name);
+                    sortOrder++;
                 }
 
             }
         }
 
-        function uploadAFile(file, num, totalSize) {
+        function uploadAFile(file, num, sortOrder, totalSize) {
             progressWindow = Swal.fire({
                 icon: 'info',
                 title: "Uploading...",
@@ -490,6 +491,7 @@
                         "token": '{{.Auth.Email}}',
                         "upload_to": "./ui/static/site-content/inventory/{{$v.ID}}",
                         "endpoint": 'http://{{.TusHost}}/tusd/hook',
+                        "sort_order": sortOrder,
                     },
                     onError: function (error) {
                         progressWindow.close();

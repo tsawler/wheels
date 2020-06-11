@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gosimple/slug"
+	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	channel_data "github.com/tsawler/goblender/pkg/channel-data"
 	"github.com/tsawler/goblender/pkg/config"
 	"github.com/tsawler/goblender/pkg/helpers"
@@ -26,6 +27,7 @@ type TusMetaData struct {
 	UserID     string `json:"user_id"`
 	UploadType string `json:"upload_type"`
 	UploadTo   string `json:"upload_to"`
+	SortOrder  string `json:"sort_order"`
 }
 
 // TusStorage is the storage
@@ -167,7 +169,16 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				if err != nil {
 					app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
 				}
-
+				so, _ := strconv.Atoi(payload.Upload.MetaData.SortOrder)
+				// write image to db
+				vi := clientmodels.Image{
+					VehicleID: vehicleID,
+					Image:     slugified,
+					SortOrder: so,
+					CreatedAt: time.Time{},
+					UpdatedAt: time.Time{},
+				}
+				infoLog.Println("Sort order for", slugified, "is", vi.SortOrder)
 			}
 		}
 	}
