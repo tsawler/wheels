@@ -150,7 +150,7 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 			} else if payload.Upload.MetaData.UploadType == "inventory" {
 				vehicleID, _ := strconv.Atoi(payload.Upload.MetaData.ID)
 				infoLog.Println("Creating", fmt.Sprintf("./ui/static/site-content/inventory/%d", vehicleID))
-				helpers.CreateDirIfNotExist(fmt.Sprintf("./ui/static/site-content/inventory/%d", vehicleID))
+				_ = helpers.CreateDirIfNotExist(fmt.Sprintf("./ui/static/site-content/inventory/%d", vehicleID))
 
 				fileName := payload.Upload.MetaData.FileName
 				dot := strings.LastIndex(fileName, ".")
