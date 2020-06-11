@@ -120,6 +120,14 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 	rowSets["options"] = options
 
+	// add map of options
+	optionMap := make(map[int]int)
+	for _, x := range vehicle.VehicleOptions {
+		optionMap[x.ID] = 1
+	}
+
+	vehicle.VehicleOptionMap = optionMap
+
 	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
 		Form:    forms.New(nil),

@@ -47,6 +47,7 @@ type Vehicle struct {
 	VehicleModel      string           `xml:"Model"`
 	VehicleModelsID   int              `xml:"-"`
 	VehicleOptions    []*VehicleOption `xml:"-"`
+	VehicleOptionMap  map[int]int      `xml:"-"`
 	VehicleType       int              `xml:"-"`
 	VehicleTypeString string           `xml:"vehicle_type"`
 	Video             Video            `xml:"-"`
