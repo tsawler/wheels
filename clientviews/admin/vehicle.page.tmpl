@@ -7,6 +7,7 @@
 
 {{define "content"}}
     {{$v := index .RowSets "vehicle"}}
+    {{$years := index .RowSets "years"}}
 
 
     <ul class="nav nav-tabs" id="prefTabs" role="tablist">
@@ -42,27 +43,65 @@
 
         <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="general-tab"
              id="general-tab-content">
-            a
+            <div class="row">
+                <div class="col-md-6 col-xs-12">
+
+                    <div class="form-group mt-4">
+                        <label>Year:</label>
+                        <select class="custom-select" name="year"
+                                id="year">
+                            {{range $years}}
+                                <option value="{{.}}" {{if eq . $v.Year}} selected {{end}}>{{.}}</option>
+                            {{end}}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Vehicle Type:</label>
+                        <select class="custom-select" name="vehicle_type"
+                                id="vehicle_type">
+                            <option value="8" {{if eq $v.VehicleType 8}} selected {{end}}>ATV - Brute Force</option>
+                            <option value="11" {{if eq $v.VehicleType 11}} selected {{end}}>ATV - Mules</option>
+                            <option value="12" {{if eq $v.VehicleType 12}} selected {{end}}>ATV - Teryx</option>
+                            <option value="1" {{if eq $v.VehicleType 1}} selected {{end}}>Car</option>
+                            <option value="16" {{if eq $v.VehicleType 16}} selected {{end}}>Electric Bikes</option>
+                            <option value="13" {{if eq $v.VehicleType 13}} selected {{end}}>Jetski</option>
+                            <option value="10" {{if eq $v.VehicleType 10}} selected {{end}}>Mercury</option>
+                            <option value="7" {{if eq $v.VehicleType 7}} selected {{end}}>Motorcycle</option>
+                            <option value="3" {{if eq $v.VehicleType 3}} selected {{end}}>Other</option>
+                            <option value="9" {{if eq $v.VehicleType 9}} selected {{end}}>Pontoon Boat</option>
+                            <option value="15" {{if eq $v.VehicleType 15}} selected {{end}}>Power Boat</option>
+                            <option value="17" {{if eq $v.VehicleType 17}} selected {{end}}>Scooter</option>
+                            <option value="5" {{if eq $v.VehicleType 5}} selected {{end}}>SUV</option>
+                            <option value="14" {{if eq $v.VehicleType 14}} selected {{end}}>Trailer</option>
+                            <option value="2" {{if eq $v.VehicleType 2}} selected {{end}}>Truck</option>
+                            <option value="6" {{if eq $v.VehicleType 6}} selected {{end}}>Van</option>
+                            <option value="4" {{if eq $v.VehicleType 4}} selected {{end}}>Unknown</option><
+                        </select>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         <div class="tab-pane fade show" role="tabpanel" aria-labelledby="detailed-tab"
              id="detailed-tab-content">
-b
+            b
         </div>
 
         <div class="tab-pane fade show" role="tabpanel" aria-labelledby="images-tab"
              id="images-tab-content">
-c
+            c
         </div>
 
         <div class="tab-pane fade show" role="tabpanel" aria-labelledby="sticker-tab"
              id="sticker-tab-content">
-d
+            d
         </div>
 
         <div class="tab-pane fade show" role="tabpanel" aria-labelledby="video-tab"
              id="video-tab-content">
-e
+            e
         </div>
 
 

@@ -9,6 +9,7 @@ import (
 	"github.com/tsawler/goblender/pkg/templates"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // DataTablesJSON holds the json for datatables
@@ -87,6 +88,13 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 
 	rowSets := make(map[string]interface{})
 	rowSets["vehicle"] = vehicle
+
+	var years []int
+	for i := (time.Now().Year() + 1); i >= 1900; i-- {
+		years = append(years, i)
+	}
+
+	rowSets["years"] = years
 
 	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
