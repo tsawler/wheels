@@ -1,0 +1,22 @@
+sql(`
+create or replace view v_all_vehicles as
+
+select
+       id,
+       stock_no,
+       vin,
+       coalesce(trim, '') as trim,
+        year,
+       case
+            when status = 1 then 'For Sale'
+            when status = 0 then 'Sold'
+            when status = 2 then 'Pending'
+            when status = 3 then 'Trade In' end as status,
+       coalesce((select make from vehicle_makes where id = v.vehicle_makes_id), '') as make,
+       coalesce((select model from vehicle_models where id = v.vehicle_models_id), '') as model,
+       created_at,
+       updated_at
+from
+     vehicles v
+order by id desc
+`)
