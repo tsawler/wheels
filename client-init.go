@@ -5,6 +5,7 @@ import (
 	"github.com/tsawler/goblender/pkg/config"
 	"github.com/tsawler/goblender/pkg/driver"
 	"github.com/tsawler/goblender/pkg/handlers"
+	"github.com/tsawler/goblender/pkg/helpers"
 	"log"
 )
 
@@ -16,6 +17,9 @@ var vehicleModel *clientdb.DBModel
 
 // ClientInit gives client code access to goBlender configuration
 func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DBRepo) {
+	// make sure the directories we need are there
+	helpers.CreateDirIfNotExist("./ui/static/site-content/inventory/")
+
 	// conf is the application config, from goBlender
 	app = conf
 	repo = rep

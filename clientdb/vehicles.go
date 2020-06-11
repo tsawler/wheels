@@ -1368,8 +1368,6 @@ func (m *DBModel) GetVehicleByID(id int) (clientmodels.Vehicle, error) {
 			&o.OptionName,
 		)
 
-		fmt.Println("added option", o.OptionName)
-
 		if err != nil {
 			fmt.Println(err)
 		} else {

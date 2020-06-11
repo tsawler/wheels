@@ -407,6 +407,10 @@
         </div>
     </div>
 </form>
+
+<div id="hidden_data" class="d-none">
+
+</div>
 `
 
         let progressBarHtml = `
@@ -457,8 +461,6 @@
                     console.log("past await for", file.name);
                 }
 
-                refreshFolders();
-                refreshFiles();
             }
         }
 
@@ -482,6 +484,7 @@
                     metadata: {
                         filename: file.name,
                         filetype: file.type,
+                        "id": '{{$v.ID}}',
                         "upload_type": "inventory",
                         "user_id": {{.Auth.ID}},
                         "token": '{{.Auth.Email}}',
@@ -513,9 +516,7 @@
                     onSuccess: function () {
                         uploadInProgress = false;
                         totalUploaded = totalUploaded + file.size;
-                        refreshFiles();
                         setTimeout(function () {
-                            refreshFiles();
                         }, 1000);
                     }
                 })
