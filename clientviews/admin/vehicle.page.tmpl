@@ -1,0 +1,16 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Vehicle- GoBlender Admin{{end}}
+
+{{define "admin-title"}}{{$v := index .RowSets "vehicle"}}Vehicle: {{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}{{end}}
+{{define "content-title"}}{{$v := index .RowSets "vehicle"}}Vehicle: {{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}{{end}}
+
+{{define "content"}}
+    {{$v := index .RowSets "vehicle"}}
+
+{{end}}
+
+{{define "js"}}
+
+
+{{end}}

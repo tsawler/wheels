@@ -13,6 +13,7 @@ type DBModel struct {
 	DB *sql.DB
 }
 
+// VehicleJSON generates JSON for searching vehicles in admin tool
 func (m *DBModel) VehicleJSON(query, baseQuery string) ([]*clientmodels.VehicleJSON, int, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1093,8 +1094,8 @@ func (m *DBModel) GetModelsForVehicleType(id int) ([]clientmodels.Model, error) 
 	return models, nil
 }
 
-// GetPowerSportItem gets a complete record for a power sports item
-func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
+// GetVehicleByID gets a complete record for a vehicle
+func (m *DBModel) GetVehicleByID(id int) (clientmodels.Vehicle, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -1130,7 +1131,7 @@ func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 		       created_at,
 		       updated_at
 		from 
-		     wheelsanddeals.vehicles v 
+		     vehicles v 
 		where
 			id = ?`
 
@@ -1180,7 +1181,7 @@ func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_makes 
+				vehicle_makes 
 			WHERE 
 				id = ?`
 	makeRow := m.DB.QueryRowContext(ctx, query, c.VehicleMakesID)
@@ -1206,7 +1207,7 @@ func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_models 
+				vehicle_models 
 			WHERE 
 				id = ?`
 	modelRow := m.DB.QueryRowContext(ctx, query, c.VehicleModelsID)
@@ -1232,8 +1233,8 @@ func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 				vo.updated_at,
 				o.option_name
 			from 
-				wheelsanddeals.vehicle_options vo
-				left join wheelsanddeals.options o on (vo.option_id = o.id)
+				vehicle_options vo
+				left join options o on (vo.option_id = o.id)
 			where
 				vo.vehicle_id = ?
 				and o.active = 1
@@ -1277,7 +1278,7 @@ func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 				updated_at,
 				sort_order
 			from 
-				wheelsanddeals.vehicle_images 
+				vehicle_images 
 			where
 				vehicle_id = ?
 			order by 
@@ -1319,8 +1320,8 @@ func (m *DBModel) GetPowerSportItem(id int) (clientmodels.Vehicle, error) {
 				v.file_name,
 				v.thumb
 			from 
-				wheelsanddeals.vehicle_videos vv
-				left join wheelsanddeals.videos v on (vv.video_id = v.id)
+				vehicle_videos vv
+				left join videos v on (vv.video_id = v.id)
 			where
 				vv.vehicle_id = ?
 			limit 1`

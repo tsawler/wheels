@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tsawler/goblender/pkg/datatables"
+	"github.com/tsawler/goblender/pkg/forms"
 	"github.com/tsawler/goblender/pkg/helpers"
 	"github.com/tsawler/goblender/pkg/templates"
 	"net/http"
+	"strconv"
 )
 
 // DataTablesJSON holds the json for datatables
@@ -23,7 +25,6 @@ func AllVehicles(w http.ResponseWriter, r *http.Request) {
 
 // AuditJson returns audit json
 func AllVehiclesJSON(w http.ResponseWriter, r *http.Request) {
-	infoLog.Println("hit json")
 	err := r.ParseForm()
 	if err != nil {
 		app.ErrorLog.Print(err)
@@ -66,4 +67,30 @@ func AllVehiclesJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(out)
+}
+
+// DisplayVehicleForAdmin shows vehicle for edit
+func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get(":ID"))
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	vehicle, err := vehicleModel.GetVehicleByID(id)
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	rowSets := make(map[string]interface{})
+	rowSets["vehicle"] = vehicle
+
+	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+		Form:    forms.New(nil),
+	})
+
 }
