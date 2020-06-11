@@ -8,10 +8,10 @@ select
        coalesce(trim, '') as trim,
         year,
        case
-            when status = 1 then 'For Sale'
-            when status = 0 then 'Sold'
-            when status = 2 then 'Pending'
-            when status = 3 then 'Trade In' end as status,
+            when status = 1 then '<span class="badge badge-primary">For Sale</span>'
+            when status = 0 then '<span class="badge badge-danger">Sold</span>'
+            when status = 2 then '<span class="badge badge-info">Pending</span>'
+            when status = 3 then '<span class="badge badge-warning">Trade In</span>' end as status,
        coalesce((select make from vehicle_makes where id = v.vehicle_makes_id), '') as make,
        coalesce((select model from vehicle_models where id = v.vehicle_models_id), '') as model,
        created_at,

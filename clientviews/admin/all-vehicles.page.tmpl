@@ -30,12 +30,12 @@
 {{end}}
 
 {{define "js"}}
-
+    <script src="https://cdn.datatables.net/plug-ins/1.10.21/dataRender/datetime.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function(event) {
+        document.addEventListener("DOMContentLoaded", function (event) {
             $('#itable').DataTable({
                 "processing": true,
-                "order": [[ 1, "desc" ]],
+                "order": [[1, "desc"]],
                 "serverSide": true,
                 "stateSave": true,
                 "paging": true,
@@ -73,9 +73,17 @@
                     {"data": "trim", "name": "trim"},
                     {"data": "stock_no", "name": "stock_no"},
                     {"data": "vin", "name": "vin"},
-                    {"data": "status", "name": "status","searchable": false},
-                    {"data": "created_at", "name": "created_at","searchable": false},
-                    {"data": "created_at", "name": "updated_at","searchable": false}
+                    {"data": "status", "name": "status", "searchable": false, "className": "text-center"},
+                    {
+                        "data": "created_at",
+                        "name": "created_at",
+                        "render": $.fn.dataTable.render.moment( 'YYYY-MM-DDTHH:mm:ssZ', 'YYYY-MM-DD' )
+                    },
+                    {
+                        "data": "updated_at",
+                        "name": "updated_at",
+                        "render": $.fn.dataTable.render.moment( 'YYYY-MM-DDTHH:mm:ssZ', 'YYYY-MM-DD' )
+                    },
                 ]
             });
         });
