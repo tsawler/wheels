@@ -1873,3 +1873,129 @@ func (m *DBModel) CheckIfVehicleExists(stockNumber string) bool {
 	}
 	return false
 }
+
+// InsertVehicle inserts a vehicle
+func (m *DBModel) InsertVehicle(v clientmodels.Vehicle) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+	INSERT INTO vehicles (stock_no, cost, vin, odometer, year, trim, vehicle_type, 
+	                   body, seating_capacity, drive_train, engine, exterior_color, interior_color,
+	                   transmission, options, model_number, total_msr, status, description, vehicle_makes_id,
+	                   vehicle_models_id, hand_picked, used, price_for_display, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?)
+    `
+
+	_, err := m.DB.ExecContext(ctx,
+		stmt,
+		v.StockNo,
+		v.Cost,
+		v.Vin,
+		v.Odometer,
+		v.Year,
+		v.Trim,
+		v.VehicleType,
+		v.Body,
+		v.SeatingCapacity,
+		v.DriveTrain,
+		v.Engine,
+		v.ExteriorColour,
+		v.InteriorColour,
+		v.Transmission,
+		v.Options,
+		v.ModelNumber,
+		v.TotalMSR,
+		v.Status,
+		v.Description,
+		v.VehicleMakesID,
+		v.VehicleModelsID,
+		v.HandPicked,
+		v.Used,
+		v.PriceForDisplay,
+		v.CreatedAt,
+		v.UpdatedAt,
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	stmt = "SELECT LAST_INSERT_ID()"
+	row := m.DB.QueryRowContext(ctx, stmt)
+
+	var id int
+	err = row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+// UpdateVehicle updates a vehcile in the database
+func (m *DBModel) UpdateVehicle(v clientmodels.Vehicle) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update vehicles set 
+		stock_no = ?,
+		cost = ?,
+		vin = ?,
+		odometer = ?,
+		year = ?,
+		trim = ?,
+		vehicle_type = ?,
+		body = ?,
+		seating_capacity = ?,
+		drive_train = ?,
+		engine = ?,
+		exterior_color = ?,
+		interior_color = ?,
+		transmission = ?,
+		options = ?,
+		model_number = ?,
+		total_msr = ?,
+		status = ?,
+		description = ?,
+		vehicle_makes_id = ?,
+		vehicle_models_id = ?,
+		hand_picked = ?,
+		used = ?,
+		price_for_display = ?,
+		updated_at = ?
+		where id = ?`
+	_, err := m.DB.ExecContext(ctx, query,
+		v.StockNo,
+		v.Cost,
+		v.Vin,
+		v.Odometer,
+		v.Year,
+		v.Trim,
+		v.VehicleType,
+		v.Body,
+		v.SeatingCapacity,
+		v.DriveTrain,
+		v.Engine,
+		v.ExteriorColour,
+		v.InteriorColour,
+		v.Transmission,
+		v.Options,
+		v.ModelNumber,
+		v.TotalMSR,
+		v.Status,
+		v.Description,
+		v.VehicleMakesID,
+		v.VehicleModelsID,
+		v.HandPicked,
+		v.Used,
+		v.PriceForDisplay,
+		v.UpdatedAt,
+		v.ID,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
