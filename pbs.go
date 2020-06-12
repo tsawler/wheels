@@ -142,7 +142,6 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 		infoLog.Println(x.Model)
 		infoLog.Println(x.Trim)
 		infoLog.Println(x.Status)
-		infoLog.Println(x.VehicleType)
 		infoLog.Println(x.Odometer)
 		infoLog.Println(x.Engine)
 		infoLog.Println(x.Cylinders)
