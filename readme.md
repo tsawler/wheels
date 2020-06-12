@@ -5,7 +5,7 @@ It is written as an extension to [goBlender](https://github.com/tsawler/goblende
 
 ## Development Setup
 
-Clone [goBlender](https://github.com/tsawler/goblender), and then clonse
+Clone [goBlender](https://github.com/tsawler/goblender), and then clone
 this repository into `./ui/client/clienthandlers`
 
 Add PBS authentication to the `.env` file:
