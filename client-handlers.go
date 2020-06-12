@@ -502,3 +502,54 @@ func AllVehiclesPendingJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(out)
 }
+
+// AllVehiclesTradeIns displays table of all pending
+func AllVehiclesTradeIns(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-vehicles-trade-ins.page.tmpl", &templates.TemplateData{})
+}
+
+// AllVehiclesTradeInsJSON returns json for pending
+func AllVehiclesTradeInsJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("v_all_vehicles")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "where vehicle_status = 3")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := DataTablesJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
