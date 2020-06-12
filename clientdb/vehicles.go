@@ -57,7 +57,8 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 
 	if len(extra) > 0 {
 		if strings.Contains(query, " lower(") {
-			query = strings.Replace(query, "ORDER BY", fmt.Sprintf("and %s ORDER BY", extra[0]), 1)
+			query = strings.Replace(query, "WHERE", "WHERE (", 1)
+			query = strings.Replace(query, "ORDER BY", fmt.Sprintf(") and %s ORDER BY", extra[0]), 1)
 		} else {
 			query = strings.Replace(query, "ORDER BY", fmt.Sprintf("where true and %s ORDER BY", extra[0]), 1)
 		}
@@ -80,6 +81,7 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 		return nil, 0, 0, err
 	}
 	defer allRows.Close()
+
 	for allRows.Next() {
 		err = allRows.Scan(&rowCount)
 		if err != nil {
@@ -88,7 +90,6 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 	}
 
 	// count filtered rows
-	fmt.Println("Base query:", baseQuery)
 	filteredRows, err := m.DB.QueryContext(ctx, baseQuery)
 	if err != nil {
 		fmt.Println("Error getting filtered rows", err)
@@ -100,7 +101,7 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 		_ = filteredRows.Scan(&filterCount)
 	}
 
-	fmt.Println("Query:", query)
+	//fmt.Println("Query:", query)
 	rows, err := m.DB.Query(query)
 	if err != nil {
 		fmt.Println("Error running query", err)
