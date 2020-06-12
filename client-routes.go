@@ -7,9 +7,7 @@ import (
 	"net/http"
 )
 
-// ClientRoutes is used to handle custom routes for specific clients. Prepend some unique (and site wide) value
-// to the start of each route in order to avoid clashes with pages, etc. Middleware can be applied by importing and
-// using the middleware.* functions.
+// ClientRoutes are the client specific routes
 func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddleware alice.Chain) (*pat.PatternServeMux, error) {
 	// public folder
 	fileServer := http.FileServer(http.Dir("./client/clienthandlers/public/"))
