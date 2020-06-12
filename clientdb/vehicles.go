@@ -56,14 +56,27 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 	where := ""
 
 	if len(extra) > 0 {
-		query = strings.Replace(query, "ORDER BY", fmt.Sprintf("%s ORDER BY", extra[0]), 1)
-		baseQuery = fmt.Sprintf("%s %s", baseQuery, extra[0])
+		if strings.Contains(query, " lower(") {
+			query = strings.Replace(query, "ORDER BY", fmt.Sprintf("and %s ORDER BY", extra[0]), 1)
+		} else {
+			query = strings.Replace(query, "ORDER BY", fmt.Sprintf("where true and %s ORDER BY", extra[0]), 1)
+		}
+
+		baseQuery = strings.Replace(baseQuery, "WHERE", "WHERE true and", 1)
+
+		if strings.Contains(baseQuery, " lower(") {
+			baseQuery = fmt.Sprintf("%s and %s", baseQuery, extra[0])
+		} else {
+			baseQuery = fmt.Sprintf("%s where true and %s", baseQuery, extra[0])
+		}
+
 		where = extra[0]
 	}
 
 	// count all rows
-	allRows, err := m.DB.QueryContext(ctx, fmt.Sprintf("select count(id) as all_rows from v_all_vehicles %s", where))
+	allRows, err := m.DB.QueryContext(ctx, fmt.Sprintf("select count(id) as all_rows from v_all_vehicles where true and %s", where))
 	if err != nil {
+		fmt.Println("Error getting all rows", err)
 		return nil, 0, 0, err
 	}
 	defer allRows.Close()
@@ -75,8 +88,10 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 	}
 
 	// count filtered rows
+	fmt.Println("Base query:", baseQuery)
 	filteredRows, err := m.DB.QueryContext(ctx, baseQuery)
 	if err != nil {
+		fmt.Println("Error getting filtered rows", err)
 		return nil, 0, 0, err
 	}
 	defer filteredRows.Close()
@@ -85,8 +100,10 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 		_ = filteredRows.Scan(&filterCount)
 	}
 
+	fmt.Println("Query:", query)
 	rows, err := m.DB.Query(query)
 	if err != nil {
+		fmt.Println("Error running query", err)
 		return nil, 0, 0, err
 	}
 	defer rows.Close()
@@ -1826,4 +1843,32 @@ func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 	}
 
 	return v, nil
+}
+
+// CheckIfVehicleExists checks to see if we have a vehicle, by stock number
+func (m *DBModel) CheckIfVehicleExists(stockNumber string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	count := 0
+	query := `
+		select 
+		       count(id) as counter
+		from 
+		     vehicles v 
+		where
+			stock_no = ?`
+
+	row := m.DB.QueryRowContext(ctx, query, stockNumber)
+	err := row.Scan(
+		&count,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+
+	if count > 0 {
+		return true
+	}
+	return false
 }

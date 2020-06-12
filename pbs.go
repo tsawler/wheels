@@ -136,18 +136,10 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 
 	for _, x := range usedItems.Vehicles {
 		infoLog.Println(x.StockNumber)
-		infoLog.Println(x.VehicleType)
-		infoLog.Println(x.Year)
-		infoLog.Println(x.Make)
-		infoLog.Println(x.Model)
-		infoLog.Println(x.Trim)
-		infoLog.Println(x.Status)
-		infoLog.Println(x.Odometer)
-		infoLog.Println(x.Engine)
-		infoLog.Println(x.Cylinders)
-		infoLog.Println(x.Transmission)
-		infoLog.Println(x.InteriorColor.Description)
-		infoLog.Println(x.ExteriorColor.Description)
+		exists := vehicleModel.CheckIfVehicleExists(x.StockNumber)
+		if !exists {
+			infoLog.Println("we don't have", x.StockNumber)
+		}
 		infoLog.Println("-----------------------------------")
 	}
 
