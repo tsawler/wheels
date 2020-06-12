@@ -1880,11 +1880,11 @@ func (m *DBModel) InsertVehicle(v clientmodels.Vehicle) (int, error) {
 	defer cancel()
 
 	stmt := `
-	INSERT INTO vehicles (stock_no, cost, vin, odometer, year, trim, vehicle_type, 
-	                   body, seating_capacity, drive_train, engine, exterior_color, interior_color,
-	                   transmission, options, model_number, total_msr, status, description, vehicle_makes_id,
-	                   vehicle_models_id, hand_picked, used, price_for_display, created_at, updated_at)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO vehicles (stock_no, cost, vin, odometer, year, trim, vehicle_type, 
+			body, seating_capacity, drive_train, engine, exterior_color, interior_color,
+			transmission, options, model_number, total_msr, status, description, vehicle_makes_id,
+			vehicle_models_id, hand_picked, used, price_for_display, created_at, updated_at)
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 
 	_, err := m.DB.ExecContext(ctx,
