@@ -53,14 +53,16 @@ func (m *DBModel) VehicleJSON(query, baseQuery string, extra ...string) ([]*clie
 
 	rowCount := 0
 	filterCount := 0
+	where := ""
 
 	if len(extra) > 0 {
 		query = strings.Replace(query, "ORDER BY", fmt.Sprintf("%s ORDER BY", extra[0]), 1)
-		baseQuery = strings.Replace(baseQuery, "ORDER BY", fmt.Sprintf("%s ORDER BY", extra[0]), 1)
+		baseQuery = fmt.Sprintf("%s %s", baseQuery, extra[0])
+		where = extra[0]
 	}
 
 	// count all rows
-	allRows, err := m.DB.QueryContext(ctx, "select count(id) as all_rows from v_all_vehicles")
+	allRows, err := m.DB.QueryContext(ctx, fmt.Sprintf("select count(id) as all_rows from v_all_vehicles %s", where))
 	if err != nil {
 		return nil, 0, 0, err
 	}

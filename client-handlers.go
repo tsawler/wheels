@@ -173,6 +173,160 @@ func AllPowerSportsForSaleJSON(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 }
 
+// AllSold displays table of all sold cars/trucks
+func AllSold(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-sold.page.tmpl", &templates.TemplateData{})
+}
+
+// AllSoldJSON returns json for sold cars/trucks
+func AllSoldJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("v_all_vehicles")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "where vehicle_status = 0 and vehicle_type < 7")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := DataTablesJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
+// AllSoldThisMonth displays table of all sold cars/trucks this month
+func AllSoldThisMonth(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-sold-this-month.page.tmpl", &templates.TemplateData{})
+}
+
+// AllSoldThisMonthJSON returns json for sold cars/trucks this month
+func AllSoldThisMonthJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("v_all_vehicles")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	thisMonth := fmt.Sprintf("%d-%d-01", time.Now().Year(), time.Now().Month())
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, fmt.Sprintf("where vehicle_status = 0 and vehicle_type < 7 and updated_at > '%s'", thisMonth))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := DataTablesJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
+// AllPowerSportsSold displays table of all sold cars/trucks
+func AllPowerSportsSold(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-powersports-sold.page.tmpl", &templates.TemplateData{})
+}
+
+// AllPowerSportsSoldJSON returns json for sold cars/trucks
+func AllPowerSportsSoldJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("v_all_vehicles")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "where vehicle_status = 0 and vehicle_type >= 7")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := DataTablesJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
 // DisplayVehicleForAdmin shows vehicle for edit
 func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get(":ID"))
