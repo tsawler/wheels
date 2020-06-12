@@ -134,15 +134,17 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	count := 0
 	for _, x := range usedItems.Vehicles {
 		infoLog.Println(x.StockNumber)
 		exists := vehicleModel.CheckIfVehicleExists(x.StockNumber)
 		if !exists {
 			infoLog.Println("we don't have", x.StockNumber)
+			count++
 		}
 		infoLog.Println("-----------------------------------")
 	}
 
-	session.Put(r.Context(), "flash", "Refreshed from PBS!")
+	session.Put(r.Context(), "flash", fmt.Sprintf("Refreshed from PBS. %d items added.", count))
 	http.Redirect(w, r, lastPage, http.StatusSeeOther)
 }
