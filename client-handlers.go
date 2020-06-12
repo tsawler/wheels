@@ -173,7 +173,7 @@ func AllVehiclesForSaleJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Do the queries and get back our data, the row count, and the filtered row count
-	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "and vehicle_status = 1 and vehicle_type <  7")
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "vehicle_status = 1 and vehicle_type <  7")
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -224,7 +224,7 @@ func AllPowerSportsForSaleJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Do the queries and get back our data, the row count, and the filtered row count
-	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "and vehicle_status = 1 and vehicle_type >=  7")
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "vehicle_status = 1 and vehicle_type >=  7")
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -275,7 +275,7 @@ func AllSoldJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Do the queries and get back our data, the row count, and the filtered row count
-	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "and vehicle_status = 0 and vehicle_type < 7")
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "vehicle_status = 0 and vehicle_type < 7")
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -327,7 +327,7 @@ func AllSoldThisMonthJSON(w http.ResponseWriter, r *http.Request) {
 
 	// Do the queries and get back our data, the row count, and the filtered row count
 	thisMonth := fmt.Sprintf("%d-%d-01", time.Now().Year(), time.Now().Month())
-	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, fmt.Sprintf("and vehicle_status = 0 and vehicle_type < 7 and updated_at > '%s'", thisMonth))
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, fmt.Sprintf("vehicle_status = 0 and vehicle_type < 7 and updated_at > '%s'", thisMonth))
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -378,7 +378,7 @@ func AllPowerSportsSoldJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Do the queries and get back our data, the row count, and the filtered row count
-	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "and vehicle_status = 0 and vehicle_type >= 7")
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "vehicle_status = 0 and vehicle_type >= 7")
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -430,7 +430,7 @@ func AllPowerSportsSoldThisMonthJSON(w http.ResponseWriter, r *http.Request) {
 
 	// Do the queries and get back our data, the row count, and the filtered row count
 	thisMonth := fmt.Sprintf("%d-%d-01", time.Now().Year(), time.Now().Month())
-	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, fmt.Sprintf("and vehicle_status = 0 and vehicle_type >= 7 and updated_at > '%s'", thisMonth))
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, fmt.Sprintf("vehicle_status = 0 and vehicle_type >= 7 and updated_at > '%s'", thisMonth))
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -481,7 +481,7 @@ func AllVehiclesPendingJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Do the queries and get back our data, the row count, and the filtered row count
-	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "and vehicle_status = 2")
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, "vehicle_status = 2")
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
