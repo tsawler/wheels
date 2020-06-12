@@ -363,7 +363,9 @@
                 <a class="btn btn-info" href="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}">Cancel</a>
             </div>
         </div>
-
+        <input type="hidden" name="category" value="{{index .StringMap "category"}}">
+        <input type="hidden" name="segment" value="{{index .StringMap "segment"}}">
+        <input type="hidden" name="src" value="{{index .StringMap "src"}}">
     </form>
 
 {{end}}
