@@ -2,8 +2,8 @@
 
 {{define "title"}}All PowerSports Sold - GoBlender Admin{{end}}
 
-{{define "admin-title"}}All PowerSports Sold{{end}}
-{{define "content-title"}}All PowerSports Sold{{end}}
+{{define "admin-title"}}All PowerSports Sold This Month{{end}}
+{{define "content-title"}}All PowerSports Sold This Month{{end}}
 
 {{define "content"}}
     <div class="table-responsive">
@@ -43,7 +43,7 @@
                     "caseInsensitive": true
                 },
                 "ajax": {
-                    "url": "/admin/powersports/all-powersports-sold-json",
+                    "url": "/admin/powersports/all-powersports-sold-this-month-json",
                     "type": "POST",
                     data: function (d) {
                         return $.extend({}, d, {

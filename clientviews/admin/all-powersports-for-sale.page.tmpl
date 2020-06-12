@@ -1,9 +1,9 @@
 {{template "admin-base" .}}
 
-{{define "title"}}All Vehicles - GoBlender Admin{{end}}
+{{define "title"}}All PowerSports - GoBlender Admin{{end}}
 
-{{define "admin-title"}}All PowerSPorts For Sale{{end}}
-{{define "content-title"}}All PowerSPorts For Sale{{end}}
+{{define "admin-title"}}All PowerSports For Sale{{end}}
+{{define "content-title"}}All PowerSports For Sale{{end}}
 
 {{define "content"}}
     <div class="table-responsive">
@@ -43,7 +43,7 @@
                     "caseInsensitive": true
                 },
                 "ajax": {
-                    "url": "/admin/inventory/all-powersports-for-sale-json",
+                    "url": "/admin/powersports/all-powersports-for-sale-json",
                     "type": "POST",
                     data: function (d) {
                         return $.extend({}, d, {

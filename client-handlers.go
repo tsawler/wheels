@@ -327,6 +327,58 @@ func AllPowerSportsSoldJSON(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 }
 
+// AllPowerSportsThisMonthSold displays table of all sold powersports for this month
+func AllPowerSportsThisMonthSold(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-powersports-sold-this-month.page.tmpl", &templates.TemplateData{})
+}
+
+// AllPowerSportsSoldThisMonthJSON returns json for sold powersports for this month
+func AllPowerSportsSoldThisMonthJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("v_all_vehicles")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	thisMonth := fmt.Sprintf("%d-%d-01", time.Now().Year(), time.Now().Month())
+	v, rowCount, filterCount, err := vehicleModel.VehicleJSON(query, baseQuery, fmt.Sprintf("where vehicle_status = 0 and vehicle_type >= 7 and updated_at > '%s'", thisMonth))
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := DataTablesJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
 // DisplayVehicleForAdmin shows vehicle for edit
 func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get(":ID"))
