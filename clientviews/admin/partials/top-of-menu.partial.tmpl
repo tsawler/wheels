@@ -4,12 +4,12 @@
             <a href="#!"><i class="fa fa-car fa-fw"></i> <span class="nav-label">Vehicles</span> <span
                         class="fa arrow"></span></a>
             <ul class="nav nav-second-level collapse">
-                <li><a href="/admin/inventory/all-vehicles">All Vehicles</a></li>
-                <li><a href="/admin/inventory/all-vehicles-for-sale">For Sale</a></li>
-                <li><a href="/admin/inventory/all-vehicles-sold-this-month">Sold (this month)</a></li>
-                <li><a href="/admin/inventory/all-vehicles-sold">Sold</a></li>
-                <li><a href="/admin/inventory/all-vehicles-pending">Pending</a></li>
-                <li><a href="/admin/inventory/all-vehicles-trade-in">Trade-ins</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles">All Vehicles</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-for-sale">For Sale</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-sold-this-month">Sold (this month)</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-sold">Sold</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-pending">Pending</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-trade-in">Trade-ins</a></li>
                 <li><a href="/admin/inventory/options-all">Options</a></li>
                 <li><a href="/admin/inventory/options/0">Add Option</a></li>
                 <li><a href="/admin/inventory/refresh-from-pbs">Force PBS Update</a></li>
@@ -18,13 +18,13 @@
     {{end}}
 
     {{if hasRole "inventory" .Auth.ID}}
-        <li id="powersports" {{if eq .CurrentSegment "powersports"}} class="active" {{end}}>
+        <li id="powersports-inventory" {{if eq .CurrentSegment "powersports-inventory"}} class="active" {{end}}>
             <a href="#!"><i class="fa fa-motorcycle fa-fw"></i> <span class="nav-label">PowerSports</span> <span
                         class="fa arrow"></span></a>
             <ul class="nav nav-second-level collapse">
-                <li><a href="/admin/powersports/all-powersports-for-sale">For Sale PowerSports</a></li>
-                <li><a href="/admin/powersports/all-powersports-sold-this-month">PowerSports Sold (this month)</a></li>
-                <li><a href="/admin/powersports/all-powersports-sold">PowerSports Sold</a></li>
+                <li><a href="/admin/powersports-inventory/powersports/all-powersports-for-sale">For Sale PowerSports</a></li>
+                <li><a href="/admin/powersports-inventory/powersports/all-powersports-sold-this-month">PowerSports Sold (this month)</a></li>
+                <li><a href="/admin/powersports-inventory/powersports/all-powersports-sold">PowerSports Sold</a></li>
             </ul>
         </li>
     {{end}}

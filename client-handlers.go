@@ -388,6 +388,14 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	src := r.URL.Query().Get(":SRC")
+	segment := r.URL.Query().Get(":TYPE")
+	category := r.URL.Query().Get(":CATEGORY")
+	stringMap := make(map[string]string)
+	stringMap["segment"] = segment
+	stringMap["src"] = src
+	stringMap["category"] = category
+
 	vehicle, err := vehicleModel.GetVehicleByID(id)
 	if err != nil {
 		errorLog.Println(err)
@@ -436,9 +444,10 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
-		RowSets: rowSets,
-		IntMap:  intMap,
-		Form:    forms.New(nil),
+		RowSets:   rowSets,
+		IntMap:    intMap,
+		Form:      forms.New(nil),
+		StringMap: stringMap,
 	})
 
 }
