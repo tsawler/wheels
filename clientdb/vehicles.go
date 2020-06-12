@@ -204,7 +204,7 @@ func (m *DBModel) GetAllVehicles() ([]clientmodels.Vehicle, error) {
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_makes 
+				vehicle_makes 
 			WHERE 
 				id = ?`
 		makeRow := m.DB.QueryRowContext(ctx, query, c.VehicleMakesID)
@@ -231,7 +231,7 @@ func (m *DBModel) GetAllVehicles() ([]clientmodels.Vehicle, error) {
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_models 
+				vehicle_models 
 			WHERE 
 				id = ?`
 		modelRow := m.DB.QueryRowContext(ctx, query, c.VehicleModelsID)
@@ -258,8 +258,8 @@ func (m *DBModel) GetAllVehicles() ([]clientmodels.Vehicle, error) {
 				vo.updated_at,
 				o.option_name
 			from 
-				wheelsanddeals.vehicle_options vo
-				left join wheelsanddeals.options o on (vo.option_id = o.id)
+				vehicle_options vo
+				left join options o on (vo.option_id = o.id)
 			where
 				vo.vehicle_id = ?
 				and o.active = 1
@@ -301,7 +301,7 @@ func (m *DBModel) GetAllVehicles() ([]clientmodels.Vehicle, error) {
 				updated_at,
 				sort_order
 			from 
-				wheelsanddeals.vehicle_images 
+				vehicle_images 
 			where
 				vehicle_id = ?
 			order by 
@@ -442,7 +442,7 @@ func (m *DBModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels.Vehi
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_makes 
+				vehicle_makes 
 			WHERE 
 				id = ?`
 		makeRow := m.DB.QueryRowContext(ctx, query, c.VehicleMakesID)
@@ -469,7 +469,7 @@ func (m *DBModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels.Vehi
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_models 
+				vehicle_models 
 			WHERE 
 				id = ?`
 		modelRow := m.DB.QueryRowContext(ctx, query, c.VehicleModelsID)
@@ -496,8 +496,8 @@ func (m *DBModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels.Vehi
 				vo.updated_at,
 				o.option_name
 			from 
-				wheelsanddeals.vehicle_options vo
-				left join wheelsanddeals.options o on (vo.option_id = o.id)
+				vehicle_options vo
+				left join options o on (vo.option_id = o.id)
 			where
 				vo.vehicle_id = ?
 				and o.active = 1
@@ -539,7 +539,7 @@ func (m *DBModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels.Vehi
 				updated_at,
 				sort_order
 			from 
-				wheelsanddeals.vehicle_images 
+				vehicle_images 
 			where
 				vehicle_id = ?
 			order by 
@@ -617,7 +617,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 		select 
 			count(v.id) 
 		from 
-			wheelsanddeals.vehicles v 
+			vehicles v 
 		where 
 			status = 1 
 			and vehicle_type = ? %s`, where)
@@ -627,7 +627,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 		select 
 			count(v.id) 
 		from 
-			wheelsanddeals.vehicles v 
+			vehicles v 
 		where 
 			status = 1 
 			and vehicle_type in (8, 11, 12, 16, 13, 10, 7, 9, 15, 17, 14) %s 
@@ -638,7 +638,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 		select 
 			count(v.id) 
 		from 
-			wheelsanddeals.vehicles v 
+			vehicles v 
 		where 
 			status = 1 
 			and vehicle_type in (13, 10, 9, 15) %s 
@@ -686,7 +686,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 		       created_at,
 		       updated_at
 		from 
-		     wheelsanddeals.vehicles v 
+		     vehicles v 
 		where
 			vehicle_type = ?
 			and status = 1
@@ -730,7 +730,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 		       created_at,
 		       updated_at
 		from 
-		     wheelsanddeals.vehicles v 
+		     vehicles v 
 		where
 			vehicle_type in (8, 11, 12, 16, 7, 17, 14)
 			and status = 1
@@ -776,7 +776,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 		       created_at,
 		       updated_at
 		from 
-		     wheelsanddeals.vehicles v 
+		     vehicles v 
 		where
 			vehicle_type in (13, 10, 9, 15)
 			and status = 1
@@ -841,7 +841,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_makes 
+				vehicle_makes 
 			WHERE 
 				id = ?`
 		makeRow := m.DB.QueryRowContext(ctx, query, c.VehicleMakesID)
@@ -868,7 +868,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_models 
+				vehicle_models 
 			WHERE 
 				id = ?`
 		modelRow := m.DB.QueryRowContext(ctx, query, c.VehicleModelsID)
@@ -895,8 +895,8 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 				vo.updated_at,
 				o.option_name
 			from 
-				wheelsanddeals.vehicle_options vo
-				left join wheelsanddeals.options o on (vo.option_id = o.id)
+				vehicle_options vo
+				left join options o on (vo.option_id = o.id)
 			where
 				vo.vehicle_id = ?
 				and o.active = 1
@@ -940,7 +940,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 				updated_at,
 				sort_order
 			from 
-				wheelsanddeals.vehicle_images 
+				vehicle_images 
 			where
 				vehicle_id = ?
 			order by 
@@ -994,7 +994,7 @@ func (m *DBModel) GetYearsForVehicleType(id int) ([]int, error) {
 			select distinct 
 				v.year
 			from 
-				wheelsanddeals.vehicles v
+				vehicles v
 			where
 				vehicle_type = ?
 				and v.status = 1
@@ -1074,9 +1074,9 @@ func (m *DBModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
 			select  
 				m.id, m.make
 			from 
-				wheelsanddeals.vehicle_makes m
+				vehicle_makes m
 			where
-				m.id in (select v.vehicle_makes_id from wheelsanddeals.vehicles v where status = 1 and vehicle_type = ?)
+				m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and vehicle_type = ?)
 			order by 
 				m.make`
 	} else if id == 1000 {
@@ -1084,9 +1084,9 @@ func (m *DBModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
 			select  
 				m.id, m.make
 			from 
-				wheelsanddeals.vehicle_makes m
+				vehicle_makes m
 			where
-				m.id in (select v.vehicle_makes_id from wheelsanddeals.vehicles v where status = 1 and used = 1 and vehicle_type  in
+				m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and used = 1 and vehicle_type  in
 				(8, 11, 12, 16, 7, 17, 14, ?)
 )
 			order by 
@@ -1096,9 +1096,9 @@ func (m *DBModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
 			select  
 				m.id, m.make
 			from 
-				wheelsanddeals.vehicle_makes m
+				vehicle_makes m
 			where
-				m.id in (select v.vehicle_makes_id from wheelsanddeals.vehicles v where status = 1 and used = 1 and vehicle_type  in
+				m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and used = 1 and vehicle_type  in
 				(13, 10, 9, 15, ?)
 )
 			order by 
@@ -1140,9 +1140,9 @@ func (m *DBModel) GetModelsForVehicleType(id int) ([]clientmodels.Model, error) 
 			select  
 				m.id, m.model
 			from 
-				wheelsanddeals.vehicle_models m
+				vehicle_models m
 			where
-				m.id in (select v.vehicle_models_id from wheelsanddeals.vehicles v where status = 1 and vehicle_type = ?)
+				m.id in (select v.vehicle_models_id from vehicles v where status = 1 and vehicle_type = ?)
 			order by 
 				m.model`
 	rows, err := m.DB.QueryContext(ctx, query, id)
@@ -1478,7 +1478,7 @@ func (m *DBModel) GetSales() ([]clientmodels.SalesStaff, error) {
 		       coalesce(phone, ''),
 		       coalesce(image, '')
 		from 
-		     wheelsanddeals.sales 
+		     sales 
 		where
 			active = 1
 
@@ -1520,7 +1520,7 @@ func (m *DBModel) InsertCreditApp(a clientmodels.CreditApp) error {
 	defer cancel()
 
 	stmt := `
-	INSERT INTO wheelsanddeals.credit_applications (first_name, last_name, email, phone, address, city, province, zip, 
+	INSERT INTO credit_applications (first_name, last_name, email, phone, address, city, province, zip, 
 	                   vehicle, processed, created_at, updated_at)
     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
@@ -1553,7 +1553,7 @@ func (m *DBModel) InsertTestDrive(a clientmodels.TestDrive) error {
 	defer cancel()
 
 	stmt := `
-	INSERT INTO wheelsanddeals.test_drives (users_name, email, phone, preferred_date, preferred_time, vehicle_id, 
+	INSERT INTO test_drives (users_name, email, phone, preferred_date, preferred_time, vehicle_id, 
 	                   processed, created_at, updated_at)
     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
@@ -1582,7 +1582,7 @@ func (m *DBModel) InsertQuickQuote(a clientmodels.QuickQuote) error {
 	defer cancel()
 
 	stmt := `
-	INSERT INTO wheelsanddeals.quick_quotes (users_name, email, phone, vehicle_id, 
+	INSERT INTO quick_quotes (users_name, email, phone, vehicle_id, 
 	                   processed, created_at, updated_at)
     VALUES(?, ?, ?, ?, ?, ?, ?)
     `
@@ -1656,7 +1656,7 @@ func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 		       else 'Other'
 		       end as vehicle_type_string 
 		from 
-		     wheelsanddeals.vehicles v 
+		     vehicles v 
 		where
 			v.status = 1
 			and v.vehicle_models_id is not null 
@@ -1719,7 +1719,7 @@ func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_makes 
+				vehicle_makes 
 			WHERE 
 				id = ?`
 		makeRow := m.DB.QueryRowContext(ctx, query, c.VehicleMakesID)
@@ -1747,7 +1747,7 @@ func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 				created_at, 
 				updated_at 
 			FROM 
-				wheelsanddeals.vehicle_models 
+				vehicle_models 
 			WHERE 
 				id = ?`
 		modelRow := m.DB.QueryRowContext(ctx, query, c.VehicleModelsID)
@@ -1775,7 +1775,7 @@ func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 				updated_at,
 				sort_order
 			from 
-				wheelsanddeals.vehicle_images 
+				vehicle_images 
 			where
 				vehicle_id = ?
 			order by 
@@ -1799,7 +1799,7 @@ func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 				&o.SortOrder,
 			)
 
-			ph := fmt.Sprintf("https://www.wheelsanddeals.ca/storage/inventory/%d/%s", c.ID, o.Image)
+			ph := fmt.Sprintf("https://www.ca/storage/inventory/%d/%s", c.ID, o.Image)
 			o.Image = ph
 
 			if err != nil {
