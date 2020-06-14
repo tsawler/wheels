@@ -29,6 +29,12 @@ type DataTablesJSON struct {
 	DataRows        []*clientmodels.VehicleJSON `json:"data"`
 }
 
+// SortOrder struct for sorting images
+type SortOrder struct {
+	ImageID    string `json:"id"`
+	StepNumber int    `json:"order"`
+}
+
 // DisplayVehicleForAdmin shows vehicle for edit
 func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get(":ID"))
@@ -100,12 +106,6 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 		StringMap: stringMap,
 	})
 
-}
-
-// SortOrder struct for sorting images
-type SortOrder struct {
-	ImageID    string `json:"id"`
-	StepNumber int    `json:"order"`
 }
 
 // DisplayVehicleForAdminPost handles post of vehicle
@@ -284,6 +284,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// AllVehicles displays all vehicles
 func AllVehicles(w http.ResponseWriter, r *http.Request) {
 	helpers.Render(w, r, "all-vehicles.page.tmpl", &templates.TemplateData{})
 }
