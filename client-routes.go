@@ -18,6 +18,12 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	/*
 		|--------------------------------------------------------------------------
+		| Public Routes // TODO
+		|--------------------------------------------------------------------------
+	*/
+
+	/*
+		|--------------------------------------------------------------------------
 		| Vehicle Administration routes
 		|--------------------------------------------------------------------------
 		| These routes require authentication and a specific role assigned to a
