@@ -16,9 +16,15 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	// webhook from tusd (overrides default handler in goBlender)
 	mux.Post("/tusd/hook", standardMiddleWare.ThenFunc(TusWebHook(app)))
 
-	/*----------------------------------------------------------------------------------------------------------------
-	* Vehicle Administration
-	-----------------------------------------------------------------------------------------------------------------*/
+	/*
+		|--------------------------------------------------------------------------
+		| Vehicle Administration routes
+		|--------------------------------------------------------------------------
+		| These routes require authentication and a specific role assigned to a
+		| user before they can be accessed. Any attempt to access them without the
+		| proper authentication/role results in an "Unauthorized" http response.
+	*/
+
 	// json for vehicle admin
 	mux.Post("/admin/vehicle-images-json/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(VehicleImagesJSON))
 	mux.Post("/admin/delete-vehicle-image-json/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(VehicleImageDelete))
