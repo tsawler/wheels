@@ -1,9 +1,9 @@
 {{template "admin-base" .}}
 
-{{define "title"}}Vehicle- GoBlender Admin{{end}}
+{{define "title"}}Inventory Item - GoBlender Admin{{end}}
 
-{{define "admin-title"}}{{$v := index .RowSets "vehicle"}}Vehicle: {{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}} - {{$v.StockNo}}{{end}}
-{{define "content-title"}}{{$v := index .RowSets "vehicle"}}Vehicle: {{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}} - {{$v.StockNo}}{{end}}
+{{define "admin-title"}}{{$v := index .RowSets "vehicle"}}{{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}, Stock # {{$v.StockNo}}{{end}}
+{{define "content-title"}}{{$v := index .RowSets "vehicle"}}{{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}, Stock # {{$v.StockNo}}{{end}}
 
 {{define "content"}}
     {{$v := index .RowSets "vehicle"}}
@@ -13,7 +13,9 @@
     {{$options := index .RowSets "options"}}
 
 
-    <form method="post" action="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}" id="vehicle-form" novalidate class="needs-validation">
+    <form method="post"
+          action="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}"
+          id="vehicle-form" novalidate class="needs-validation">
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <ul class="nav nav-tabs" id="prefTabs" role="tablist">
             <li class="nav-item">
@@ -330,10 +332,11 @@
                         <div class="custom-control custom-switch">
                             <input type="checkbox"
                                     {{if eq (index $.IntMap (printf "option_%d" .ID)) 1}}
-                                    checked
-                                   {{end}}
+                                        checked
+                                    {{end}}
                                    class="custom-control-input" id="option_{{.ID}}">
-                            <label class="custom-control-label" name="option_{{.ID}}" for="option_{{.ID}}">{{.OptionName}}</label>
+                            <label class="custom-control-label" name="option_{{.ID}}"
+                                   for="option_{{.ID}}">{{.OptionName}}</label>
                         </div>
                     {{end}}
                 </div>
@@ -343,8 +346,15 @@
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="images-tab"
                  id="images-tab-content">
                 <div class="mt-4">
-                <a href="javascript:" onclick="uploadFile()" class="btn btn-outline-secondary">Upload Images...</a>
+                    <a href="javascript:" onclick="uploadFile()" class="btn btn-outline-secondary">Upload Images...</a>
                 </div>
+                {{if gt (len $v.Images) 0 }}
+                    <hr>
+                    {{range $v.Images}}
+                        <img src="/static/site-content/inventory/{{$v.ID}}/{{.Image}}" alt="" style="max-width: 200px; outline: 1px solid silver">
+                    {{end}}
+
+                {{end}}
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="sticker-tab"
@@ -374,7 +384,8 @@
                     </div>
                 </div>
 
-                <a class="btn btn-info" href="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}">Cancel</a>
+                <a class="btn btn-info"
+                   href="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}">Cancel</a>
             </div>
         </div>
         <input type="hidden" name="category" value="{{index .StringMap "category"}}">
