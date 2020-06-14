@@ -9,17 +9,27 @@ import (
 
 // ClientRoutes are the client specific routes
 func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddleware alice.Chain) (*pat.PatternServeMux, error) {
-	// public folder
+	// client public folder
 	fileServer := http.FileServer(http.Dir("./client/clienthandlers/public/"))
 	mux.Get("/client/static/", http.StripPrefix("/client/static", fileServer))
 
-	// webhook from tusd (overrides default handler in goBlender)
+	/*
+		|--------------------------------------------------------------------------
+		| TUS web hook
+		|--------------------------------------------------------------------------
+		| Web hook for tusd (overrides default handler in goBlender).
+		| Handles uploads of images, files, videos for standard goBlender
+		| functionality, and additional functionality specific to this site.
+		| Authentication is handled the same way it is for goBlender.
+		|
+	*/
 	mux.Post("/tusd/hook", standardMiddleWare.ThenFunc(TusWebHook(app)))
 
 	/*
 		|--------------------------------------------------------------------------
 		| Public Routes // TODO
 		|--------------------------------------------------------------------------
+		|
 	*/
 
 	/*
