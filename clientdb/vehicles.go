@@ -1932,7 +1932,7 @@ func (m *DBModel) InsertVehicle(v clientmodels.Vehicle) (int, error) {
 	return id, nil
 }
 
-// UpdateVehicle updates a vehcile in the database
+// UpdateVehicle updates a vehicle in the database
 func (m *DBModel) UpdateVehicle(v clientmodels.Vehicle) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -1997,5 +1997,28 @@ func (m *DBModel) UpdateVehicle(v clientmodels.Vehicle) error {
 		return err
 	}
 
+	return nil
+}
+
+func (m *DBModel) InsertVehicleImage(vi clientmodels.Image) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+		INSERT INTO vehicle_images (vehicle_id, image, sort_order, created_at, updated_at)
+		VALUES(?, ?, ?, ?, ?)
+    `
+
+	_, err := m.DB.ExecContext(ctx,
+		stmt,
+		vi.VehicleID,
+		vi.Image,
+		vi.SortOrder,
+		vi.CreatedAt,
+		vi.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
 	return nil
 }

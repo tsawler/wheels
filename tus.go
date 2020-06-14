@@ -159,6 +159,7 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				rootName := fileName[0:dot]
 				last4 := fileName[dot:len(fileName)]
 				slugified := fmt.Sprintf("%s%s", slug.Make(rootName), last4)
+
 				oldLocation := fmt.Sprintf("%s/%s", app.TusDir, payload.Upload.ID)
 				newLocation := fmt.Sprintf("%s/%s", payload.Upload.MetaData.UploadTo, slugified)
 
@@ -172,18 +173,25 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				so, _ := strconv.Atoi(payload.Upload.MetaData.SortOrder)
 
 				// convert image to 1200x900
-
-				// move converted image
+				sourceDir := payload.Upload.MetaData.UploadTo
+				destDir := payload.Upload.MetaData.UploadTo
+				err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 1200, 900)
 
 				// write image to db
 				vi := clientmodels.Image{
 					VehicleID: vehicleID,
 					Image:     slugified,
 					SortOrder: so,
-					CreatedAt: time.Time{},
-					UpdatedAt: time.Time{},
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
 				}
-				infoLog.Println("Sort order for", slugified, "is", vi.SortOrder)
+
+				err = vehicleModel.InsertVehicleImage(vi)
+				if err != nil {
+					app.ErrorLog.Println(err)
+					return
+				}
+				infoLog.Println("Uploaded and saved", slugified)
 			}
 		}
 	}
