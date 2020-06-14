@@ -103,6 +103,22 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	segment := form.Get("segment")
 	src := form.Get("src")
 
+	v, err := vehicleModel.GetVehicleByID(vehicleID)
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	v.Trim = r.Form.Get("trim")
+	v.Transmission = r.Form.Get("transmission")
+	err = vehicleModel.UpdateVehicle(v)
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
 	session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s", category, segment, src), http.StatusSeeOther)
 }
