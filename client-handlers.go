@@ -211,7 +211,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 
 	v.Trim = r.Form.Get("trim")
 
-	odometer, _ := strconv.Atoi("odometer")
+	odometer, _ := strconv.Atoi(form.Get("odometer"))
 	v.Odometer = odometer
 
 	v.InteriorColour = form.Get("interior_color")
