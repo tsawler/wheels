@@ -29,6 +29,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 		| These routes require authentication and a specific role assigned to a
 		| user before they can be accessed. Any attempt to access them without the
 		| proper authentication/role results in an "Unauthorized" http response.
+		|
 	*/
 
 	// json for vehicle admin
