@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -227,6 +228,18 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// vehicle options
+
+	// first delete all options
+
+	// loop through all posted vars, and add options
+	for key, value := range r.Form {
+		if strings.HasPrefix(key, "option_") {
+			infoLog.Println(key, "=>", value)
+		}
+	}
+
+	// redirect
 	session.Put(r.Context(), "flash", "Changes saved")
 	if action == 1 {
 		http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s", category, segment, src), http.StatusSeeOther)
