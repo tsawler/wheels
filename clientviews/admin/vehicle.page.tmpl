@@ -13,7 +13,8 @@
     {{$options := index .RowSets "options"}}
 
 
-    <form method="post" action="/admin/inventory/vehicle/{{$v.ID}}" novalidate class="needs-validation">
+    <form method="post" action="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}" novalidate class="needs-validation">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <ul class="nav nav-tabs" id="prefTabs" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general-tab-content" role="tab"
@@ -192,7 +193,7 @@
                             {{end}}
                             <input class="form-control" id="price_for_display" autocomplete="off" type='text'
                                    name='price_for_display'
-                                   value='{{$v.PriceForDisplay}}' required>
+                                   value='{{$v.PriceForDisplay}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>
@@ -221,7 +222,7 @@
                             {{end}}
                             <input class="form-control" id="interior_color" autocomplete="off" type='text'
                                    name='interior_color'
-                                   value='{{$v.InteriorColour}}' required>
+                                   value='{{$v.InteriorColour}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>
@@ -234,7 +235,7 @@
                             {{end}}
                             <input class="form-control" id="exterior_color" autocomplete="off" type='text'
                                    name='exterior_color'
-                                   value='{{$v.ExteriorColour}}' required>
+                                   value='{{$v.ExteriorColour}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>
@@ -247,7 +248,7 @@
                             {{end}}
                             <input class="form-control" id="body" autocomplete="off" type='text'
                                    name='body'
-                                   value='{{$v.Body}}' required>
+                                   value='{{$v.Body}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>
@@ -260,7 +261,7 @@
                             {{end}}
                             <input class="form-control" id="engine" autocomplete="off" type='text'
                                    name='engine'
-                                   value='{{$v.Engine}}' required>
+                                   value='{{$v.Engine}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>
@@ -273,7 +274,7 @@
                             {{end}}
                             <input class="form-control" id="transmission" autocomplete="off" type='text'
                                    name='transmission'
-                                   value='{{$v.Transmission}}' required>
+                                   value='{{$v.Transmission}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>
@@ -287,7 +288,7 @@
                             {{end}}
                             <input class="form-control" id="drive_train" autocomplete="off" type='text'
                                    name='drive_train'
-                                   value='{{$v.DriveTrain}}' required>
+                                   value='{{$v.DriveTrain}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>

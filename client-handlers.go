@@ -94,6 +94,19 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DisplayVehicleForAdminPost handles post of vehicle
+func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
+	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	infoLog.Println(vehicleID)
+	form := forms.New(r.PostForm, app.Database)
+	category := form.Get("category")
+	segment := form.Get("segment")
+	src := form.Get("src")
+
+	session.Put(r.Context(), "flash", "Changes saved")
+	http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s", category, segment, src), http.StatusSeeOther)
+}
+
 func AllVehicles(w http.ResponseWriter, r *http.Request) {
 	helpers.Render(w, r, "all-vehicles.page.tmpl", &templates.TemplateData{})
 }
