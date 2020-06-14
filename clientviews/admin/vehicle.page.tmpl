@@ -1,5 +1,39 @@
 {{template "admin-base" .}}
 
+{{define "css"}}
+    <style>
+        .img__wrap {
+            position: relative;
+            height: 150px;
+            width: 200px;
+            margin-bottom: 1em;
+        }
+
+        .img__description {
+            position: absolute;
+            color: #fff;
+            visibility: hidden;
+            opacity: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            text-align: center;
+            transition: opacity .2s, visibility .2s;
+        }
+
+        .img__wrap:hover .img__img {
+            opacity: 0.5;
+            transition: opacity .2s, visibility .2s;
+        }
+
+        .img__wrap:hover .img__description {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+{{end}}
+
 {{define "title"}}Inventory Item - GoBlender Admin{{end}}
 
 {{define "admin-title"}}{{$v := index .RowSets "vehicle"}}{{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}, Stock # {{$v.StockNo}}{{end}}
@@ -351,7 +385,13 @@
                 {{if gt (len $v.Images) 0 }}
                     <hr>
                     {{range $v.Images}}
-                        <img src="/static/site-content/inventory/{{$v.ID}}/{{.Image}}" alt="" style="max-width: 200px; outline: 1px solid silver">
+                        <article class="img__wrap">
+                            <img alt="" class="img__img" style="width: 200px; height: 150px;" src="/static/site-content/inventory/{{$v.ID}}/{{.Image}}" />
+                            <p class="img__description">
+                                <a class="btn btn-primary btn-sm" href="javascript:"><i class="fa fa-arrows"></i></a>
+                                <a class="btn btn-danger btn-sm" href="javascript:" onclick="confirmDeleteImage({{.ID}})"><i class="fa fa-trash"></i></a>
+                            </p>
+                        </article>
                     {{end}}
 
                 {{end}}
@@ -589,5 +629,18 @@
                 $('#prefTabs a[href="' + activeTab + '"]').tab('show');
             }
         });
+
+        async function confirmDeleteImage(x) {
+            const {value: result} = await Swal.fire({
+                html: "Are you sure you want to delete this image?",
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                icon: 'warning',
+            })
+
+            if (result) {
+                window.location.href = "/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}/delete-image/" + x;
+            }
+        }
     </script>
 {{end}}
