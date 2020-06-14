@@ -688,3 +688,17 @@ func AllVehiclesTradeInsJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(out)
 }
+
+// VehicleImagesJSON returns a vehicle's images as JSON
+func VehicleImagesJSON(w http.ResponseWriter, r *http.Request) {
+	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	v, _ := vehicleModel.GetVehicleByID(vehicleID)
+
+	out, err := json.MarshalIndent(v.Images, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}

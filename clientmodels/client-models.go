@@ -92,12 +92,12 @@ type Model struct {
 
 // Image is a vehicle image
 type Image struct {
-	ID        int       `xml:"-"`
-	VehicleID int       `xml:"-"`
-	Image     string    `xml:"image"`
-	SortOrder int       `xml:"-"`
-	CreatedAt time.Time `xml:"-"`
-	UpdatedAt time.Time `xml:"-"`
+	ID        int       `xml:"-" json:"id"`
+	VehicleID int       `xml:"-" json:"vehicle_id"`
+	Image     string    `xml:"image" json:"image"`
+	SortOrder int       `xml:"-" json:"sort_order"`
+	CreatedAt time.Time `xml:"-" json:"created-at"`
+	UpdatedAt time.Time `xml:"-" json:"updated_at"`
 }
 
 // Video holds a video
