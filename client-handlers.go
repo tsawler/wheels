@@ -102,6 +102,12 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// SortOrder struct for sorting images
+type SortOrder struct {
+	ImageID    string `json:"id"`
+	StepNumber int    `json:"order"`
+}
+
 // DisplayVehicleForAdminPost handles post of vehicle
 func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
@@ -247,6 +253,24 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				errorLog.Println(err)
 			}
+		}
+	}
+
+	// update sort order for images
+	sortList := r.Form.Get("sort_list")
+	var sorted []SortOrder
+
+	err = json.Unmarshal([]byte(sortList), &sorted)
+	if err != nil {
+		app.ErrorLog.Println(err)
+	}
+
+	for _, v := range sorted {
+		imageID, _ := strconv.Atoi(v.ImageID)
+		err := vehicleModel.UpdateSortOrderForImage(imageID, v.StepNumber)
+		//infoLog.Println(fmt.Sprintf("update vehicle_images set sort_order = %d where id = %d", v.StepNumber, imageID))
+		if err != nil {
+			app.ErrorLog.Println(err)
 		}
 	}
 

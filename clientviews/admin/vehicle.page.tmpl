@@ -391,7 +391,7 @@
                     <a href="javascript:" onclick="uploadFile()" class="btn btn-outline-secondary">Upload Images...</a>
                 </div>
                 <hr>
-                <input type="text" class="form-control" name="sort-list" id="sort-list" value="">
+                <input type="text" class="form-control" name="sort_list" id="sort-list" value="">
                 <ul class="list-inline" id="image-list">
                     {{range $v.Images}}
                         <li data-id="{{.ID}}">
@@ -678,9 +678,11 @@
                                     console.log("refreshing & sorting");
                                     refreshImages();
                                     sortList();
+                                    performSort();
                                     setTimeout(function () {
                                         refreshImages();
                                         sortList();
+                                        performSort();
                                     }, 1000);
                                 }
                             } else if ((ajax.readyState === 4) && (ajax.status !== 200)) {

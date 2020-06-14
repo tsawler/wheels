@@ -2115,3 +2115,20 @@ func (m *DBModel) GetMaxSortOrderForVehicleID(id int) (int, error) {
 
 	return max, nil
 }
+
+// UpdateSortOrderForImage updates sort order for image
+func (m *DBModel) UpdateSortOrderForImage(id, order int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update vehicle_images set 
+		sort_order = ?
+		where id = ?`
+	_, err := m.DB.ExecContext(ctx, query, order, id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
