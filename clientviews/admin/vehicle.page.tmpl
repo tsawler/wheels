@@ -2,11 +2,17 @@
 
 {{define "css"}}
     <style>
+
+        #image-list li {
+            padding-left: 0.3em;
+            padding-right: 0.3em;
+        }
         .img__wrap {
             position: relative;
             height: 150px;
             width: 200px;
             margin-bottom: 1em;
+            display: inline-block;
         }
 
         .img__description {
@@ -384,15 +390,22 @@
                 </div>
                 {{if gt (len $v.Images) 0 }}
                     <hr>
-                    {{range $v.Images}}
-                        <article class="img__wrap">
-                            <img alt="" class="img__img" style="width: 200px; height: 150px;" src="/static/site-content/inventory/{{$v.ID}}/{{.Image}}" />
-                            <p class="img__description">
-                                <a class="btn btn-primary btn-sm" href="javascript:"><i class="fa fa-arrows"></i></a>
-                                <a class="btn btn-danger btn-sm" href="javascript:" onclick="confirmDeleteImage({{.ID}})"><i class="fa fa-trash"></i></a>
-                            </p>
-                        </article>
-                    {{end}}
+                    <ul class="list-inline" id="image-list">
+                        {{range $v.Images}}
+                            <li>
+                            <article class="img__wrap">
+                                <img alt="" class="img__img" style="width: 200px; height: 150px;"
+                                     src="/static/site-content/inventory/{{$v.ID}}/{{.Image}}"/>
+                                <p class="img__description">
+                                    <a class="btn btn-primary btn-sm vehicle-image-handle" href="javascript:"><i
+                                                class="fa fa-arrows"></i></a>
+                                    <a class="btn btn-danger btn-sm" href="javascript:"
+                                       onclick="confirmDeleteImage({{.ID}})"><i class="fa fa-trash"></i></a>
+                                </p>
+                            </article>
+                            </li>
+                        {{end}}
+                    </ul>
 
                 {{end}}
             </div>
@@ -441,6 +454,9 @@
     <script src="/static/js/tus.min.js"></script>
     <script>
 
+        document.addEventListener("DOMContentLoaded", function () {
+           sortList();
+        });
 
         function val() {
             document.getElementById("action").value = 0;
@@ -641,6 +657,28 @@
             if (result) {
                 window.location.href = "/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}/delete-image/" + x;
             }
+        }
+
+        function performSort() {
+
+        }
+
+        function sortList() {
+            var el = document.getElementById('image-list');
+            var sortable = Sortable.create(el, {
+                animation: 150,
+                chosenClass: 'sortable-chosen',
+                handle: '.vehicle-image-handle',
+                onUpdate: function (event) {
+                    performSort();
+                },
+                onAdd: function (event) {
+                    performSort();
+                },
+                onRemove: function (event) {
+                    performSort();
+                }
+            });
         }
     </script>
 {{end}}
