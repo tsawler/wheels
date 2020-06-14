@@ -2036,3 +2036,25 @@ func (m *DBModel) DeleteVehicleImage(id int) error {
 	}
 	return nil
 }
+
+// GetVehicleImageByID gets one image by id
+func (m *DBModel) GetVehicleImageByID(id int) (clientmodels.Image, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var i clientmodels.Image
+
+	query := `select image, vehicle_id from vehicle_images where id = ?`
+
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&i.Image,
+		&i.VehicleID,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return i, err
+	}
+
+	return i, nil
+}

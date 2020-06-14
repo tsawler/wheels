@@ -9,6 +9,7 @@ import (
 	"github.com/tsawler/goblender/pkg/helpers"
 	"github.com/tsawler/goblender/pkg/templates"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -712,6 +713,12 @@ func VehicleImagesJSON(w http.ResponseWriter, r *http.Request) {
 // VehicleImageDelete deletes an image and returns json
 func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 	imageID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+
+	image, _ := vehicleModel.GetVehicleImageByID(imageID)
+	// delete this image file
+	sourcePath := fmt.Sprintf("./ui/static/site-content/inventory/%d/%s", image.VehicleID, image.Image)
+	_ = os.Remove(sourcePath)
+
 	okay := true
 	message := ""
 	err := vehicleModel.DeleteVehicleImage(imageID)
@@ -720,8 +727,6 @@ func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 		okay = false
 		message = err.Error()
 	}
-
-	infoLog.Println("Deleted", imageID)
 
 	resp := JsonResponse{}
 	resp.Ok = okay
