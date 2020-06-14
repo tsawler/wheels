@@ -268,7 +268,6 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	for _, v := range sorted {
 		imageID, _ := strconv.Atoi(v.ImageID)
 		err := vehicleModel.UpdateSortOrderForImage(imageID, v.StepNumber)
-		//infoLog.Println(fmt.Sprintf("update vehicle_images set sort_order = %d where id = %d", v.StepNumber, imageID))
 		if err != nil {
 			app.ErrorLog.Println(err)
 		}
