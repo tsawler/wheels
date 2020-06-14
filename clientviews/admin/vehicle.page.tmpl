@@ -563,7 +563,7 @@
                     });
                     sortOrder++;
                 }
-
+                refreshImages();
             }
         }
 
@@ -620,7 +620,9 @@
                     onSuccess: function () {
                         uploadInProgress = false;
                         totalUploaded = totalUploaded + file.size;
+                        refreshImages();
                         setTimeout(function () {
+                            refreshImages();
                         }, 1000);
                     }
                 })
@@ -679,6 +681,41 @@
                     performSort();
                 }
             });
+        }
+
+        function refreshImages() {
+            let formData = new FormData();
+            formData.append("csrf_token", '{{.CSRFToken}}');
+            let ajax = new XMLHttpRequest();
+            ajax.open("POST", "/admin/vehicle-images-json/{{$v.ID}}");
+            ajax.send(formData);
+            ajax.onreadystatechange = function () {
+                if ((ajax.readyState === 4) && (ajax.status === 200)) {
+                    let resp = ajax.response;
+                    let json = JSON.parse(resp);
+                    let html = "";
+
+                    if (json !== null) {
+                        json.forEach(function (item) {
+                            html += `
+<li>
+<article class="img__wrap">
+    <img alt="" class="img__img" style="width: 200px; height: 150px;"
+         src="/static/site-content/inventory/{{$v.ID}}/${item.image}"/>
+    <p class="img__description">
+        <a class="btn btn-primary btn-sm vehicle-image-handle" href="javascript:"><i
+                    class="fa fa-arrows"></i></a>
+        <a class="btn btn-danger btn-sm" href="javascript:"
+           onclick="confirmDeleteImage(${item.id})"><i class="fa fa-trash"></i></a>
+    </p>
+</article>
+</li>`
+                        })
+                        let imageList = document.getElementById("image-list");
+                        imageList.innerHTML = html;
+                    }
+                }
+            }
         }
     </script>
 {{end}}
