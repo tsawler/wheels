@@ -13,7 +13,7 @@
     {{$options := index .RowSets "options"}}
 
 
-    <form method="post" action="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}" novalidate class="needs-validation">
+    <form method="post" action="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}" id="vehicle-form" novalidate class="needs-validation">
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <ul class="nav nav-tabs" id="prefTabs" role="tablist">
             <li class="nav-item">
@@ -162,7 +162,7 @@
 
                         <div class="form-group pt-1">
                             <label>Price:</label>
-                            {{with .Form.Errors.Get "price"}}
+                            {{with .Form.Errors.Get "cost"}}
                                 <label class='text-danger'>{{.}}</label>
                             {{end}}
                             <input class="form-control" id="cost" autocomplete="off" type='text'
@@ -360,13 +360,27 @@
         <div class="row">
             <div class="col">
                 <hr>
-                <input type="submit" class="btn btn-primary" value="Save Changes">
+                <div class="btn-group dropup">
+                    <a class="btn btn-primary savebtn" href="javascript:" onclick="saveClose()" data-action="close">
+                        Save and Close
+                    </a>
+                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                            data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="javascript:" onclick="val()">Save & Continue</a>
+                    </div>
+                </div>
+
                 <a class="btn btn-info" href="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}">Cancel</a>
             </div>
         </div>
         <input type="hidden" name="category" value="{{index .StringMap "category"}}">
         <input type="hidden" name="segment" value="{{index .StringMap "segment"}}">
         <input type="hidden" name="src" value="{{index .StringMap "src"}}">
+        <input type="hidden" name="action" id="action" value="1">
     </form>
 
 {{end}}
@@ -376,21 +390,39 @@
     <script src="/static/js/tus.min.js"></script>
     <script>
 
-        (function () {
-            'use strict';
-            window.addEventListener('load', function () {
-                var forms = document.getElementsByClassName('needs-validation');
-                var validation = Array.prototype.filter.call(forms, function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
+
+        function val() {
+            document.getElementById("action").value = 0;
+            let form = document.getElementById("vehicle-form");
+            if (form.checkValidity() === false) {
+                this.event.preventDefault();
+                this.event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+
+            if (form.checkValidity() === true) {
+                document.getElementById("vehicle-form").submit();
+            } else {
+                errorAlert('{{trans "form_errors" .Lang}}');
+            }
+        }
+
+        function saveClose() {
+            document.getElementById("action").value = 1;
+            let form = document.getElementById("vehicle-form");
+            if (form.checkValidity() === false) {
+                this.event.preventDefault();
+                this.event.stopPropagation();
+
+            }
+            form.classList.add('was-validated');
+
+            if (form.checkValidity() === true) {
+                document.getElementById("vehicle-form").submit();
+            } else {
+                errorAlert('{{trans "form_errors" .Lang}}');
+            }
+        }
 
         let progressWindow;
         let listView = false;

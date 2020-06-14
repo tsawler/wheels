@@ -97,7 +97,7 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 // DisplayVehicleForAdminPost handles post of vehicle
 func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
-	infoLog.Println(vehicleID)
+
 	form := forms.New(r.PostForm, app.Database)
 	category := form.Get("category")
 	segment := form.Get("segment")
@@ -110,8 +110,109 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	form.Required("stock_no", "vin", "cost", "total_msr")
+	form.IsFloat("cost")
+	form.IsFloat("total_msr")
+	form.IsInt("odometer")
+
+	if !form.Valid() {
+		stringMap := make(map[string]string)
+		stringMap["segment"] = segment
+		stringMap["src"] = src
+		stringMap["category"] = category
+
+		rowSets := make(map[string]interface{})
+		rowSets["vehicle"] = v
+		var years []int
+		for i := time.Now().Year() + 1; i >= 1900; i-- {
+			years = append(years, i)
+		}
+
+		rowSets["years"] = years
+
+		makes, err := vehicleModel.GetMakes()
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		rowSets["makes"] = makes
+		models, err := vehicleModel.GetModelsForMakeID(v.VehicleMakesID)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		rowSets["models"] = models
+
+		options, err := vehicleModel.AllActiveOptions()
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		rowSets["options"] = options
+
+		// add map of options
+		intMap := make(map[string]int)
+		for _, x := range v.VehicleOptions {
+			intMap[fmt.Sprintf("option_%d", x.OptionID)] = 1
+		}
+
+		helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
+			RowSets:   rowSets,
+			IntMap:    intMap,
+			Form:      form,
+			StringMap: stringMap,
+		})
+		return
+	}
+	year, _ := strconv.Atoi(form.Get("year"))
+	v.Year = year
+
+	vehicleType, _ := strconv.Atoi(form.Get("vehicle_type"))
+	v.VehicleType = vehicleType
+
+	vehicleMakesID, _ := strconv.Atoi(form.Get("vehicle_makes_id"))
+	v.VehicleMakesID = vehicleMakesID
+
+	vehicleModelsID, _ := strconv.Atoi(form.Get("vehicle_models_id"))
+	v.VehicleModelsID = vehicleModelsID
+
+	used, _ := strconv.Atoi(form.Get("used"))
+	v.Used = used
+
+	handPicked, _ := strconv.Atoi(form.Get("hand_picked"))
+	v.HandPicked = handPicked
+
+	if cost, err := strconv.ParseFloat(form.Get("cost"), 32); err == nil {
+		v.Cost = float32(cost)
+	}
+
+	if totalMSR, err := strconv.ParseFloat(form.Get("total_msr"), 32); err == nil {
+		v.TotalMSR = float32(totalMSR)
+	}
+
+	v.PriceForDisplay = form.Get("price_for_display")
+
 	v.Trim = r.Form.Get("trim")
-	v.Transmission = r.Form.Get("transmission")
+
+	odometer, _ := strconv.Atoi("odometer")
+	v.Odometer = odometer
+
+	v.InteriorColour = form.Get("interior_color")
+	v.ExteriorColour = form.Get("exterior_color")
+	v.Body = form.Get("body")
+	v.Engine = form.Get("engine")
+	v.Transmission = form.Get("transmission")
+	v.DriveTrain = form.Get("drive_train")
+
+	status, _ := strconv.Atoi(form.Get("status"))
+	v.Status = status
+	v.StockNo = form.Get("stock_no")
+	v.Vin = form.Get("vin")
+	action, _ := strconv.Atoi(form.Get("action"))
+
 	err = vehicleModel.UpdateVehicle(v)
 	if err != nil {
 		errorLog.Println(err)
@@ -120,7 +221,12 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session.Put(r.Context(), "flash", "Changes saved")
-	http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s", category, segment, src), http.StatusSeeOther)
+	if action == 1 {
+		http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s", category, segment, src), http.StatusSeeOther)
+		return
+	}
+	http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s/%d", category, segment, src, vehicleID), http.StatusSeeOther)
+
 }
 
 func AllVehicles(w http.ResponseWriter, r *http.Request) {
