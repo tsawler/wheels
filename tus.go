@@ -163,9 +163,6 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				oldLocation := fmt.Sprintf("%s/%s", app.TusDir, payload.Upload.ID)
 				newLocation := fmt.Sprintf("%s/%s", payload.Upload.MetaData.UploadTo, slugified)
 
-				infoLog.Println("Old location", oldLocation)
-				infoLog.Println("New location", newLocation)
-
 				err := MoveFile(oldLocation, newLocation)
 				if err != nil {
 					app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
@@ -195,7 +192,6 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 					app.ErrorLog.Println(err)
 					return
 				}
-				infoLog.Println("Uploaded and saved", slugified)
 			}
 		}
 	}
