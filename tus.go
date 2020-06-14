@@ -170,6 +170,11 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 					app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
 				}
 				so, _ := strconv.Atoi(payload.Upload.MetaData.SortOrder)
+
+				// convert image to 1200x900
+
+				// move converted image
+
 				// write image to db
 				vi := clientmodels.Image{
 					VehicleID: vehicleID,
