@@ -388,7 +388,7 @@
                 <div class="mt-4">
                     <a href="javascript:" onclick="uploadFile()" class="btn btn-outline-secondary">Upload Images...</a>
                 </div>
-                {{if gt (len $v.Images) 0 }}
+{{/*                {{if gt (len $v.Images) 0 }}*/}}
                     <hr>
                     <ul class="list-inline" id="image-list">
                         {{range $v.Images}}
@@ -407,7 +407,7 @@
                         {{end}}
                     </ul>
 
-                {{end}}
+{{/*                {{end}}*/}}
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="sticker-tab"
@@ -564,6 +564,7 @@
                     sortOrder++;
                 }
                 refreshImages();
+                sortList();
             }
         }
 
@@ -621,8 +622,10 @@
                         uploadInProgress = false;
                         totalUploaded = totalUploaded + file.size;
                         refreshImages();
+                        sortList();
                         setTimeout(function () {
                             refreshImages();
+                            sortList();
                         }, 1000);
                     }
                 })
@@ -649,16 +652,39 @@
         });
 
         async function confirmDeleteImage(x) {
-            const {value: result} = await Swal.fire({
+            attention.confirm({
                 html: "Are you sure you want to delete this image?",
-                showCancelButton: true,
-                confirmButtonText: 'Delete',
                 icon: 'warning',
-            })
-
-            if (result) {
-                window.location.href = "/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}/delete-image/" + x;
-            }
+                callback: function (result) {
+                    if (result !== false) {
+                        let formData = new FormData
+                        formData.append("csrf_token", '{{.CSRFToken}}');
+                        let ajax = new XMLHttpRequest();
+                        ajax.open("POST", "/admin/delete-vehicle-image-json/" + x);
+                        ajax.send(formData);
+                        ajax.onreadystatechange = function () {
+                            if ((ajax.readyState === 4) && (ajax.status === 200)) {
+                                let resp = ajax.response;
+                                let json = JSON.parse(resp);
+                                console.log(resp);
+                                if (!json.okay) {
+                                    errorAlert("Errors: " + json.message);
+                                } else {
+                                    console.log("refreshing & sorting");
+                                    refreshImages();
+                                    sortList();
+                                    setTimeout(function () {
+                                        refreshImages();
+                                        sortList();
+                                    }, 1000);
+                                }
+                            } else if ((ajax.readyState === 4) && (ajax.status !== 200)) {
+                                errorAlert("Error: Status " + ajax.status);
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         function performSort() {
@@ -666,21 +692,24 @@
         }
 
         function sortList() {
-            var el = document.getElementById('image-list');
-            var sortable = Sortable.create(el, {
-                animation: 150,
-                chosenClass: 'sortable-chosen',
-                handle: '.vehicle-image-handle',
-                onUpdate: function (event) {
-                    performSort();
-                },
-                onAdd: function (event) {
-                    performSort();
-                },
-                onRemove: function (event) {
-                    performSort();
-                }
-            });
+            var elementExists = !!document.getElementById("image-list");
+            if (elementExists) {
+                var el = document.getElementById('image-list');
+                var sortable = Sortable.create(el, {
+                    animation: 150,
+                    chosenClass: 'sortable-chosen',
+                    handle: '.vehicle-image-handle',
+                    onUpdate: function (event) {
+                        performSort();
+                    },
+                    onAdd: function (event) {
+                        performSort();
+                    },
+                    onRemove: function (event) {
+                        performSort();
+                    }
+                });
+            }
         }
 
         function refreshImages() {
@@ -694,7 +723,8 @@
                     let resp = ajax.response;
                     let json = JSON.parse(resp);
                     let html = "";
-
+                    let imageList = document.getElementById("image-list");
+                    imageList.innerHTML = "";
                     if (json !== null) {
                         json.forEach(function (item) {
                             html += `
@@ -711,7 +741,6 @@
 </article>
 </li>`
                         })
-                        let imageList = document.getElementById("image-list");
                         imageList.innerHTML = html;
                     }
                 }

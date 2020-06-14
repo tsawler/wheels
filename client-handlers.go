@@ -13,6 +13,12 @@ import (
 	"time"
 )
 
+// JSONResp holds a json response message
+type JsonResponse struct {
+	Ok      bool   `json:"okay"`
+	Message string `json:"message"`
+}
+
 // DataTablesJSON holds the json for datatables
 type DataTablesJSON struct {
 	Draw            int64                       `json:"draw"`
@@ -701,4 +707,37 @@ func VehicleImagesJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(out)
+}
+
+// VehicleImageDelete deletes an image and returns json
+func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
+	imageID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	okay := true
+	message := ""
+	err := vehicleModel.DeleteVehicleImage(imageID)
+	if err != nil {
+		errorLog.Println(err)
+		okay = false
+		message = err.Error()
+	}
+
+	infoLog.Println("Deleted", imageID)
+
+	resp := JsonResponse{}
+	resp.Ok = okay
+	resp.Message = message
+
+	// build the json response from the struct
+	out, err := json.MarshalIndent(resp, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// send json to client
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(out)
+	if err != nil {
+		errorLog.Println(err)
+	}
 }

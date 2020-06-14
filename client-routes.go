@@ -18,6 +18,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	// Vehicle Administration
 	mux.Post("/admin/vehicle-images-json/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(VehicleImagesJSON))
+	mux.Post("/admin/delete-vehicle-image-json/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(VehicleImageDelete))
 
 	mux.Get("/admin/:CATEGORY/:TYPE/:SRC/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayVehicleForAdmin))
 	mux.Post("/admin/:CATEGORY/:TYPE/:SRC/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayVehicleForAdminPost))

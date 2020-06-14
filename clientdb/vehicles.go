@@ -2000,6 +2000,7 @@ func (m *DBModel) UpdateVehicle(v clientmodels.Vehicle) error {
 	return nil
 }
 
+// InsertVehicleImage inserts a vehicle image
 func (m *DBModel) InsertVehicleImage(vi clientmodels.Image) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2017,6 +2018,19 @@ func (m *DBModel) InsertVehicleImage(vi clientmodels.Image) error {
 		vi.CreatedAt,
 		vi.UpdatedAt,
 	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteEvent deletes a calendar event
+func (m *DBModel) DeleteVehicleImage(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := "delete from vehicle_images where id = ?"
+	_, err := m.DB.ExecContext(ctx, stmt, id)
 	if err != nil {
 		return err
 	}
