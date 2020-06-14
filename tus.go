@@ -177,6 +177,10 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				destDir := payload.Upload.MetaData.UploadTo
 				err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 1200, 900)
 
+				// get current max for sort order
+				curSort, err := vehicleModel.GetMaxSortOrderForVehicleID(vehicleID)
+				so = so + curSort
+
 				// write image to db
 				vi := clientmodels.Image{
 					VehicleID: vehicleID,

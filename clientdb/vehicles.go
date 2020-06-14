@@ -2094,3 +2094,24 @@ func (m *DBModel) InsertVehicleOption(vo clientmodels.VehicleOption) error {
 	}
 	return nil
 }
+
+// GetMaxSortOrderForVehicleID gets one image by id
+func (m *DBModel) GetMaxSortOrderForVehicleID(id int) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	max := 0
+
+	query := `select max(sort_order) from vehicle_images where vehicle_id = ?`
+
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&max,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	return max, nil
+}
