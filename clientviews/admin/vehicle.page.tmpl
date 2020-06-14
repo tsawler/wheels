@@ -7,6 +7,7 @@
             padding-left: 0.3em;
             padding-right: 0.3em;
         }
+
         .img__wrap {
             position: relative;
             height: 150px;
@@ -374,7 +375,8 @@
                                     {{if eq (index $.IntMap (printf "option_%d" .ID)) 1}}
                                         checked
                                     {{end}}
-                                   class="custom-control-input" value="{{.ID}}" id="option_{{.ID}}"  name="option_{{.ID}}">
+                                   class="custom-control-input" value="{{.ID}}" id="option_{{.ID}}"
+                                   name="option_{{.ID}}">
                             <label class="custom-control-label" name="option_{{.ID}}"
                                    for="option_{{.ID}}">{{.OptionName}}</label>
                         </div>
@@ -388,10 +390,11 @@
                 <div class="mt-4">
                     <a href="javascript:" onclick="uploadFile()" class="btn btn-outline-secondary">Upload Images...</a>
                 </div>
-                    <hr>
-                    <ul class="list-inline" id="image-list">
-                        {{range $v.Images}}
-                            <li>
+                <hr>
+                <input type="text" class="form-control" name="sort-list" id="sort-list" value="">
+                <ul class="list-inline" id="image-list">
+                    {{range $v.Images}}
+                        <li data-id="{{.ID}}">
                             <article class="img__wrap">
                                 <img alt="" class="img__img" style="width: 200px; height: 150px;"
                                      src="/static/site-content/inventory/{{$v.ID}}/{{.Image}}"/>
@@ -402,9 +405,9 @@
                                        onclick="confirmDeleteImage({{.ID}})"><i class="fa fa-trash"></i></a>
                                 </p>
                             </article>
-                            </li>
-                        {{end}}
-                    </ul>
+                        </li>
+                    {{end}}
+                </ul>
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="sticker-tab"
@@ -451,8 +454,11 @@
     <script src="/static/js/tus.min.js"></script>
     <script>
 
+        let imageList;
+
         document.addEventListener("DOMContentLoaded", function () {
-           sortList();
+            sortList();
+            performSort();
         });
 
         function val() {
@@ -562,6 +568,7 @@
                 }
                 refreshImages();
                 sortList();
+                performSort();
             }
         }
 
@@ -623,6 +630,7 @@
                         setTimeout(function () {
                             refreshImages();
                             sortList();
+                            performSort();
                         }, 1000);
                     }
                 })
@@ -685,14 +693,19 @@
         }
 
         function performSort() {
-
+            let items = imageList.toArray();
+            let obj = [];
+            for (let i = 0; i < items.length; i++) {
+                obj.push({id: items[i], order: (i + 1)});
+            }
+            document.getElementById("sort-list").value = JSON.stringify(obj);
         }
 
         function sortList() {
             var elementExists = !!document.getElementById("image-list");
             if (elementExists) {
                 var el = document.getElementById('image-list');
-                var sortable = Sortable.create(el, {
+                imageList = Sortable.create(el, {
                     animation: 150,
                     chosenClass: 'sortable-chosen',
                     handle: '.vehicle-image-handle',
