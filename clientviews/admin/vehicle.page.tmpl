@@ -388,7 +388,6 @@
                 <div class="mt-4">
                     <a href="javascript:" onclick="uploadFile()" class="btn btn-outline-secondary">Upload Images...</a>
                 </div>
-{{/*                {{if gt (len $v.Images) 0 }}*/}}
                     <hr>
                     <ul class="list-inline" id="image-list">
                         {{range $v.Images}}
@@ -406,8 +405,6 @@
                             </li>
                         {{end}}
                     </ul>
-
-{{/*                {{end}}*/}}
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="sticker-tab"
