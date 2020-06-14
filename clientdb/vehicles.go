@@ -2058,3 +2058,39 @@ func (m *DBModel) GetVehicleImageByID(id int) (clientmodels.Image, error) {
 
 	return i, nil
 }
+
+// DeleteAllVehicleOptions deletes all options
+func (m *DBModel) DeleteAllVehicleOptions(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := "delete from vehicle_options where vehicle_id = ?"
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// InsertVehicleOption inserts a vehicle option
+func (m *DBModel) InsertVehicleOption(vo clientmodels.VehicleOption) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+		INSERT INTO vehicle_options (vehicle_id, option_id, created_at, updated_at)
+		VALUES(?, ?, ?, ?)
+    `
+
+	_, err := m.DB.ExecContext(ctx,
+		stmt,
+		vo.VehicleID,
+		vo.OptionID,
+		vo.CreatedAt,
+		vo.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}

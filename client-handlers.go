@@ -220,6 +220,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	v.StockNo = form.Get("stock_no")
 	v.Vin = form.Get("vin")
 	action, _ := strconv.Atoi(form.Get("action"))
+	v.Description = form.Get("description")
 
 	err = vehicleModel.UpdateVehicle(v)
 	if err != nil {
@@ -229,13 +230,23 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// vehicle options
-
 	// first delete all options
+	_ = vehicleModel.DeleteAllVehicleOptions(v.ID)
 
 	// loop through all posted vars, and add options
 	for key, value := range r.Form {
 		if strings.HasPrefix(key, "option_") {
-			infoLog.Println(key, "=>", value)
+			optionID, _ := strconv.Atoi(value[0])
+			o := clientmodels.VehicleOption{
+				VehicleID: v.ID,
+				OptionID:  optionID,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			err = vehicleModel.InsertVehicleOption(o)
+			if err != nil {
+				errorLog.Println(err)
+			}
 		}
 	}
 

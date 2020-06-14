@@ -374,7 +374,7 @@
                                     {{if eq (index $.IntMap (printf "option_%d" .ID)) 1}}
                                         checked
                                     {{end}}
-                                   class="custom-control-input" id="option_{{.ID}}"  name="option_{{.ID}}">
+                                   class="custom-control-input" value="{{.ID}}" id="option_{{.ID}}"  name="option_{{.ID}}">
                             <label class="custom-control-label" name="option_{{.ID}}"
                                    for="option_{{.ID}}">{{.OptionName}}</label>
                         </div>
