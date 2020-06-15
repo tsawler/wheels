@@ -1,0 +1,572 @@
+{{define "inventory-js"}}
+<!-- start inventory js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Morphext/2.4.4/morphext.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".rotator").Morphext({
+            animation: "fadeInDown",
+            separator: ",",
+            speed: 2000,
+        });
+        $("[data-hide]").removeClass("hidden");
+    });
+</script>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="qqModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quick Quote</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <p>Just fill out the form below and click <strong>Request Quick Quote</strong>, and we'll get
+                    back
+                    to you with a quick quote.</p>
+
+                <form id="qq-form" class="needs-validation" method="post" action="/power-sports/quick-quote"
+                      novalidate>
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <input type="hidden" name="qq-vid" id="qq-vid">
+
+                    <div class="form-group">
+                        <label for="qq-name">Your Name</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-user fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="qq-name"
+                                   autocomplete="off" type='text'
+                                   name='name' required>
+                            <div class="invalid-feedback">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qq-email">Your Email:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-envelope fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="qq-email"
+                                   autocomplete="off" type='email'
+                                   name='email' required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qq-phone">Your Phone Number:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-phone fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="qq-phone"
+                                   autocomplete="off" type='text'
+                                   name='phone'>
+                            <div class="invalid-feedback">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-12">
+                            <div class="card card-body bg-light" style="width: 100%;">
+                                <div class="card-body">
+                                    <p class="text-center"><strong>Interested In:</strong>
+                                        <span id="interested-in-item"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="valQQ()">
+                    Click Here
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="qciModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Quick Quote</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <p>This virtual thing is different but I understand...</p>
+
+                <form id="qci-form" class="needs-validation" method="post" action="/power-sports/quick-quote"
+                      novalidate>
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <input type="hidden" name="qci-vid" id="qci-vid">
+
+                    <div class="form-group">
+                        <label for="qci-name">My name is:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-user fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="qci-name"
+                                   autocomplete="off" type='text'
+                                   name='name' required>
+                            <div class="invalid-feedback">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qci-email">My email is:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-envelope fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="qci-email"
+                                   autocomplete="off" type='email'
+                                   name='email' required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qci-phone">My number is:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-phone fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="qci-phone"
+                                   autocomplete="off" type='text'
+                                   name='phone'>
+                            <div class="invalid-feedback">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="talkabout">I would like to talk about:</label>
+                        <textarea id="talkabout" class="form-control" rows="3"></textarea>
+                        <span id="qci-interested-in-item"></span>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="valQCI()">
+                    Click Here
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openQCI(id, item, stockNo) {
+        $("#qci-interested-in-item").html(item + ", Stock Number: " + stockNo);
+        $("#qci-vid").val(id)
+        $('#qciModal').modal({backdrop: true})
+    }
+
+    function openQQ(id, item, stockNo) {
+        $("#interested-in-item").html(item + ", Stock Number: " + stockNo);
+        $("#qq-vid").val(id)
+        $('#qqModal').modal({backdrop: true})
+    }
+
+    function valQQ() {
+        let form = $("#qq-form");
+        if (form[0].checkValidity() === false) {
+            this.event.preventDefault();
+            this.event.stopPropagation();
+        }
+        form.addClass('was-validated');
+        if (form[0].checkValidity() === true) {
+            let formData = new FormData();
+            formData.append('name', $("#qq-name").val());
+            formData.append('email', $("#qq-email").val());
+            formData.append('phone', $("#qq-phone").val());
+            formData.append('interested', $("#interested-in-item").html());
+            formData.append('vehicle_id', $("#qq-vid").val());
+            // formData.append("msg", $("#talkabout").val());
+            formData.append('csrf_token', {{.CSRFToken}});
+            let ajax = new XMLHttpRequest();
+            ajax.responseType = "json";
+            ajax.open("POST", "/power-sports/quick-quote");
+            ajax.send(formData);
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState === 4) {
+                    $("#qqModal").modal('hide');
+                    successAlert("Quick Quote Request sent!!");
+                }
+            }
+        }
+    }
+
+    function valQCI() {
+        let form = $("#qci-form");
+        if (form[0].checkValidity() === false) {
+            this.event.preventDefault();
+            this.event.stopPropagation();
+        }
+        form.addClass('was-validated');
+        let v = document.getElementById("qci-interested-in-item").innerHTML;
+        if (form[0].checkValidity() === true) {
+            let formData = new FormData();
+            formData.append('name', $("#qci-name").val());
+            formData.append('email', $("#qci-email").val());
+            formData.append('phone', $("#qci-phone").val());
+            formData.append('interested', $("#qci-interested-in-item").html());
+            formData.append('vehicle_id', $("#qci-vid").val());
+            formData.append("msg", $("#talkabout").val() + "<br> " + v);
+            formData.append('csrf_token', {{.CSRFToken}});
+            let ajax = new XMLHttpRequest();
+            ajax.responseType = "json";
+            ajax.open("POST", "/power-sports/quick-quote");
+            ajax.send(formData);
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState === 4) {
+                    $("#qqModal").modal('hide');
+                    successAlert("Quick Quote Request sent!!");
+                }
+            }
+        }
+    }
+
+    $("#qqModal").on('hidden.bs.modal', function () {
+        $(this).data('bs.modal', null);
+        $(".is-invalid").each(function (index) {
+            $(this).removeClass('is-invalid')
+        });
+        $(".was-validated").each(function (index) {
+            $(this).removeClass('was-validated')
+        });
+    });
+
+</script>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="tdModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request a Test Drive</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="td-form" class="needs-validation" method="post" action="/power-sports/test-drive"
+                      novalidate>
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <input type="hidden" name="td-vid" id="td-vid">
+                    <div class="form-group">
+                        <label for="td-name">Your Name</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-user fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="td-name"
+                                   autocomplete="off" type='text'
+                                   name='name' required>
+                            <div class="invalid-feedback">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="td-email">Your Email:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-envelope fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="td-email"
+                                   autocomplete="off" type='email'
+                                   name='email' required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="td-phone">Your Phone Number:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-phone fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="td-phone"
+                                   autocomplete="off" type='text'
+                                   name='phone' required>
+                            <div class="invalid-feedback">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="td-date">Preferred Date:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                                <span class="input-group-text"><i
+                                                            class="fa fa-calendar fa-fw"></i></span>
+                                    </div>
+                                    <input class="form-control required"
+                                           id="td-date"
+                                           autocomplete="off" type='date'
+                                           name='preferred_date' required>
+                                    <div class="invalid-feedback">
+                                        Required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="td-time">Preferred Time:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                                <span class="input-group-text"><i
+                                                            class="fa fa-clock-o fa-fw"></i></span>
+                                    </div>
+                                    <input class="form-control required"
+                                           id="td-time"
+                                           autocomplete="off" type='time'
+                                           name='preferred_time' required>
+                                    <div class="invalid-feedback">
+                                        Required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-12">
+                            <div class="card card-body bg-light" style="width: 100%;">
+                                <div class="card-body">
+                                    <p class="text-center"><strong>Interested In:</strong>
+                                        <span id="td-interested-in-item"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="valTD()">
+                    Request Test Drive
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function openTD(id, item, stockNo) {
+        $("#td-interested-in-item").html(item + ", Stock Number: " + stockNo);
+        $("#td-vid").val(id);
+        $('#tdModal').modal({backdrop: true})
+    }
+
+    function valTD() {
+        let form = $("#td-form");
+        if (form[0].checkValidity() === false) {
+            this.event.preventDefault();
+            this.event.stopPropagation();
+        }
+        form.addClass('was-validated');
+        if (form[0].checkValidity() === true) {
+            let formData = new FormData();
+            formData.append('name', $("#td-name").val());
+            formData.append('email', $("#td-email").val());
+            formData.append('phone', $("#td-phone").val());
+            formData.append('preferred_date', $("#td-date").val());
+            formData.append('preferred_time', $("#td-time").val());
+            formData.append('interested', $("#td-interested-in-item").html());
+            formData.append('vehicle_id', $("#td-vid").val());
+            formData.append('csrf_token', {{.CSRFToken}});
+            let ajax = new XMLHttpRequest();
+            ajax.responseType = "json";
+            ajax.open("POST", "/power-sports/test-drive");
+            ajax.send(formData);
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState === 4) {
+                    $("#tdModal").modal('hide');
+                    successAlert("Test Drive Request sent!!");
+                }
+            }
+        }
+    }
+
+    $("#tdModal").on('hidden.bs.modal', function () {
+        $(this).data('bs.modal', null);
+        $(".is-invalid").each(function (index) {
+            $(this).removeClass('is-invalid')
+        });
+        $(".was-validated").each(function (index) {
+            $(this).removeClass('was-validated')
+        });
+    });
+</script>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="sfModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Send to a Friend</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form id="sf-form" class="needs-validation" method="post" action="/power-sports/send-to-friend"
+                      novalidate>
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                    <div class="form-group">
+                        <label for="sf-name">Your Name</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-user fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="sf-name"
+                                   autocomplete="off" type='text'
+                                   name='name' required>
+                            <div class="invalid-feedback">
+                                Required
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sf-email">Your Friend's Email:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-envelope fa-fw"></i></span>
+                            </div>
+                            <input class="form-control required"
+                                   id="sf-email"
+                                   autocomplete="off" type='email'
+                                   name='email' required>
+                            <div class="invalid-feedback">
+                                Please enter a valid email address
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-12">
+                            <div class="card card-body bg-light" style="width: 100%;">
+                                <div class="card-body">
+                                    <p class="text-center"><strong>Your friend might be interested in:</strong>
+                                        <span id="sf-interested-in-item"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        onclick="valSF()">
+                    Send to your Friend
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openSF(id, item, stockNo) {
+        $("#sf-interested-in-item").html(item + ", Stock Number: " + stockNo);
+        $('#sfModal').modal({backdrop: true})
+    }
+
+    function valSF() {
+        let form = $("#sf-form");
+        if (form[0].checkValidity() === false) {
+            this.event.preventDefault();
+            this.event.stopPropagation();
+        }
+        form.addClass('was-validated');
+        if (form[0].checkValidity() === true) {
+            let formData = new FormData();
+            formData.append('name', $("#sf-name").val());
+            formData.append('email', $("#sf-email").val());
+            formData.append('interested', $("#sf-interested-in-item").html());
+            formData.append('csrf_token', {{.CSRFToken}});
+            formData.append('url', '{{.CurrentUrl}}');
+            let ajax = new XMLHttpRequest();
+            ajax.responseType = "json";
+            ajax.open("POST", "/power-sports/send-to-friend");
+            ajax.send(formData);
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState === 4) {
+                    $("#tdModal").modal('hide');
+                    successAlert("Email sent!!");
+                }
+            }
+        }
+    }
+
+    $("#sfModal").on('hidden.bs.modal', function () {
+        $(this).data('bs.modal', null);
+        $(".is-invalid").each(function (index) {
+            $(this).removeClass('is-invalid')
+        });
+        $(".was-validated").each(function (index) {
+            $(this).removeClass('was-validated')
+        });
+    });
+</script>
+<!-- end inventory js -->
+{{end}}
