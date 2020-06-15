@@ -20,6 +20,17 @@ func DisplayAllVehicleInventory(w http.ResponseWriter, r *http.Request) {
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory")
 }
 
+func DisplaySUVInventory(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["pager-url"] = "/used-suvs-fredericton"
+	intMap := make(map[string]int)
+	intMap["show-makes"] = 1
+	vehicleType := 5
+	templateName := "inventory.page.tmpl"
+
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory")
+}
+
 // renderInventory renders inventory for a product type
 func renderInventory(r *http.Request, stringMap map[string]string, vehicleType int, w http.ResponseWriter, intMap map[string]int, templateName, slug string) {
 	var offset int

@@ -34,8 +34,14 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	mux.Get("/inventory-filter/makes/:YEAR", dynamicMiddleware.ThenFunc(GetMakesForYear))
 	mux.Get("/inventory-filter/models/:ID", dynamicMiddleware.ThenFunc(GetModelsForMake))
+
+	// all used vehicles
 	mux.Get("/used-vehicle-inventory", dynamicMiddleware.ThenFunc(DisplayAllVehicleInventory))
 	mux.Get("/used-vehicle-inventory/:pageIndex", dynamicMiddleware.ThenFunc(DisplayAllVehicleInventory))
+
+	// suvs
+	mux.Get("/used-suvs-fredericton", dynamicMiddleware.ThenFunc(DisplaySUVInventory))
+	mux.Get("/used-suvs-fredericton/:pageIndex", dynamicMiddleware.ThenFunc(DisplaySUVInventory))
 
 	mux.Get("/:CATEGORY/view/:ID/:SLUG", dynamicMiddleware.ThenFunc(DisplayOneVehicle))
 	/*
