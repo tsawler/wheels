@@ -1,6 +1,7 @@
 package clienthandlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/tsawler/goblender/pkg/helpers"
 	"github.com/tsawler/goblender/pkg/templates"
@@ -107,4 +108,21 @@ func renderInventory(r *http.Request, stringMap map[string]string, vehicleType i
 		IntMap:    intMap,
 		StringMap: stringMap,
 	})
+}
+
+func GetModelsForMake(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	models, err := vehicleModel.ModelsForMakeID(id)
+	if err != nil {
+		return
+	}
+
+	out, err := json.MarshalIndent(models, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+
 }

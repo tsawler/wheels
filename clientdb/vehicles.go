@@ -2167,3 +2167,37 @@ func (m *DBModel) UpdateSortOrderForImage(id, order int) error {
 
 	return nil
 }
+
+func (m *DBModel) ModelsForMakeID(id int) ([]clientmodels.Model, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var models []clientmodels.Model
+	query := `select id, model from vehicle_models where vehicle_makes_id = ? and 
+		id in (select vehicle_models_id from vehicles where status = 1)
+		order by model`
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil {
+		fmt.Println(err)
+		return models, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var y clientmodels.Model
+		err = rows.Scan(
+			&y.ID,
+			&y.Model,
+		)
+		if err != nil {
+			fmt.Println(err)
+		}
+		models = append(models, y)
+	}
+
+	if err = rows.Err(); err != nil {
+		return models, err
+	}
+	return models, nil
+}

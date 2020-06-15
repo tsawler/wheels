@@ -2,6 +2,10 @@
 <!-- start inventory js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Morphext/2.4.4/morphext.min.js"></script>
 <script>
+    let yearsMenu = document.getElementById("year")
+    let makesMenu = document.getElementById("make")
+    let modelsMenu = document.getElementById("model")
+
     $(document).ready(function () {
         $(".rotator").Morphext({
             animation: "fadeInDown",
@@ -9,6 +13,17 @@
             speed: 2000,
         });
         $("[data-hide]").removeClass("hidden");
+
+        makesMenu.addEventListener("change", function(el){
+            console.log("make changed to", this.value);
+            fetch('/inventory-filter/models/' + this.value)
+                .then(response => response.json())
+                .then(result => {
+                    result.forEach(function (item) {
+                        console.log(item.id, "->", item.model)
+                    })
+                })
+        })
     });
 </script>
 
@@ -567,6 +582,8 @@
             $(this).removeClass('was-validated')
         });
     });
+
+
 </script>
 <!-- end inventory js -->
 {{end}}

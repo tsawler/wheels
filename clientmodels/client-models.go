@@ -83,11 +83,11 @@ type Make struct {
 
 // Model is vehicle model (i.e. Camry)
 type Model struct {
-	ID        int
-	Model     string
-	MakeID    int
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int       `json:"id"`
+	Model     string    `json:"model"`
+	MakeID    int       `json:"-"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 // Image is a vehicle image
