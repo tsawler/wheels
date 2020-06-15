@@ -1,0 +1,329 @@
+{{template "base" .}}
+
+{{define "title"}}
+    {{$item := index .RowSets "item"}}
+    {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} - {{index .PreferenceMap "org-name"}}
+{{end}}
+
+{{define "css"}}
+
+    <style>
+        video {
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        #myCarousel .list-inline {
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+
+        #item-slider .carousel-indicators {
+            position: static;
+            left: initial;
+            width: initial;
+            margin-left: initial;
+        }
+
+        #item-slider .carousel-indicators > li {
+            width: initial;
+            height: initial;
+            text-indent: initial;
+        }
+
+        #item-slider .carousel-indicators > li.active img {
+            opacity: 0.7;
+        }
+
+        #compareModal, #qqModal, #tdModal, #sfModal, #qciModal {
+            z-index: 20003;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.css"
+          integrity="sha256-YVY0cgMlN3Yk6z5+sLnD90gFlKARWzjDwWSnReb0ATI=" crossorigin="anonymous"/>
+{{end}}
+
+{{define "flyout"}}
+
+{{end}}
+
+
+{{define "content"}}
+
+{{end}}
+
+
+{{define "body"}}
+    <div class="clearfix"></div>
+    <div class="container">
+        <div class="is-section is-section-100 is-box is-bg-light is-dark-text">
+            <div class="is-boxes">
+                <div class="is-box-centered">
+                    <div class="is-container is-builder container-fluid is-content-1100" id="contentareaKjBWooO">
+
+                        <div class="row">
+                            <div class="col-md-12 mt-5">
+                                {{$item := index .RowSets "item"}}
+                                <h3 class="text-center">
+                                    {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}
+                                    <span class="text-danger">{{formatCurrency $item.Cost}}<sup>*</sup></span>
+                                </h3>
+                                {{if lt $item.TotalMSR $item.Cost}}
+                                    <h5 class="text-center"><em>MSRP {{formatCurrency $item.TotalMSR}}</em></h5>
+                                {{end}}
+                            </div>
+                        </div>
+
+                        {{if ne $item.Video.VideoName ""}}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <video class="" controls autoplay muted playsinline
+                                           poster="/static/site-content/videos/{{$item.Video.Thumb}}">
+                                        <source type="video/mp4"
+                                                src="/static/site-content/videos/{{$item.Video.FileName}}.mp4"/>
+                                    </video>
+                                </div>
+                            </div>
+                        {{end}}
+
+                        {{if gt (len $item.Images) 0}}
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <div id="item-slider"
+                                         class="carousel slide carousel-fade"
+                                         data-ride="carousel"
+                                         data-interval="3000"
+                                         data-pause="hover">
+
+                                        <div class="carousel-inner">
+                                            {{$first := true}}
+                                            {{range $item.Images}}
+                                                {{if $first}}
+                                                    <div class="carousel-item active">
+                                                        <img src="/static/site-content/inventory/{{$item.ID}}/{{.Image}}">
+                                                    </div>
+                                                {{else}}
+                                                    <div class="carousel-item">
+                                                        <img src="/static/site-content/inventory/{{$item.ID}}/{{.Image}}">
+                                                    </div>
+                                                {{end}}
+                                                {{$first = false}}
+                                            {{end}}
+                                        </div>
+
+                                        <ul class="carousel-indicators list-inline mx-auto border px-2">
+                                            {{range $index, $value := $item.Images}}
+                                                {{if eq $index 0}}
+                                                    <li class="list-inline-item active">
+                                                        <a id="carousel-selector-{{$index}}" class="selected"
+                                                           data-slide-to="{{$index}}" data-target="#item-slider">
+                                                            <img src="/static/site-content/inventory/{{$item.ID}}/thumbs/{{.Image}}">
+                                                        </a>
+                                                    </li>
+                                                {{else}}
+                                                    <li class="list-inline-item">
+                                                        <a id="carousel-selector-{{$index}}" data-slide-to="{{$index}}"
+                                                           data-target="#item-slider">
+                                                            <img src="/static/site-content/inventory/{{$item.ID}}/thumbs/{{.Image}}">
+                                                        </a>
+                                                    </li>
+                                                {{end}}
+                                            {{end}}
+
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        {{else}}
+                            <div class="row">
+                                <div class="col text-center">
+                                    <img src="https://www.wheelsanddeals.ca//vendor/wheelspackage/hug-in-progress.jpg"
+                                         class="img-fluid" alt="image">
+                                </div>
+                            </div>
+                        {{end}}
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{safeHTML $item.Description}}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <hr>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-3 col-xs-12">
+                                <div class="card card-body bg-light" style="width: 18rem;">
+                                    <div class="card-body">
+                                        <strong>Stock #:</strong> {{$item.StockNo}}<br>
+                                        <strong>Trim:</strong> {{$item.Trim}}<br>
+                                        <strong>Kilometers:</strong> {{$item.Odometer}}<br>
+                                        <strong>Exterior Color:</strong> {{$item.ExteriorColour}}<br>
+                                        <strong>Engine:</strong> {{$item.Engine}}<br>
+                                        <strong>VIN:</strong> {{$item.Vin}}<br>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-xs-12 text-center">
+
+                                {{if or (eq $item.VehicleMakesID 89) (eq $item.VehicleMakesID 47) (eq $item.VehicleMakesID 90) (eq $item.VehicleMakesID 30) (eq $item.VehicleMakesID 39)  }}
+                                    <p class="text-danger" style="font-weight: bold">The Jim Gilbert’s PowerSports Advantage:
+                                    </p>
+                                    <div data-hide="true" class="hidden">
+                                        <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Parts & Labor,Full Tank of Gas</span>
+                                    </div>
+                                {{else if or (eq $item.VehicleMakesID 41) (eq $item.VehicleMakesID 68)}}
+
+                                {{else}}
+                                    <p class="text-danger" style="font-weight: bold">The Jim Gilbert’s PowerSports Advantage:
+                                    </p>
+                                    <div data-hide="true" class="hidden"> <!-- other powerports -->
+                                        <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Accessories,VIP Discounts & Savings on Parts & Labor,First Service Free or Free Service Kit,Full Tank of Gas</span>
+                                    </div>
+                                {{end}}
+
+                                <div class="mt-5"></div>
+
+                                <img src="/static/site-content/photos/2020-powersports-logo.png" alt="logo" class="img img-fluid"
+                                     style="max-width: 300px;">
+
+                                <div class="text-center">
+
+                                    <p class="text-center">
+                                        <strong>DEALER INFORMATION:</strong><br>
+                                        Jim Gilbert's PowerSports<br>
+                                        402 St Marys St #2<br>
+                                        Fredericton, NB<br>
+                                        E3A 8H5<br>
+                                        Phone: (506) 459-6831
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-3 col-xs-12">
+                                <div class="card card-body" style="width: 18rem;">
+                                    <div class="card-body">
+                                        <a class="btn btn-block btn-danger text-white"
+                                           href="/credit-application">
+                                            <i style="color: white;" class="fa fa-dollar"></i> Fast Financing
+                                        </a>
+
+                                        <a class="btn btn-block btn-danger text-white"
+                                           href="#!"
+                                           onclick="openTD('{{$item.ID}}', '{{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}', '{{$item.StockNo}}')">
+                                            <i style="color: white;" class="fa fa-car"></i> Request a test drive
+                                        </a>
+
+                                        <a class="btn btn-block btn-danger text-white"
+                                           href="#!"
+                                           onclick="openSF('{{$item.ID}}', '{{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}', '{{$item.StockNo}}')">
+                                            <i style="color: white;" class="fa fa-envelope"></i> Email a Friend
+                                        </a>
+
+                                        <a class="btn btn-block btn-danger text-white"
+                                           href="#!"
+                                           onclick="openQCI('{{$item.ID}}', '{{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}', '{{$item.StockNo}}')">
+                                            Quick Click Inquiry
+                                        </a>
+
+
+                                        <a class="btn btn-block btn-danger text-white"
+                                           href="#!"
+                                           onclick="openQQ('{{$item.ID}}', '{{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}', '{{$item.StockNo}}')">
+                                            Quick Quote
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <hr>
+                            </div>
+                        </div>
+
+                        <div class="row d-flex justify-content-center">
+                            {{$sales := index .RowSets "sales"}}
+                            {{range $sales}}
+                                <div class="col-md-2 text-center">
+                                    <a href="https://www.wheelsanddeals.ca/sales/{{.Slug}}" target="_blank">
+                                        <img src="https://www.wheelsanddeals.ca/salesstaff/{{.Image}}" alt="image"
+                                             class="img img-fluid">
+                                    </a>
+                                </div>
+                            {{end}}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <hr>
+                                <p>
+                                    * All advertised prices exclude government fees and taxes, any finance charges and any
+                                    dealer
+                                    document preparation charges. While every reasonable effort is made to ensure the
+                                    accuracy of this
+                                    data, we are not responsible for any errors or omissions contained on these pages.
+                                    Please verify any
+                                    information in question with a dealership sales representative.
+                                </p>
+                                <hr>
+                                <p>
+                                    ** If it has a registration you can trade it in.... With over 40 years’ experience and an
+                                    understanding that it is all about the customer Experience. I know deep down that caring
+                                    for people is job one. I do not want to be the dealer trying to be everything to
+                                    everyone and failing you time after time. Jim Gilbert’s PowerSports wants to be the best
+                                    Kawasaki Dealer not a hit and miss bike dealer, we want to be the Best Mercury Outboard
+                                    motor dealer not a general small engine repair shop, we want to be the Best Bennington
+                                    Pontoon Boat, the best Glastron power boat dealer and the best Crestliner pontoon,
+                                    fishing &amp; Jon boat dealer... not a hit and miss try to patch up on anything boat dealer,
+                                    we want to specialize in Vespa Mopeds & Scooters and Pedego E-Bikes. We want to be the
+                                    BEST in the products we sell to you, so you know you are getting our best for your
+                                    dollar.
+                                </p>
+                                <p>
+                                    And speaking of savings dollars... besides a warm smile and a hug... when you become a
+                                    Huggable Jim Gilbert's PowerSports Customer you will receive discounts on Parts, Labor,
+                                    Accessories and a Ton load of extras that says we appreciate you and care about you.
+                                    Not only today but everyday... That is the Jim Gilbert’s PowerSports Advantage..
+                                </p>
+                                <p>
+                                    Extended warranties, life and disability insurance is always recommended but "as always
+                                    the choice is yours".
+                                </p>
+                            </div>
+                        </div>
+
+                    </div> <!-- container -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+{{end}}
+
+{{define "buttons"}}
+
+{{end}}
+
+
+{{define "js"}}
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.min.js"
+            integrity="sha256-voP3sbDhk+YDZKsGO8dpMGk9qzne1cf3f1CRgjwRnrk=" crossorigin="anonymous"></script>
+
+    {{template "inventory-js" .}}
+
+{{end}}

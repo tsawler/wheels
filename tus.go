@@ -152,6 +152,7 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 			} else if payload.Upload.MetaData.UploadType == "inventory" {
 				vehicleID, _ := strconv.Atoi(payload.Upload.MetaData.ID)
 				_ = helpers.CreateDirIfNotExist(fmt.Sprintf("./ui/static/site-content/inventory/%d", vehicleID))
+				_ = helpers.CreateDirIfNotExist(fmt.Sprintf("./ui/static/site-content/inventory/%d/thumbs", vehicleID))
 
 				fileName := payload.Upload.MetaData.FileName
 				dot := strings.LastIndex(fileName, ".")
@@ -172,6 +173,8 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				sourceDir := payload.Upload.MetaData.UploadTo
 				destDir := payload.Upload.MetaData.UploadTo
 				err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 1200, 900)
+				destDir = fmt.Sprintf("%s/thumbs", payload.Upload.MetaData.UploadTo)
+				err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 320, 240)
 
 				// get current max for sort order
 				curSort, err := vehicleModel.GetMaxSortOrderForVehicleID(vehicleID)
