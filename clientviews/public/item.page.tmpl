@@ -153,6 +153,17 @@
                         </div>
 
                         <div class="row">
+                            <div class="col">
+                                <h3>Options</h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {{range $item.VehicleOptions}}
+                            <div class="col-md-3">&bull; {{.OptionName}}</div>
+                            {{end}}
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-12">
                                 <hr>
                             </div>
@@ -164,9 +175,9 @@
                                 <div class="card card-body bg-light" style="width: 18rem;">
                                     <div class="card-body">
                                         {{if ne $item.HandPicked 1}}
-                                        <strong><span class="text-danger">Certified Vehicle</span></strong><br>
+                                            <strong><span class="text-danger">Certified Vehicle</span></strong><br>
                                         {{else}}
-
+                                            <strong><span class="text-danger">MVI Select Plus Vehicle</span></strong><br>
                                         {{end}}
                                         <strong>Stock #:</strong> {{$item.StockNo}}<br>
                                         <strong>Drivetrain:</strong> {{$item.DriveTrain}}<br>
@@ -182,7 +193,8 @@
                                 </div>
 
                                 <div class="pt-3 text-center">
-                                    <a href="http://www.autofinance.cibc.com/#/pre-approval/redirect?dealerid=C05722" target="_blank">
+                                    <a href="http://www.autofinance.cibc.com/#/pre-approval/redirect?dealerid=C05722"
+                                       target="_blank">
                                         <img src="/client/static/cibc.png" alt="CIBC">
                                     </a>
                                 </div>
@@ -191,15 +203,15 @@
                             <div class="col-md-6 col-xs-12 text-center">
 
                                 {{if ne $item.HandPicked 1  }}
-                                    <p class="text-danger" style="font-weight: bold">Your Benefits when buying from <br> Wheels and Deals Include:
+                                    <p class="text-danger" style="font-weight: bold">Your Benefits when buying from <br>
+                                        Wheels and Deals Include:
                                     </p>
-                                    <div data-hide="true" class="hidden"> <!-- other powerports -->
+                                    <div data-hide="true" class="hidden">
                                         <span class="rotator" style="color: #a94442; font-weight: bold;">Full Tank of Gas,WalkaWay Credit &amp; Job Loss Protection,Paint Sealant Shine Guard Protection,No charge Nitrogen for life,Factory Warranty,Carfax History Report,Two Key Guarantee,Fresh MVI 200% above industry Standards,Fully Serviced and Guaranteed,All Fluids inspected and topped up,Refreshed Cabin air filter,Professional Detailed,Best in Class Service</span>
                                     </div>
                                 {{end}}
 
                                 <div class="mt-5"></div>
-
 
 
                                 <img src="/client/static/logo.png" alt="logo" class="img img-fluid"
@@ -286,25 +298,37 @@
                                 <h3>40 Years, over 20,000 Customers, more than a 1,000,000 Hugs</h3>
 
                                 <p>
-                                    <strong>You do save with a low kilometre, fully warrantied slightly used SUV, Car, Truck or Minivan... from us...</strong>
-                                    Our on-site licensed professionals fully service and detail every vehicle we sell. All our certified
-                                    vehicles have a new updated MVI 200% above industry standards. Plus… you get a Full tank of gas,
-                                    Paint sealant shine, Nitrogen filled tires, Walkaway credit & job loss protection, balance of
-                                    factory warranty and our huggable guarantee… a value to you of well over $2400.00. </p>
+                                    <strong>You do save with a low kilometre, fully warrantied slightly used SUV, Car,
+                                        Truck or Minivan... from us...</strong>
+                                    Our on-site licensed professionals fully service and detail every vehicle we sell.
+                                    All our certified
+                                    vehicles have a new updated MVI 200% above industry standards. Plus… you get a Full
+                                    tank of gas,
+                                    Paint sealant shine, Nitrogen filled tires, Walkaway credit & job loss protection,
+                                    balance of
+                                    factory warranty and our huggable guarantee… a value to you of well over $2400.00.
+                                </p>
 
                                 <hr>
                                 <p>
-                                    * All advertised prices exclude government fees and taxes, any finance charges and any dealer
-                                    document preparation charges. While every reasonable effort is made to ensure the accuracy of this
-                                    data, we are not responsible for any errors or omissions contained on these pages. Please verify any
+                                    * All advertised prices exclude government fees and taxes, any finance charges and
+                                    any dealer
+                                    document preparation charges. While every reasonable effort is made to ensure the
+                                    accuracy of this
+                                    data, we are not responsible for any errors or omissions contained on these pages.
+                                    Please verify any
                                     information in question with a dealership sales representative.
                                 </p>
                                 <hr>
                                 <p>
-                                    ** We accept all trade ins and recommend your purchase of credit protection and extended vehicle
-                                    protection, however "as always the choice is yours". Jim Gilbert's Wheels and Deals is Canada's Best
-                                    six acre Car Shopping Experience and we would love to share our Huggable knowledge with you. You
-                                    will receive many extras, the warm Huggable feeling and the good attention that has made Canada's
+                                    ** We accept all trade ins and recommend your purchase of credit protection and
+                                    extended vehicle
+                                    protection, however "as always the choice is yours". Jim Gilbert's Wheels and Deals
+                                    is Canada's Best
+                                    six acre Car Shopping Experience and we would love to share our Huggable knowledge
+                                    with you. You
+                                    will receive many extras, the warm Huggable feeling and the good attention that has
+                                    made Canada's
                                     Huggable Car Dealer Famous. Shop us First, Feel the Difference... then compare.
 
                                 </p>
@@ -330,19 +354,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.min.js"
             integrity="sha256-voP3sbDhk+YDZKsGO8dpMGk9qzne1cf3f1CRgjwRnrk=" crossorigin="anonymous"></script>
 
-        <script>
-            async function printVehicle(x) {
-                attention.confirm({
-                    html: "Are you sure download the vehicle information as a PDF?",
-                    icon: 'question',
-                    callback: function (result) {
-                        if (result !== false) {
-                            window.location.href = "/admin/inventory/print-window-sticker/" + x;
-                        }
+    <script>
+        async function printVehicle(x) {
+            attention.confirm({
+                html: "Are you sure download the vehicle information as a PDF?",
+                icon: 'question',
+                callback: function (result) {
+                    if (result !== false) {
+                        window.location.href = "/admin/inventory/print-window-sticker/" + x;
                     }
-                });
-            }
-        </script>
+                }
+            });
+        }
+    </script>
 
     {{template "inventory-js" .}}
 
