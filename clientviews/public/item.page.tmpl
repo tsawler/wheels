@@ -163,11 +163,20 @@
                             <div class="col-md-3 col-xs-12">
                                 <div class="card card-body bg-light" style="width: 18rem;">
                                     <div class="card-body">
+                                        {{if ne $item.HandPicked 1}}
+                                        <strong><span class="text-danger">Certified Vehicle</span></strong><br>
+                                        {{else}}
+
+                                        {{end}}
                                         <strong>Stock #:</strong> {{$item.StockNo}}<br>
+                                        <strong>Drivetrain:</strong> {{$item.DriveTrain}}<br>
+                                        <strong>Body Style:</strong> {{$item.Body}}<br>
                                         <strong>Trim:</strong> {{$item.Trim}}<br>
                                         <strong>Kilometers:</strong> {{$item.Odometer}}<br>
+                                        <strong>Interior Color:</strong> {{$item.InteriorColour}}<br>
                                         <strong>Exterior Color:</strong> {{$item.ExteriorColour}}<br>
                                         <strong>Engine:</strong> {{$item.Engine}}<br>
+                                        <strong>Transmission:</strong> {{$item.Transmission}}<br>
                                         <strong>VIN:</strong> {{$item.Vin}}<br>
                                     </div>
                                 </div>
@@ -185,7 +194,7 @@
                                     <p class="text-danger" style="font-weight: bold">Your Benefits when buying from <br> Wheels and Deals Include:
                                     </p>
                                     <div data-hide="true" class="hidden"> <!-- other powerports -->
-                                        <span class="rotator" style="color: #a94442; font-weight: bold;">Full Tank of Gas,WalkaWay Credit & Job Loss Protection,Paint Sealant Shine Guard Protection,No charge Nitrogen for life,Factory Warranty,Carfax History Report,Two Key Guarantee,Fresh MVI 200% above industry Standards,Fully Serviced and Guaranteed,All Fluids inspected and topped up,Refreshed Cabin air filter,Professional Detailed,Best in Class Service</span>
+                                        <span class="rotator" style="color: #a94442; font-weight: bold;">Full Tank of Gas,WalkaWay Credit &amp; Job Loss Protection,Paint Sealant Shine Guard Protection,No charge Nitrogen for life,Factory Warranty,Carfax History Report,Two Key Guarantee,Fresh MVI 200% above industry Standards,Fully Serviced and Guaranteed,All Fluids inspected and topped up,Refreshed Cabin air filter,Professional Detailed,Best in Class Service</span>
                                     </div>
                                 {{end}}
 
