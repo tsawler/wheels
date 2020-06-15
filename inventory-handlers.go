@@ -143,3 +143,17 @@ func GetMakesForYear(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 
 }
+
+func DisplayOneVehicle(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	infoLog.Println(id)
+	category := r.URL.Query().Get(":CATEGORY")
+	infoLog.Println(category)
+
+	v, err := vehicleModel.GetVehicleByID(id)
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+	}
+	w.Write([]byte(v.Description))
+}

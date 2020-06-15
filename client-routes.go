@@ -35,8 +35,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/inventory-filter/makes/:YEAR", dynamicMiddleware.ThenFunc(GetMakesForYear))
 	mux.Get("/inventory-filter/models/:ID", dynamicMiddleware.ThenFunc(GetModelsForMake))
 	mux.Get("/used-vehicle-inventory", dynamicMiddleware.ThenFunc(DisplayAllVehicleInventory))
-	mux.Get("/used-vehicle-inventory/:pageIndex", standardMiddleWare.ThenFunc(DisplayAllVehicleInventory))
+	mux.Get("/used-vehicle-inventory/:pageIndex", dynamicMiddleware.ThenFunc(DisplayAllVehicleInventory))
 
+	mux.Get("/:CATEGORY/view/:ID/:SLUG", dynamicMiddleware.ThenFunc(DisplayOneVehicle))
 	/*
 		|--------------------------------------------------------------------------
 		| Vehicle Administration routes

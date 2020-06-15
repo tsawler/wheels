@@ -1430,13 +1430,13 @@ func (m *DBModel) GetVehicleByID(id int) (clientmodels.Vehicle, error) {
 			select 
 				vv.id,
 				vv.video_id,
-				v.video_name,
-				v.file_name,
-				v.thumb,
-				v.is_360,
-				v.duration,
-				vv.created_at,
-				vv.updated_at
+				coalesce(v.video_name, ''),
+				coalesce(v.file_name, ''),
+				coalesce(v.thumb, ''),
+				coalesce(v.is_360, 0),
+				coalesce(v.duration, 0),
+				coalesce(vv.created_at, now()),
+				coalesce(vv.updated_at, now())
 			from 
 				vehicle_videos vv
 				left join videos v on (vv.video_id = v.id)
