@@ -2168,6 +2168,7 @@ func (m *DBModel) UpdateSortOrderForImage(id, order int) error {
 	return nil
 }
 
+// ModelsForMakeID returns json for available models for specified make
 func (m *DBModel) ModelsForMakeID(id int) ([]clientmodels.Model, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2202,6 +2203,7 @@ func (m *DBModel) ModelsForMakeID(id int) ([]clientmodels.Model, error) {
 	return models, nil
 }
 
+// MakesForYear returns json for available makes for a specified year
 func (m *DBModel) MakesForYear(year int) ([]clientmodels.Make, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
