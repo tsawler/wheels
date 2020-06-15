@@ -796,6 +796,7 @@ func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// PrintWindowSticker prints a window sticker to pdf (as stream) and downloads it to client
 func PrintWindowSticker(w http.ResponseWriter, r *http.Request) {
 	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	v, err := vehicleModel.GetVehicleByID(vehicleID)
