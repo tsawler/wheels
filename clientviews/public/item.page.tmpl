@@ -171,40 +171,40 @@
                                         <strong>VIN:</strong> {{$item.Vin}}<br>
                                     </div>
                                 </div>
+
+                                <div class="pt-3">
+                                    <a href="http://www.autofinance.cibc.com/#/pre-approval/redirect?dealerid=C05722" target="_blank">
+                                        <img src="/client/static/cibc.png" alt="CIBC">
+                                    </a>
+                                </div>
                             </div>
 
                             <div class="col-md-6 col-xs-12 text-center">
 
-                                {{if or (eq $item.VehicleMakesID 89) (eq $item.VehicleMakesID 47) (eq $item.VehicleMakesID 90) (eq $item.VehicleMakesID 30) (eq $item.VehicleMakesID 39)  }}
-                                    <p class="text-danger" style="font-weight: bold">The Jim Gilbert’s PowerSports Advantage:
-                                    </p>
-                                    <div data-hide="true" class="hidden">
-                                        <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Parts & Labor,Full Tank of Gas</span>
-                                    </div>
-                                {{else if or (eq $item.VehicleMakesID 41) (eq $item.VehicleMakesID 68)}}
-
-                                {{else}}
-                                    <p class="text-danger" style="font-weight: bold">The Jim Gilbert’s PowerSports Advantage:
+                                {{if ne $item.HandPicked 1  }}
+                                    <p class="text-danger" style="font-weight: bold">Your Benefits when buying from <br> Wheels and Deals Include:
                                     </p>
                                     <div data-hide="true" class="hidden"> <!-- other powerports -->
-                                        <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Accessories,VIP Discounts & Savings on Parts & Labor,First Service Free or Free Service Kit,Full Tank of Gas</span>
+                                        <span class="rotator" style="color: #a94442; font-weight: bold;">Full Tank of Gas,WalkaWay Credit & Job Loss Protection,Paint Sealant Shine Guard Protection,No charge Nitrogen for life,Factory Warranty,Carfax History Report,Two Key Guarantee,Fresh MVI 200% above industry Standards,Fully Serviced and Guaranteed,All Fluids inspected and topped up,Refreshed Cabin air filter,Professional Detailed,Best in Class Service</span>
                                     </div>
                                 {{end}}
 
                                 <div class="mt-5"></div>
 
-                                <img src="/static/site-content/photos/2020-powersports-logo.png" alt="logo" class="img img-fluid"
+
+
+                                <img src="/client/static/logo.png" alt="logo" class="img img-fluid"
                                      style="max-width: 300px;">
 
                                 <div class="text-center">
 
                                     <p class="text-center">
                                         <strong>DEALER INFORMATION:</strong><br>
-                                        Jim Gilbert's PowerSports<br>
-                                        402 St Marys St #2<br>
-                                        Fredericton, NB<br>
+                                        Jim Gilbert's Wheels &amp; Deals<br>
+                                        402 St Marys St<br>
+                                        Fredericton, New Brunswick<br>
                                         E3A 8H5<br>
-                                        Phone: (506) 459-6831
+                                        Phone: (506) 459-6832
                                     </p>
                                 </div>
 
@@ -236,11 +236,16 @@
                                             Quick Click Inquiry
                                         </a>
 
-
                                         <a class="btn btn-block btn-danger text-white"
                                            href="#!"
                                            onclick="openQQ('{{$item.ID}}', '{{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}', '{{$item.StockNo}}')">
                                             Quick Quote
+                                        </a>
+
+                                        <a class="btn btn-block btn-danger text-white"
+                                           href="#!"
+                                           onclick="printVehicle({{$item.ID}})">
+                                            <i style="color: white;" class="fa fa-print"></i> Print Vehicle
                                         </a>
                                     </div>
                                 </div>
@@ -323,6 +328,20 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.min.js"
             integrity="sha256-voP3sbDhk+YDZKsGO8dpMGk9qzne1cf3f1CRgjwRnrk=" crossorigin="anonymous"></script>
+
+        <script>
+            async function printVehcile(x) {
+                attention.confirm({
+                    html: "Are you sure download the window sticker as a PDF?",
+                    icon: 'question',
+                    callback: function (result) {
+                        if (result !== false) {
+                            window.location.href = "/admin/inventory/print-window-sticker/" + x;
+                        }
+                    }
+                });
+            }
+        </script>
 
     {{template "inventory-js" .}}
 

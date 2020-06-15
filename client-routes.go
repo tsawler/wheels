@@ -74,7 +74,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/inventory/refresh-from-pbs", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(RefreshFromPBS))
 
 	// print window sticker
-	mux.Get("/admin/inventory/print-window-sticker/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(PrintWindowSticker))
+	mux.Get("/admin/inventory/print-window-sticker/:ID", dynamicMiddleware.ThenFunc(PrintWindowSticker))
 
 	// display and edit vehicle/item
 	mux.Get("/admin/:CATEGORY/:TYPE/:SRC/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayVehicleForAdmin))
