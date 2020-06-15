@@ -2,6 +2,7 @@ package clienthandlers
 
 import (
 	"github.com/tsawler/goblender/client/clienthandlers/clientdb"
+	template_data "github.com/tsawler/goblender/client/clienthandlers/template-data"
 	"github.com/tsawler/goblender/pkg/config"
 	"github.com/tsawler/goblender/pkg/driver"
 	"github.com/tsawler/goblender/pkg/handlers"
@@ -49,4 +50,5 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 
 	// Create client middleware
 	NewClientMiddleware(app)
+	template_data.NewTemplateData(parentDriver.SQL)
 }

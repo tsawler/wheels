@@ -2292,3 +2292,125 @@ func (m *DBModel) MakesForYear(year int) ([]clientmodels.Make, error) {
 	}
 	return makes, nil
 }
+
+func (m *DBModel) CountSoldThisMonth() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var soldThisMonth int
+	thisMonth := fmt.Sprintf("%d-%d-01", time.Now().Year(), time.Now().Month())
+
+	query := fmt.Sprintf(`select count(id) from vehicles where status = 0 and updated_at >= '%s' and vehicle_type < 7`, thisMonth)
+	row := m.DB.QueryRowContext(ctx, query)
+	err := row.Scan(
+		&soldThisMonth,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	return soldThisMonth
+}
+
+func (m *DBModel) CountPending() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var pending int
+
+	query := "select count(id) from vehicles where status = 2"
+	row := m.DB.QueryRowContext(ctx, query)
+	err := row.Scan(
+		&pending,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	return pending
+}
+
+func (m *DBModel) CountTradeIns() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var pending int
+
+	query := "select count(id) from vehicles where status = 3"
+	row := m.DB.QueryRowContext(ctx, query)
+	err := row.Scan(
+		&pending,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	return pending
+}
+
+func (m *DBModel) CountForSale() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var forSale int
+
+	query := "select count(id) from vehicles where status = 1 and vehicle_type < 7"
+	row := m.DB.QueryRowContext(ctx, query)
+	err := row.Scan(
+		&forSale,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	return forSale
+}
+
+func (m *DBModel) CountForSalePowerSports() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var forSale int
+
+	query := "select count(id) from vehicles where status = 1 and vehicle_type >= 7"
+	row := m.DB.QueryRowContext(ctx, query)
+	err := row.Scan(
+		&forSale,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	return forSale
+}
+
+func (m *DBModel) CountSoldThisMonthPowerSports() int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var soldThisMonth int
+	thisMonth := fmt.Sprintf("%d-%d-01", time.Now().Year(), time.Now().Month())
+
+	query := fmt.Sprintf(`select count(id) from vehicles where status = 0 and updated_at >= '%s' and vehicle_type >= 7`, thisMonth)
+	row := m.DB.QueryRowContext(ctx, query)
+	err := row.Scan(
+		&soldThisMonth,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0
+	}
+
+	return soldThisMonth
+}

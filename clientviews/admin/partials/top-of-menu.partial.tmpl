@@ -5,11 +5,11 @@
                         class="fa arrow"></span></a>
             <ul class="nav nav-second-level collapse">
                 <li><a href="/admin/inventory/vehicles/all-vehicles">All Vehicles</a></li>
-                <li><a href="/admin/inventory/vehicles/all-vehicles-for-sale">For Sale</a></li>
-                <li><a href="/admin/inventory/vehicles/all-vehicles-sold-this-month">Sold (this month)</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-for-sale">For Sale <span class="badge">{{index .Data "for_sale"}}</span></a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-sold-this-month">Sold (this month) <span class="badge">{{index .Data "sold_this_month"}}</span></a></li>
                 <li><a href="/admin/inventory/vehicles/all-vehicles-sold">Sold</a></li>
-                <li><a href="/admin/inventory/vehicles/all-vehicles-pending">Pending</a></li>
-                <li><a href="/admin/inventory/vehicles/all-vehicles-trade-ins">Trade-ins</a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-pending">Pending <span class="badge">{{index .Data "pending"}}</span></a></li>
+                <li><a href="/admin/inventory/vehicles/all-vehicles-trade-ins">Trade-ins <span class="badge">{{index .Data "trade_ins"}}</span></a></li>
                 <li><a href="/admin/inventory/options-all">Options</a></li>
                 <li><a href="/admin/inventory/options/0">Add Option</a></li>
                 <li><a href="/admin/inventory/refresh-from-pbs">Force PBS Update</a></li>
@@ -22,9 +22,9 @@
             <a href="#!"><i class="fa fa-motorcycle fa-fw"></i> <span class="nav-label">PowerSports</span> <span
                         class="fa arrow"></span></a>
             <ul class="nav nav-second-level collapse">
-                <li><a href="/admin/powersports-inventory/powersports/all-powersports-for-sale">For Sale PowerSports</a></li>
-                <li><a href="/admin/powersports-inventory/powersports/all-powersports-sold-this-month">PowerSports Sold (this month)</a></li>
-                <li><a href="/admin/powersports-inventory/powersports/all-powersports-sold">PowerSports Sold</a></li>
+                <li><a href="/admin/powersports-inventory/powersports/all-powersports-for-sale">For Sale  <span class="badge">{{index .Data "for_sale_powersports"}}</span></a></li>
+                <li><a href="/admin/powersports-inventory/powersports/all-powersports-sold-this-month">Sold (this month) <span class="badge">{{index .Data "sold_this_month_powersports"}}</span></a></li>
+                <li><a href="/admin/powersports-inventory/powersports/all-powersports-sold">Sold</a></li>
             </ul>
         </li>
     {{end}}
