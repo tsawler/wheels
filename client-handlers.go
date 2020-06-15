@@ -60,7 +60,6 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	infoLog.Println("Video id is", vehicle.Video.VideoID)
 	rowSets := make(map[string]interface{})
 	rowSets["vehicle"] = vehicle
 
@@ -279,7 +278,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	// handle video
 	videoID, _ := strconv.Atoi(form.Get("video_id"))
 	if videoID != oldVideoID {
-		if videoID == 0 && oldVideoID != 0 {
+		if (videoID == 0 && oldVideoID != 0) || (videoID > 0 && oldVideoID != 0) {
 			vv := clientmodels.VehicleVideo{
 				VehicleID: v.ID,
 				VideoID:   videoID,

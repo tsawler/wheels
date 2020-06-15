@@ -1468,7 +1468,6 @@ func (m *DBModel) GetVehicleByID(id int) (clientmodels.Vehicle, error) {
 			where
 				vv.vehicle_id = ?
 			limit 1`
-	fmt.Println("using vehicile id of", id)
 	vRow := m.DB.QueryRowContext(ctx, query, id)
 
 	var vehicleVideo clientmodels.VehicleVideo
@@ -2019,7 +2018,7 @@ func (m *DBModel) InsertVideoForVehicle(v clientmodels.VehicleVideo) error {
 	defer cancel()
 	stmt := `
 		INSERT INTO vehicle_videos (vehicle_id, video_id, created_at, updated_at)
-		VALUES(?, ?, ?, ?, ?)
+		VALUES(?, ?, ?, ?)
     `
 
 	_, err := m.DB.ExecContext(ctx,
@@ -2039,6 +2038,7 @@ func (m *DBModel) InsertVideoForVehicle(v clientmodels.VehicleVideo) error {
 func (m *DBModel) UpdateVideoForVehicle(v clientmodels.VehicleVideo) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
 	if v.VideoID > 0 {
 		query := `update vehicle_videos set 
 		video_id = ?
