@@ -1453,29 +1453,42 @@ func (m *DBModel) GetVehicleByID(id int) (clientmodels.Vehicle, error) {
 	// get video, if any
 	query = `
 			select 
-				v.id, 
+				vv.id,
+				vv.video_id,
 				v.video_name,
 				v.file_name,
-				v.thumb
+				v.thumb,
+				v.is_360,
+				v.duration,
+				vv.created_at,
+				vv.updated_at
 			from 
 				vehicle_videos vv
 				left join videos v on (vv.video_id = v.id)
 			where
 				vv.vehicle_id = ?
 			limit 1`
-	vRow := m.DB.QueryRowContext(ctx, query, c.ID)
+	fmt.Println("using vehicile id of", id)
+	vRow := m.DB.QueryRowContext(ctx, query, id)
 
-	var vehicleVideo clientmodels.Video
+	var vehicleVideo clientmodels.VehicleVideo
 
 	err = vRow.Scan(
 		&vehicleVideo.ID,
+		&vehicleVideo.VideoID,
 		&vehicleVideo.VideoName,
 		&vehicleVideo.FileName,
 		&vehicleVideo.Thumb,
+		&vehicleVideo.Is360,
+		&vehicleVideo.Duration,
+		&vehicleVideo.CreatedAt,
+		&vehicleVideo.UpdatedAt,
 	)
 
 	if err == nil {
 		c.Video = vehicleVideo
+	} else {
+		fmt.Println(err)
 	}
 
 	c.Images = vehicleImages
@@ -1995,6 +2008,53 @@ func (m *DBModel) UpdateVehicle(v clientmodels.Vehicle) error {
 	if err != nil {
 		fmt.Println(err)
 		return err
+	}
+
+	return nil
+}
+
+// InsertVideoForVehicle inserts a video for a vehicle
+func (m *DBModel) InsertVideoForVehicle(v clientmodels.VehicleVideo) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	stmt := `
+		INSERT INTO vehicle_videos (vehicle_id, video_id, created_at, updated_at)
+		VALUES(?, ?, ?, ?, ?)
+    `
+
+	_, err := m.DB.ExecContext(ctx,
+		stmt,
+		v.VehicleID,
+		v.VideoID,
+		v.CreatedAt,
+		v.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateVideoForVehicle updates video for a vehicle, or removes it entirely
+func (m *DBModel) UpdateVideoForVehicle(v clientmodels.VehicleVideo) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if v.VideoID > 0 {
+		query := `update vehicle_videos set 
+		video_id = ?
+		where vehicle_id = ?`
+		_, err := m.DB.ExecContext(ctx, query, v.VideoID, v.VehicleID)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+	} else {
+		query := `delete from vehicle_videos where vehicle_id = ?`
+		_, err := m.DB.ExecContext(ctx, query, v.VehicleID)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 	}
 
 	return nil

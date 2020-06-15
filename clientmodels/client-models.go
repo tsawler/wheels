@@ -49,7 +49,7 @@ type Vehicle struct {
 	VehicleOptions    []*VehicleOption `xml:"-"`
 	VehicleType       int              `xml:"-"`
 	VehicleTypeString string           `xml:"vehicle_type"`
-	Video             Video            `xml:"-"`
+	Video             VehicleVideo     `xml:"-"`
 	Vin               string           `xml:"Vin"`
 	Year              int              `xml:"Year"`
 }
@@ -98,6 +98,20 @@ type Image struct {
 	SortOrder int       `xml:"-" json:"sort_order"`
 	CreatedAt time.Time `xml:"-" json:"created-at"`
 	UpdatedAt time.Time `xml:"-" json:"updated_at"`
+}
+
+// VehicleVideo is the join table for vehicles/videos
+type VehicleVideo struct {
+	ID        int
+	VehicleID int
+	VideoID   int
+	VideoName string
+	FileName  string
+	Thumb     string
+	Is360     int
+	Duration  int
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // Video holds a video

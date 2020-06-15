@@ -60,6 +60,7 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	infoLog.Println("Video id is", vehicle.Video.VideoID)
 	rowSets := make(map[string]interface{})
 	rowSets["vehicle"] = vehicle
 
@@ -124,6 +125,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		helpers.ClientError(w, http.StatusBadRequest)
 		return
 	}
+	oldVideoID := v.Video.VideoID
 
 	form.Required("stock_no", "vin", "cost", "total_msr")
 	form.IsFloat("cost")
@@ -271,6 +273,32 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		err := vehicleModel.UpdateSortOrderForImage(imageID, v.StepNumber)
 		if err != nil {
 			app.ErrorLog.Println(err)
+		}
+	}
+
+	// handle video
+	videoID, _ := strconv.Atoi(form.Get("video_id"))
+	if videoID != oldVideoID {
+		if videoID == 0 && oldVideoID != 0 {
+			vv := clientmodels.VehicleVideo{
+				VehicleID: v.ID,
+				VideoID:   videoID,
+				UpdatedAt: time.Now(),
+			}
+			err := vehicleModel.UpdateVideoForVehicle(vv)
+			if err != nil {
+				errorLog.Println("Error updating video:", err)
+			}
+		} else if videoID > 0 {
+			vv := clientmodels.VehicleVideo{
+				VehicleID: v.ID,
+				VideoID:   videoID,
+				UpdatedAt: time.Now(),
+			}
+			err := vehicleModel.InsertVideoForVehicle(vv)
+			if err != nil {
+				errorLog.Println("Error inserting video:", err)
+			}
 		}
 	}
 

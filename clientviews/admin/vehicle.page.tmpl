@@ -428,11 +428,11 @@
                         <div class="form-group pt-3">
                             <label>Choose a video:</label>
                             <div>
-                                <select class="form-control" name="menu_page_id"
+                                <select class="form-control" name="video_id"
                                         id="car-video-list" style="width: 100%;;">
                                     <option value="0">No video</option>
                                     {{range .Videos}}
-                                        <option value="{{.ID}}">{{.VideoName}}</option>
+                                        <option value="{{.ID}}" {{if eq $v.Video.VideoID .ID}} selected {{end}}>{{.VideoName}}</option>
                                     {{end}}
                                 </select>
                             </div>
@@ -477,11 +477,10 @@
     <script>
 
         let imageList;
-        let carVideoList = document.getElementById("car-video-list");
 
         document.addEventListener("DOMContentLoaded", function () {
+            let carVideoList = document.getElementById("car-video-list");
             tail.select(carVideoList, {search: true, width: '100%'});
-            tail.select(carVideoList).options.handle("select", {{$v.Video.ID}}, "#");
             sortList();
             performSort();
         });
