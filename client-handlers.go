@@ -807,7 +807,7 @@ func PrintWindowSticker(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pdf, err := CreateWindowSticker(vehicleID)
+	pdf, err := CreateWindowSticker(v)
 	if err != nil {
 		lastPage := app.Session.GetString(r.Context(), "last-page")
 		session.Put(r.Context(), "error", "Unable to generate PDF!")
