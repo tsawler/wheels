@@ -632,7 +632,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 	stmt := ""
 	var nRows *sql.Row
 
-	if vehicleTypeID < 1000 {
+	if vehicleTypeID == 0 {
 		stmt = fmt.Sprintf(`
 		select 
 			count(v.id) 
@@ -640,8 +640,8 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			vehicles v 
 		where 
 			status = 1 
-			and vehicle_type = ? %s`, where)
-		nRows = m.DB.QueryRowContext(ctx, stmt, vehicleTypeID)
+			and vehicle_type < 7 %s`, where)
+		nRows = m.DB.QueryRowContext(ctx, stmt)
 	} else if vehicleTypeID == 1000 {
 		stmt = fmt.Sprintf(`
 		select 
@@ -675,7 +675,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 	query := ""
 	var rows *sql.Rows
 
-	if vehicleTypeID < 1000 {
+	if vehicleTypeID == 0 {
 		query = fmt.Sprintf(`
 		select 
 		       id, 
@@ -708,12 +708,12 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 		from 
 		     vehicles v 
 		where
-			vehicle_type = ?
+			vehicle_type < 7
 			and status = 1
 			%s
 			%s
 		limit ? offset ?`, where, orderBy)
-		rows, err = m.DB.QueryContext(ctx, query, vehicleTypeID, perPage, offset)
+		rows, err = m.DB.QueryContext(ctx, query, perPage, offset)
 		if err != nil {
 			fmt.Println(err)
 			return nil, 0, err
@@ -1016,11 +1016,11 @@ func (m *DBModel) GetYearsForVehicleType(id int) ([]int, error) {
 			from 
 				vehicles v
 			where
-				vehicle_type = ?
+				vehicle_type < 7
 				and v.status = 1
 			order by 
 				year desc`
-	rows, err := m.DB.QueryContext(ctx, query, id)
+	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -1089,42 +1089,17 @@ func (m *DBModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
 	var makes []clientmodels.Make
 	query := ""
 
-	if id < 1000 {
-		query = `
-			select  
-				m.id, m.make
-			from 
-				vehicle_makes m
-			where
-				m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and vehicle_type = ?)
-			order by 
-				m.make`
-	} else if id == 1000 {
-		query = `
-			select  
-				m.id, m.make
-			from 
-				vehicle_makes m
-			where
-				m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and used = 1 and vehicle_type  in
-				(8, 11, 12, 16, 7, 17, 14, ?)
-)
-			order by 
-				m.make`
-	} else if id == 1001 {
-		query = `
-			select  
-				m.id, m.make
-			from 
-				vehicle_makes m
-			where
-				m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and used = 1 and vehicle_type  in
-				(13, 10, 9, 15, ?)
-)
-			order by 
-				m.make`
-	}
-	rows, err := m.DB.QueryContext(ctx, query, id)
+	query = `
+		select  
+			m.id, m.make
+		from 
+			vehicle_makes m
+		where
+			m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and vehicle_type < 7)
+		order by 
+			m.make`
+
+	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
 		rows.Close()
 		fmt.Println(err)

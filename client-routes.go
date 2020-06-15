@@ -32,6 +32,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 		|
 	*/
 
+	mux.Get("/used-vehicle-inventory", dynamicMiddleware.ThenFunc(DisplayAllVehicleInventory))
+	mux.Get("/used-vehicle-inventory/:pageIndex", standardMiddleWare.ThenFunc(DisplayAllVehicleInventory))
+
 	/*
 		|--------------------------------------------------------------------------
 		| Vehicle Administration routes
