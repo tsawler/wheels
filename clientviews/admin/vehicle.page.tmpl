@@ -412,7 +412,11 @@
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="sticker-tab"
                  id="sticker-tab-content">
-                d
+                <div class="row">
+                    <div class="col">
+                        <a class="btn btn-outline-secondary mt-5" href="javascript:" onclick="confirmPrintWindowSticker({{$v.ID}})">Print Window Sticker</a>
+                    </div>
+                </div>
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="video-tab"
@@ -757,6 +761,18 @@
                     }
                 }
             }
+        }
+
+        async function confirmPrintWindowSticker(x) {
+            attention.confirm({
+                html: "Are you sure download the window sticker as a PDF?",
+                icon: 'question',
+                callback: function (result) {
+                    if (result !== false) {
+                        window.location.href = "/admin/inventory/print-window-sticker/" + x;
+                    }
+                }
+            });
         }
     </script>
 {{end}}

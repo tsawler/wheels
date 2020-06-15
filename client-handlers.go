@@ -1,6 +1,7 @@
 package clienthandlers
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
@@ -793,4 +794,33 @@ func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorLog.Println(err)
 	}
+}
+
+func PrintWindowSticker(w http.ResponseWriter, r *http.Request) {
+	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+
+	infoLog.Println("in printwindowsticker")
+
+	pdf, err := CreateWindowSticker(vehicleID)
+	if err != nil {
+		lastPage := app.Session.GetString(r.Context(), "last-page")
+		session.Put(r.Context(), "error", "Unable to generate PDF!")
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+	}
+
+	w.Header().Set("Content-Type", "application/pdf")
+
+	out := &bytes.Buffer{}
+	if err := pdf.Output(out); err != nil {
+		lastPage := app.Session.GetString(r.Context(), "last-page")
+		session.Put(r.Context(), "error", "Unable to generate PDF!")
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+	}
+	b := out.Bytes()
+
+	_, err = w.Write(b)
+	if err != nil {
+		errorLog.Println(err)
+	}
+
 }
