@@ -798,23 +798,31 @@ func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 
 func PrintWindowSticker(w http.ResponseWriter, r *http.Request) {
 	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
-
-	infoLog.Println("in printwindowsticker")
+	v, err := vehicleModel.GetVehicleByID(vehicleID)
+	if err != nil {
+		lastPage := app.Session.GetString(r.Context(), "last-page")
+		session.Put(r.Context(), "error", "Unable to find vehicle!")
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
 
 	pdf, err := CreateWindowSticker(vehicleID)
 	if err != nil {
 		lastPage := app.Session.GetString(r.Context(), "last-page")
 		session.Put(r.Context(), "error", "Unable to generate PDF!")
 		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/pdf")
+	//w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.pdf", v.StockNo))
 
 	out := &bytes.Buffer{}
 	if err := pdf.Output(out); err != nil {
 		lastPage := app.Session.GetString(r.Context(), "last-page")
 		session.Put(r.Context(), "error", "Unable to generate PDF!")
 		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
 	}
 	b := out.Bytes()
 
