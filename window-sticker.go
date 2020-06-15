@@ -89,6 +89,32 @@ func CreateWindowSticker(v clientmodels.Vehicle) (*gofpdf.Fpdf, error) {
 			pdf.Ln(spacing)
 		}
 
+		// print second column
+		pdf.SetY(38)
+		for _, x := range col2 {
+			pdf.SetX(75)
+			pdf.SetFont("ZapfDingbats", "", 10)
+			pdf.SetTextColor(60, 169, 0)
+			pdf.Write(spacing, "4 ")
+			pdf.SetFont("CenturyGothic-Bold", "", 11)
+			pdf.SetTextColor(0, 0, 0)
+			pdf.MultiCell(0, spacing, x.OptionName, "", "L", false)
+			pdf.Ln(spacing)
+		}
+
+		// print third column
+		pdf.SetY(38)
+		for _, x := range col3 {
+			pdf.SetX(140)
+			pdf.SetFont("ZapfDingbats", "", 10)
+			pdf.SetTextColor(60, 169, 0)
+			pdf.Write(spacing, "4 ")
+			pdf.SetFont("CenturyGothic-Bold", "", 11)
+			pdf.SetTextColor(0, 0, 0)
+			pdf.MultiCell(0, spacing, x.OptionName, "", "L", false)
+			pdf.Ln(spacing)
+		}
+
 		// write Stock #
 		pdf.SetTextColor(0, 0, 0)
 		pdf.SetFont("CenturyGothic-Bold", "", 12)
