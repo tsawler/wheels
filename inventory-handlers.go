@@ -9,6 +9,7 @@ import (
 	"strconv"
 )
 
+// DisplayAllVehicleInventory shows all vehicle inventory
 func DisplayAllVehicleInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["pager-url"] = "/used-vehicle-inventory"
@@ -20,6 +21,7 @@ func DisplayAllVehicleInventory(w http.ResponseWriter, r *http.Request) {
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory")
 }
 
+// DisplaySUVInventory shows suv inventory
 func DisplaySUVInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["pager-url"] = "/used-suvs-fredericton"
@@ -31,6 +33,7 @@ func DisplaySUVInventory(w http.ResponseWriter, r *http.Request) {
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-suvs-fredericton")
 }
 
+// DisplayCarInventory shows car inventory
 func DisplayCarInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["pager-url"] = "/used-cars-fredericton"
@@ -42,6 +45,7 @@ func DisplayCarInventory(w http.ResponseWriter, r *http.Request) {
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-cars-fredericton")
 }
 
+// DisplayTruckInventory shows truck inventory
 func DisplayTruckInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["pager-url"] = "/used-trucks-fredericton"
@@ -52,6 +56,8 @@ func DisplayTruckInventory(w http.ResponseWriter, r *http.Request) {
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-trucks-fredericton")
 }
+
+// DisplayMinivanInventory shows minivan inventory
 func DisplayMinivanInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["pager-url"] = "/used-minivans-fredericton"
