@@ -75,10 +75,10 @@ type VehicleOption struct {
 
 // Make is vehicle make (i.e. Volvo)
 type Make struct {
-	ID        int
-	Make      string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int       `json:"id"`
+	Make      string    `json:"make"`
+	CreatedAt time.Time `json:"-"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 // Model is vehicle model (i.e. Camry)

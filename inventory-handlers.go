@@ -126,3 +126,20 @@ func GetModelsForMake(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 
 }
+
+func GetMakesForYear(w http.ResponseWriter, r *http.Request) {
+	year, _ := strconv.Atoi(r.URL.Query().Get(":YEAR"))
+	makes, err := vehicleModel.MakesForYear(year)
+	if err != nil {
+		return
+	}
+
+	out, err := json.MarshalIndent(makes, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+
+}

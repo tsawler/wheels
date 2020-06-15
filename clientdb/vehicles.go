@@ -2201,3 +2201,37 @@ func (m *DBModel) ModelsForMakeID(id int) ([]clientmodels.Model, error) {
 	}
 	return models, nil
 }
+
+func (m *DBModel) MakesForYear(year int) ([]clientmodels.Make, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var makes []clientmodels.Make
+	query := `select id, make from vehicle_makes 
+		where id in (select vehicle_makes_id from vehicles where status = 1 and year = ? and vehicle_type < 7)
+		order by make`
+	rows, err := m.DB.QueryContext(ctx, query, year)
+	if err != nil {
+		fmt.Println(err)
+		return makes, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var y clientmodels.Make
+		err = rows.Scan(
+			&y.ID,
+			&y.Make,
+		)
+		if err != nil {
+			fmt.Println(err)
+		}
+		makes = append(makes, y)
+	}
+
+	if err = rows.Err(); err != nil {
+		return makes, err
+	}
+	return makes, nil
+}
