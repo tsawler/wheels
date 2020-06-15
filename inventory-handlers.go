@@ -28,7 +28,39 @@ func DisplaySUVInventory(w http.ResponseWriter, r *http.Request) {
 	vehicleType := 5
 	templateName := "inventory.page.tmpl"
 
-	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory")
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-suvs-fredericton")
+}
+
+func DisplayCarInventory(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["pager-url"] = "/used-cars-fredericton"
+	intMap := make(map[string]int)
+	intMap["show-makes"] = 1
+	vehicleType := 1
+	templateName := "inventory.page.tmpl"
+
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-cars-fredericton")
+}
+
+func DisplayTruckInventory(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["pager-url"] = "/used-trucks-fredericton"
+	intMap := make(map[string]int)
+	intMap["show-makes"] = 1
+	vehicleType := 2
+	templateName := "inventory.page.tmpl"
+
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-trucks-fredericton")
+}
+func DisplayMinivanInventory(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["pager-url"] = "/used-minivans-fredericton"
+	intMap := make(map[string]int)
+	intMap["show-makes"] = 1
+	vehicleType := 6
+	templateName := "inventory.page.tmpl"
+
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-minivans-fredericton")
 }
 
 // renderInventory renders inventory for a product type

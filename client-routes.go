@@ -43,6 +43,18 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/used-suvs-fredericton", dynamicMiddleware.ThenFunc(DisplaySUVInventory))
 	mux.Get("/used-suvs-fredericton/:pageIndex", dynamicMiddleware.ThenFunc(DisplaySUVInventory))
 
+	// cars
+	mux.Get("/used-cars-fredericton", dynamicMiddleware.ThenFunc(DisplayCarInventory))
+	mux.Get("/used-cars-fredericton/:pageIndex", dynamicMiddleware.ThenFunc(DisplayCarInventory))
+
+	// trucks
+	mux.Get("/used-trucks-fredericton", dynamicMiddleware.ThenFunc(DisplayTruckInventory))
+	mux.Get("/used-trucks-fredericton/:pageIndex", dynamicMiddleware.ThenFunc(DisplayTruckInventory))
+
+	// minivans
+	mux.Get("/used-minivans-fredericton", dynamicMiddleware.ThenFunc(DisplayMinivanInventory))
+	mux.Get("/used-minivans-fredericton/:pageIndex", dynamicMiddleware.ThenFunc(DisplayMinivanInventory))
+
 	mux.Get("/:CATEGORY/view/:ID/:SLUG", dynamicMiddleware.ThenFunc(DisplayOneVehicle))
 	/*
 		|--------------------------------------------------------------------------
