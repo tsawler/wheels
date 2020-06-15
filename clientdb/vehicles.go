@@ -2102,7 +2102,7 @@ func (m *DBModel) GetMaxSortOrderForVehicleID(id int) (int, error) {
 
 	max := 0
 
-	query := `select max(sort_order) from vehicle_images where vehicle_id = ?`
+	query := `select coalesce(max(sort_order), 0) from vehicle_images where vehicle_id = ?`
 
 	row := m.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
