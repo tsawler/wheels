@@ -810,18 +810,20 @@ func PrintWindowSticker(w http.ResponseWriter, r *http.Request) {
 	pdf, err := CreateWindowSticker(v)
 	if err != nil {
 		lastPage := app.Session.GetString(r.Context(), "last-page")
+		errorLog.Println(err)
 		session.Put(r.Context(), "error", "Unable to generate PDF!")
 		http.Redirect(w, r, lastPage, http.StatusSeeOther)
 		return
 	}
 
-	//w.Header().Set("Content-Type", "application/pdf")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.pdf", v.StockNo))
+	w.Header().Set("Content-Type", "application/pdf")
+	//w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.pdf", v.StockNo))
 
 	out := &bytes.Buffer{}
 	if err := pdf.Output(out); err != nil {
+		errorLog.Println(err)
 		lastPage := app.Session.GetString(r.Context(), "last-page")
-		session.Put(r.Context(), "error", "Unable to generate PDF!")
+		session.Put(r.Context(), "error", "Unable to write PDF!")
 		http.Redirect(w, r, lastPage, http.StatusSeeOther)
 		return
 	}
