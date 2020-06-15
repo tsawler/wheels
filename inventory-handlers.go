@@ -75,7 +75,7 @@ func renderInventory(r *http.Request, stringMap map[string]string, vehicleType i
 	var selectedYear, selectedMake, selectedModel, selectedPrice int
 	pagerSuffix := ""
 	stringMap["item-link-prefix"] = "view"
-	stringMap["pager-prefix"] = "powersports-inventory"
+	//stringMap["pager-prefix"] = "powersports-inventory"
 
 	pageIndex, err := strconv.Atoi(r.URL.Query().Get(":pageIndex"))
 	if err != nil {
