@@ -159,6 +159,7 @@ func renderInventory(r *http.Request, stringMap map[string]string, vehicleType i
 	})
 }
 
+// GetModelsForMake gets models for make
 func GetModelsForMake(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	models, err := vehicleModel.ModelsForMakeID(id)
@@ -173,9 +174,9 @@ func GetModelsForMake(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(out)
-
 }
 
+// GetMakesForYear gets makes for year
 func GetMakesForYear(w http.ResponseWriter, r *http.Request) {
 	year, _ := strconv.Atoi(r.URL.Query().Get(":YEAR"))
 	makes, err := vehicleModel.MakesForYear(year)
@@ -193,6 +194,7 @@ func GetMakesForYear(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DisplayOneVehicle shows one vehicle
 func DisplayOneVehicle(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	infoLog.Println(id)
