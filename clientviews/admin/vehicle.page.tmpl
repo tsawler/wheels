@@ -1,6 +1,7 @@
 {{template "admin-base" .}}
 
 {{define "css"}}
+    <link href="/static/js/ts/bootstrap4/tail.select-default.min.css" rel="stylesheet">
     <style>
 
         #image-list li {
@@ -414,14 +415,30 @@
                  id="sticker-tab-content">
                 <div class="row">
                     <div class="col">
-                        <a class="btn btn-outline-secondary mt-5" href="javascript:" onclick="confirmPrintWindowSticker({{$v.ID}})">Print Window Sticker</a>
+                        <a class="btn btn-outline-secondary mt-5" href="javascript:"
+                           onclick="confirmPrintWindowSticker({{$v.ID}})">Print Window Sticker</a>
                     </div>
                 </div>
             </div>
 
             <div class="tab-pane fade show" role="tabpanel" aria-labelledby="video-tab"
                  id="video-tab-content">
-                e
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group pt-3">
+                            <label>Choose a video:</label>
+                            <div>
+                                <select class="form-control" name="menu_page_id"
+                                        id="car-video-list" style="width: 100%;;">
+                                    <option value="0">No video</option>
+                                    {{range .Videos}}
+                                        <option value="{{.ID}}">{{.VideoName}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -456,11 +473,15 @@
 {{define "js"}}
     {{$v := index .RowSets "vehicle"}}
     <script src="/static/js/tus.min.js"></script>
+    <script src="/static/js/ts/tail.select.min.js"></script>
     <script>
 
         let imageList;
+        let carVideoList = document.getElementById("car-video-list");
 
         document.addEventListener("DOMContentLoaded", function () {
+            tail.select(carVideoList, {search: true, width: '100%'});
+            tail.select(carVideoList).options.handle("select", {{$v.Video.ID}}, "#");
             sortList();
             performSort();
         });
