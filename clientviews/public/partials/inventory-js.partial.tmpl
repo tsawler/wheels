@@ -288,7 +288,7 @@
             formData.append('interested', $("#qci-interested-in-item").html());
             formData.append('vehicle_id', $("#qci-vid").val());
             formData.append("msg", $("#talkabout").val() + "<br> " + v);
-            formData.append('csrf_token', {{.CSRFToken}});
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
             ajax.open("POST", "/wheels/quick-quote");
@@ -467,7 +467,7 @@
             formData.append('preferred_time', $("#td-time").val());
             formData.append('interested', $("#td-interested-in-item").html());
             formData.append('vehicle_id', $("#td-vid").val());
-            formData.append('csrf_token', {{.CSRFToken}});
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
             ajax.open("POST", "/wheels/test-drive");
@@ -582,7 +582,7 @@
             formData.append('name', $("#sf-name").val());
             formData.append('email', $("#sf-email").val());
             formData.append('interested', $("#sf-interested-in-item").html());
-            formData.append('csrf_token', {{.CSRFToken}});
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
             formData.append('url', '{{.CurrentUrl}}');
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
