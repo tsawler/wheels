@@ -1,0 +1,26 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Test Drive Request - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Test Drive Request{{end}}
+{{define "content-title"}}Test Drive Request{{end}}
+
+{{define "content"}}
+    {{$app := index .RowSets "app"}}
+
+    <strong>Requested By:</strong> {{$app.UsersName}}<br>
+    <strong>Email:</strong> <a href="mailto:{{$app.Email}}">{{$app.Email}}</a><br>
+    <strong>Phone:</strong> {{$app.Phone}}<br>
+    <strong>Preferred Date/Time:</strong> {{$app.PreferredDate}} / {{$app.PreferredTime}}<br>
+    <strong>Phone:</strong> {{$app.Phone}}<br>
+    <strong>Interested In:</strong> {{$app.Vehicle.Year}} {{$app.Vehicle.Make.Make}} {{$app.Vehicle.Model.Model}} {{$app.Vehicle.Trim}}<br>
+    <strong>Stock Number:</strong> {{$app.Vehicle.StockNo}}<br>
+    <strong>Received:</strong> {{humanDateTime $app.CreatedAt}}<br>
+    <hr>
+    <a class="btn btn-primary" href="/admin/test-drives/all">Back</a>
+
+{{end}}
+
+{{define "js"}}
+
+{{end}}

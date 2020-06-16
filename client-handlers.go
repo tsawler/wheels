@@ -46,6 +46,14 @@ type QuickQuoteJSON struct {
 	DataRows        []*clientmodels.QuickQuote `json:"data"`
 }
 
+// TestDriveJSON holds the json for datatables
+type TestDriveJSON struct {
+	Draw            int64                     `json:"draw"`
+	RecordsTotal    int64                     `json:"recordsTotal"`
+	RecordsFiltered int64                     `json:"recordsFiltered"`
+	DataRows        []*clientmodels.TestDrive `json:"data"`
+}
+
 // SortOrder struct for sorting images
 type SortOrder struct {
 	ImageID    string `json:"id"`
@@ -1012,6 +1020,69 @@ func AllQuickQuotesJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	theData := QuickQuoteJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
+// AllTestDrives displays all test drives
+func AllTestDrives(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-test-drives.page.tmpl", &templates.TemplateData{})
+}
+
+// OneTestDrive displays one test drive
+func OneTestDrive(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	c, _ := vehicleModel.GetTestDrive(id)
+
+	rowSet := make(map[string]interface{})
+	rowSet["app"] = c
+	helpers.Render(w, r, "one-test-drive.page.tmpl", &templates.TemplateData{
+		RowSets: rowSet,
+	})
+}
+
+// AllTestDrivesJSON returns json for test drives
+func AllTestDrivesJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("test_drives")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	v, rowCount, filterCount, err := vehicleModel.TestDrivesJSON(query, baseQuery)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := TestDriveJSON{
 		Draw:            int64(draw),
 		RecordsTotal:    int64(rowCount),
 		RecordsFiltered: int64(filterCount),

@@ -130,7 +130,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	/*
 		|--------------------------------------------------------------------------
-		| Credit Applications
+		| Credit Applications, test drives, quick quotes
 		|--------------------------------------------------------------------------
 		|
 	*/
@@ -142,6 +142,10 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/credit/all-quick-quotes", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllQuickQuotes))
 	mux.Get("/admin/credit/quick-quote/:ID", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(OneQuickQuote))
 	mux.Post("/admin/credit/all-quick-quotes-json", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllQuickQuotesJSON))
+
+	mux.Get("/admin/test-drives/all", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(AllTestDrives))
+	mux.Get("/admin/test-drives/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(OneTestDrive))
+	mux.Post("/admin/credit/all-test-drives-json", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(AllTestDrivesJSON))
 
 	return mux, nil
 }

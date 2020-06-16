@@ -164,16 +164,17 @@ type CreditApp struct {
 
 // TestDrive holds a test drive
 type TestDrive struct {
-	ID            int
-	UsersName     string
-	Email         string
-	Phone         string
-	PreferredDate string
-	PreferredTime string
-	VehicleID     int
-	Processed     int
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID            int       `json:"id"`
+	UsersName     string    `json:"users_name"`
+	Email         string    `json:"email"`
+	Phone         string    `json:"phone"`
+	PreferredDate string    `json:"preferred_date"`
+	PreferredTime string    `json:"preferred_time"`
+	VehicleID     int       `json:"-"`
+	Vehicle       Vehicle   `json:"-"`
+	Processed     int       `json:"-"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"-"`
 }
 
 // QuickQuote holds a quick quote
