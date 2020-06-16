@@ -66,7 +66,7 @@
                     back
                     to you with a quick quote.</p>
 
-                <form id="qq-form" class="needs-validation" method="post" action="/power-sports/quick-quote"
+                <form id="qq-form" class="needs-validation" method="post" action="/wheels/quick-quote"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <input type="hidden" name="qq-vid" id="qq-vid">
@@ -158,7 +158,7 @@
 
                 <p>This virtual thing is different but I understand...</p>
 
-                <form id="qci-form" class="needs-validation" method="post" action="/power-sports/quick-quote"
+                <form id="qci-form" class="needs-validation" method="post" action="/wheels/quick-quote"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <input type="hidden" name="qci-vid" id="qci-vid">
@@ -261,7 +261,7 @@
             formData.append('csrf_token', {{.CSRFToken}});
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
-            ajax.open("POST", "/power-sports/quick-quote");
+            ajax.open("POST", "/wheels/quick-quote");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {
@@ -291,7 +291,7 @@
             formData.append('csrf_token', {{.CSRFToken}});
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
-            ajax.open("POST", "/power-sports/quick-quote");
+            ajax.open("POST", "/wheels/quick-quote");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {
@@ -325,7 +325,7 @@
             </div>
             <div class="modal-body">
 
-                <form id="td-form" class="needs-validation" method="post" action="/power-sports/test-drive"
+                <form id="td-form" class="needs-validation" method="post" action="/wheels/test-drive"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <input type="hidden" name="td-vid" id="td-vid">
@@ -470,7 +470,7 @@
             formData.append('csrf_token', {{.CSRFToken}});
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
-            ajax.open("POST", "/power-sports/test-drive");
+            ajax.open("POST", "/wheels/test-drive");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {
@@ -503,7 +503,7 @@
             </div>
             <div class="modal-body">
 
-                <form id="sf-form" class="needs-validation" method="post" action="/power-sports/send-to-friend"
+                <form id="sf-form" class="needs-validation" method="post" action="/wheels/send-to-friend"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
 
@@ -586,7 +586,7 @@
             formData.append('url', '{{.CurrentUrl}}');
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
-            ajax.open("POST", "/power-sports/send-to-friend");
+            ajax.open("POST", "/wheels/send-to-friend");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {

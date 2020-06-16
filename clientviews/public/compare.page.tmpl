@@ -1,0 +1,50 @@
+<div class="row">
+    {{$items := index .RowSets "items"}}
+    {{range $items}}
+        <div class="col text-center">
+
+            <div class="card" style="width: auto;">
+                <div class="card-header"><strong>{{.Year}} {{.Make.Make}} {{.Model.Model}} {{.Trim}}</strong></div>
+                {{$image := index .Images 0}}
+                {{$vid := .ID}}
+
+                <div class="card-body">
+
+                    {{if ne $image.Image ""}}
+                        <img src="/static/site-content/inventory/{{$vid}}/thumbs/{{$image.Image}}" class="img-fluid" alt="image">
+                    {{else}}
+                        <img src="/client/static/hug-in-progress.jpg" class="img-fluid" alt="image">
+                    {{end}}
+
+                    <table class="table table-condensed table-striped">
+                        <tr>
+                            <td><strong>Price:</strong> {{formatCurrency .Cost}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MSRP:</strong> {{formatCurrency .TotalMSR}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Odometer:</strong> {{.Odometer}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Drive Train:</strong> {{.DriveTrain}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Exterior Colour:</strong> {{.ExteriorColour}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Engine:</strong> {{.Engine}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>VIN:</strong> {{.Vin}}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stock No:</strong> {{.StockNo}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    {{end}}
+</div>

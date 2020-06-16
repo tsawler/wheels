@@ -36,6 +36,11 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/credit-application", standardMiddleWare.ThenFunc(CreditApp))
 	mux.Post("/credit-application", standardMiddleWare.ThenFunc(PostCreditApp))
 
+	mux.Post("/inventory/compare-vehicles", standardMiddleWare.ThenFunc(CompareVehicles))
+	mux.Post("/wheels/quick-quote", standardMiddleWare.ThenFunc(QuickQuote))
+	mux.Post("/wheels/test-drive", standardMiddleWare.ThenFunc(TestDrive))
+	mux.Post("/wheels/send-to-friend", standardMiddleWare.ThenFunc(SendFriend))
+
 	// inventory filters
 	mux.Get("/inventory-filter/makes/:YEAR", dynamicMiddleware.ThenFunc(GetMakesForYear))
 	mux.Get("/inventory-filter/models/:ID", dynamicMiddleware.ThenFunc(GetModelsForMake))

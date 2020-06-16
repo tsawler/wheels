@@ -862,3 +862,25 @@ func PrintWindowSticker(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+// CompareVehicles Show 2 or 3 vehicles in table TODO
+func CompareVehicles(w http.ResponseWriter, r *http.Request) {
+	idString := r.Form.Get("ids")
+	infoLog.Println("Ids:", idString)
+
+	ids := strings.Split(idString, ",")
+	var items []clientmodels.Vehicle
+
+	for _, x := range ids {
+		infoLog.Println("ID:", x)
+		vid, _ := strconv.Atoi(x)
+		v, _ := vehicleModel.GetVehicleByID(vid)
+		items = append(items, v)
+	}
+
+	rowSets := make(map[string]interface{})
+	rowSets["items"] = items
+	helpers.Render(w, r, "compare.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}
