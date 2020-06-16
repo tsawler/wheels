@@ -279,7 +279,7 @@ func PostCreditApp(w http.ResponseWriter, r *http.Request) {
 	// create email
 	content := fmt.Sprintf(`
 		<p>
-			<strong>PowerSports Credit Application</strong>:<br><br>
+			<strong>Wheels and Deals Credit Application</strong>:<br><br>
 			<strong>Name:</strong> %s  %s<br>
 			<strong>Date of birth:</strong> %s <br>
 			<strong>Email:</strong> %s <br>
@@ -317,9 +317,9 @@ func PostCreditApp(w http.ResponseWriter, r *http.Request) {
 		ToAddress:   "alex.gilbert@wheelsanddeals.ca",
 		FromName:    app.PreferenceMap["smtp-from-name"],
 		FromAddress: app.PreferenceMap["smtp-from-email"],
-		Subject:     "PowerSports Credit Application",
+		Subject:     "Wheels and Deals Credit Application",
 		Content:     template.HTML(content),
-		Template:    "generic-email.mail.tmpl",
+		Template:    "bootstrap.mail.tmpl",
 		CC:          cc,
 	}
 
