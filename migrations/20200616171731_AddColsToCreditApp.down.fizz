@@ -1,0 +1,3 @@
+drop_column("credit_applications", "rent")
+drop_column("credit_applications", "employer")
+drop_column("credit_applications", "income")

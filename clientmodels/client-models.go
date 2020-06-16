@@ -153,6 +153,10 @@ type CreditApp struct {
 	Province  string    `json:"-"`
 	Zip       string    `json:"-"`
 	Vehicle   string    `json:"-"`
+	Rent      string    `json:"-"`
+	Employer  string    `json:"-"`
+	Income    string    `json:"-"`
+	DOB       string    `json:"-"`
 	Processed int       `json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"-"`

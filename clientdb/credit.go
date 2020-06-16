@@ -14,8 +14,8 @@ func (m *DBModel) InsertCreditApp(a clientmodels.CreditApp) error {
 
 	stmt := `
 	INSERT INTO credit_applications (first_name, last_name, email, phone, address, city, province, zip, 
-	                   vehicle, processed, created_at, updated_at)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	                   vehicle, rent, employer, income, dob, processed, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 
 	_, err := m.DB.ExecContext(ctx,
@@ -29,6 +29,10 @@ func (m *DBModel) InsertCreditApp(a clientmodels.CreditApp) error {
 		a.Province,
 		a.Zip,
 		a.Vehicle,
+		a.Rent,
+		a.Employer,
+		a.Income,
+		a.DOB,
 		a.Processed,
 		a.CreatedAt,
 		a.UpdatedAt,
@@ -47,7 +51,7 @@ func (m *DBModel) GetCreditApp(id int) (clientmodels.CreditApp, error) {
 
 	var c clientmodels.CreditApp
 	query := `select id, first_name, last_name, email, phone, address, city, province, zip, vehicle, 
-			created_at, updated_at from credit_applications where id = ?`
+			rent, employer, income, dob, created_at, updated_at from credit_applications where id = ?`
 	row := m.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&c.ID,
@@ -60,6 +64,10 @@ func (m *DBModel) GetCreditApp(id int) (clientmodels.CreditApp, error) {
 		&c.Province,
 		&c.Zip,
 		&c.Vehicle,
+		&c.Rent,
+		&c.Employer,
+		&c.Income,
+		&c.DOB,
 		&c.CreatedAt,
 		&c.UpdatedAt,
 	)

@@ -1,0 +1,3 @@
+add_column("credit_applications", "rent", "string", {"default": ""})
+add_column("credit_applications", "employer", "string", {"default": ""})
+add_column("credit_applications", "income", "string", {"default": ""})

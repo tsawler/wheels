@@ -10,9 +10,13 @@
 
     <strong>First Name:</strong> {{$app.FirstName}}<br>
     <strong>Last Name:</strong> {{$app.LastName}}<br>
+    <strong>Date of Birth:</strong> {{$app.DOB}}<br>
     <strong>Email:</strong> <a href="mailto:{{$app.Email}}">{{$app.Email}}</a><br>
     <strong>Phone:</strong> {{$app.Phone}}<br>
     <strong>Address:</strong> {{$app.Address}}, {{$app.City}}, {{$app.Province}} {{$app.Zip}}<br>
+    <strong>Rent/Mortgage:</strong> {{$app.Rent}}<br>
+    <strong>Employer:</strong> {{$app.Employer}}<br>
+    <strong>Income:</strong> {{$app.Income}}<br>
     <strong>Interested In:</strong> {{$app.Vehicle}}<br>
     <strong>Received:</strong> {{humanDateTime $app.CreatedAt}}<br>
     <hr>
