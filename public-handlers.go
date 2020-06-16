@@ -10,6 +10,7 @@ import (
 	"github.com/tsawler/goblender/pkg/templates"
 	"html/template"
 	"net/http"
+	url2 "net/url"
 	"strconv"
 	"time"
 )
@@ -175,22 +176,21 @@ func SendFriend(w http.ResponseWriter, r *http.Request) {
 	name := r.Form.Get("name")
 	email := r.Form.Get("email")
 	interest := r.Form.Get("interested")
-	url := r.Form.Get("url")
-	infoLog.Println("url is ", url)
+	u, _ := url2.QueryUnescape(r.Form.Get("url"))
 
 	content := fmt.Sprintf(`
 		<p>
 			Hi:
 			<br>
 			<br>
-			%s thought you might be interested in this item at Jim Gilbert's PowerSports:
+			%s thought you might be interested in this item at Jim Gilbert's Wheels and Deals:
 			<br><br>
 			%s
 			<br><br>
 			You can see the item by following this link:
-			<a href='http://%s'>Click here to see the item!</a>
+			<a href='%s'>Click here to see the item!</a>
 		</p>
-`, name, interest, url)
+`, name, interest, u)
 
 	mailMessage := channel_data.MailData{
 		ToName:      "",
