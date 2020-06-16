@@ -1,0 +1,83 @@
+{{template "admin-base" .}}
+
+{{define "title"}}All Credit Applications - GoBlender Admin{{end}}
+
+{{define "admin-title"}}All Credit Applications{{end}}
+{{define "content-title"}}All Credit Applications{{end}}
+
+{{define "content"}}
+    <div class="table-responsive">
+        <table id="itable" class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>First name</th>
+                <th>Last Name</th>
+                <th>Created</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script src="https://cdn.datatables.net/plug-ins/1.10.21/dataRender/datetime.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            $('#itable').DataTable({
+                "processing": true,
+                "order": [[3, "desc"]],
+                "serverSide": true,
+                "stateSave": true,
+                "paging": true,
+                "search": {
+                    "caseInsensitive": true
+                },
+                "ajax": {
+                    "url": "/admin/credit/all-credit-apps-json",
+                    "type": "POST",
+                    data: function (d) {
+                        return $.extend({}, d, {
+                            "csrf_token": '{{.CSRFToken}}'
+                        });
+                    }
+                },
+                columns: [
+                    {
+                        "data": "id",
+                        "name": "id",
+                        "render": function (data, type, row, meta) {
+                            var ID = row.id;
+                            return "<a href='/admin/credit/application/" + ID + "'>" + data + "</a>"
+                        }
+                    },
+                    {
+                        "data": "first_name",
+                        "name": "first_name",
+                        "render": function (data, type, row, meta) {
+                            var ID = row.id;
+                            return "<a href='/admin/credit/application/" + ID + "'>" + data + "</a>"
+                        }
+                    },
+                    {
+                        "data": "last_name",
+                        "name": "last_name",
+                        "render": function (data, type, row, meta) {
+                            var ID = row.id;
+                            return "<a href='/admin/credit/application/" + ID + "'>" + data + "</a>"
+                        }
+                    },
+                    {
+                        "data": "created_at",
+                        "name": "created_at",
+                        "render": $.fn.dataTable.render.moment( 'YYYY-MM-DDTHH:mm:ssZ', 'LLLL' )
+                    }
+                ]
+            });
+        });
+    </script>
+
+{{end}}

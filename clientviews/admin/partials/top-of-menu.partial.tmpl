@@ -28,4 +28,16 @@
             </ul>
         </li>
     {{end}}
+
+    {{if hasRole "credit" .Auth.ID}}
+        <li id="credit" {{if eq .CurrentSegment "credit"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-dollar fa-fw"></i> <span class="nav-label">Credit Applications</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/credit/all">All applications</a></li>
+            </ul>
+        </li>
+    {{end}}
+
+
 {{end}}

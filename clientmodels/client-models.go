@@ -143,19 +143,19 @@ type SalesStaff struct {
 
 // CreditApp holds a credit application
 type CreditApp struct {
-	ID        int
-	FirstName string
-	LastName  string
-	Email     string
-	Phone     string
-	Address   string
-	City      string
-	Province  string
-	Zip       string
-	Vehicle   string
-	Processed int
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int       `json:"id"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Email     string    `json:"-"`
+	Phone     string    `json:"-"`
+	Address   string    `json:"-"`
+	City      string    `json:"-"`
+	Province  string    `json:"-"`
+	Zip       string    `json:"-"`
+	Vehicle   string    `json:"-"`
+	Processed int       `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 // TestDrive holds a test drive

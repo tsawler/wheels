@@ -65,7 +65,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/used-minivans-fredericton", dynamicMiddleware.ThenFunc(DisplayMinivanInventory))
 	mux.Get("/used-minivans-fredericton/:pageIndex", dynamicMiddleware.ThenFunc(DisplayMinivanInventory))
 
+	// show vehicle
 	mux.Get("/:CATEGORY/view/:ID/:SLUG", dynamicMiddleware.ThenFunc(DisplayOneVehicle))
+
 	/*
 		|--------------------------------------------------------------------------
 		| Vehicle Administration routes
@@ -125,6 +127,17 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	// all trade ins
 	mux.Get("/admin/inventory/vehicles/all-vehicles-trade-ins", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AllVehiclesTradeIns))
 	mux.Post("/admin/inventory/all-vehicles-trade-ins-json", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AllVehiclesTradeInsJSON))
+
+	/*
+		|--------------------------------------------------------------------------
+		| Credit Applications
+		|--------------------------------------------------------------------------
+		|
+	*/
+
+	mux.Get("/admin/credit/all", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllCreditApplications))
+	mux.Get("/admin/credit/application/:ID", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(OneCreditApp))
+	mux.Post("/admin/credit/all-credit-apps-json", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllCreditAppsJSON))
 
 	return mux, nil
 }
