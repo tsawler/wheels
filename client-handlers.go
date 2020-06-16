@@ -972,11 +972,11 @@ func AllQuickQuotes(w http.ResponseWriter, r *http.Request) {
 // OneQuickQuote displays one quick quote
 func OneQuickQuote(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
-	c, _ := vehicleModel.GetCreditApp(id)
+	c, _ := vehicleModel.GetQuickQuote(id)
 
 	rowSet := make(map[string]interface{})
 	rowSet["app"] = c
-	helpers.Render(w, r, "one-credit-app.page.tmpl", &templates.TemplateData{
+	helpers.Render(w, r, "one-quick-quote.page.tmpl", &templates.TemplateData{
 		RowSets: rowSet,
 	})
 }

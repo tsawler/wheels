@@ -141,6 +141,40 @@ func (m *DBModel) CreditJSON(query, baseQuery string) ([]*clientmodels.CreditApp
 	return v, rowCount, filterCount, nil
 }
 
+// GetQuickQuote gets an quick quote
+func (m *DBModel) GetQuickQuote(id int) (clientmodels.QuickQuote, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var c clientmodels.QuickQuote
+	query := `select q.id, q.users_name, q.phone, q.email, coalesce(q.vehicle_id, 0) as vehicle_id,
+		q.created_at, q.updated_at from quick_quotes q where q.id = ?`
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&c.ID,
+		&c.UsersName,
+		&c.Phone,
+		&c.Email,
+		&c.VehicleID,
+		&c.CreatedAt,
+		&c.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return c, err
+	}
+
+	if c.VehicleID > 0 {
+		v, err := m.GetVehicleByID(c.ID)
+		if err == nil {
+			c.Vehicle = v
+		}
+	}
+
+	return c, nil
+}
+
 // QuickQuotesJSON generates JSON for searching quick quotes apps in admin tool
 func (m *DBModel) QuickQuotesJSON(query, baseQuery string) ([]*clientmodels.QuickQuote, int, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
