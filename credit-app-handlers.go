@@ -34,7 +34,7 @@ func QuickQuote(w http.ResponseWriter, r *http.Request) {
 
 	content := fmt.Sprintf(`
 		<p>
-			<strong>PowerSports Quick Quote Request</strong>:<br><br>
+			<strong>Wheels and Deals Quick Quote Request</strong>:<br><br>
 			<strong>Name:</strong> %s <br>
 			<strong>Email:</strong> %s <br>
 			<strong>Phone:</strong> %s <br>
@@ -51,9 +51,9 @@ func QuickQuote(w http.ResponseWriter, r *http.Request) {
 		ToAddress:   "alex.gilbert@wheelsanddeals.ca",
 		FromName:    app.PreferenceMap["smtp-from-name"],
 		FromAddress: app.PreferenceMap["smtp-from-email"],
-		Subject:     "PowerSports Quick Quote Request",
+		Subject:     "Wheels and Deals Quick Quote Request",
 		Content:     template.HTML(content),
-		Template:    "generic-email.mail.tmpl",
+		Template:    "bootstrap.mail.tmpl",
 		CC:          cc,
 	}
 

@@ -258,7 +258,7 @@
             formData.append('interested', $("#interested-in-item").html());
             formData.append('vehicle_id', $("#qq-vid").val());
             // formData.append("msg", $("#talkabout").val());
-            formData.append('csrf_token', {{.CSRFToken}});
+            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
             ajax.open("POST", "/wheels/quick-quote");
