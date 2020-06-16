@@ -140,3 +140,64 @@ func (m *DBModel) CreditJSON(query, baseQuery string) ([]*clientmodels.CreditApp
 
 	return v, rowCount, filterCount, nil
 }
+
+// QuickQuotesJSON generates JSON for searching quick quotes apps in admin tool
+func (m *DBModel) QuickQuotesJSON(query, baseQuery string) ([]*clientmodels.QuickQuote, int, int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rowCount := 0
+	filterCount := 0
+
+	// count all rows
+	allRows, err := m.DB.QueryContext(ctx, "select count(id) as all_rows from quick_quotes")
+	if err != nil {
+		fmt.Println("Error getting all rows", err)
+		return nil, 0, 0, err
+	}
+	defer allRows.Close()
+
+	for allRows.Next() {
+		err = allRows.Scan(&rowCount)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	// count filtered rows
+	filteredRows, err := m.DB.QueryContext(ctx, baseQuery)
+	if err != nil {
+		fmt.Println("Error getting filtered rows", err)
+		return nil, 0, 0, err
+	}
+	defer filteredRows.Close()
+
+	for filteredRows.Next() {
+		_ = filteredRows.Scan(&filterCount)
+	}
+
+	//fmt.Println("Query:", query)
+	rows, err := m.DB.Query(query)
+	if err != nil {
+		fmt.Println("Error running query", err)
+		return nil, 0, 0, err
+	}
+	defer rows.Close()
+
+	v := []*clientmodels.QuickQuote{}
+
+	for rows.Next() {
+		s := &clientmodels.QuickQuote{}
+		err = rows.Scan(&s.ID, &s.UsersName, &s.Email, &s.Phone, &s.CreatedAt)
+		if err != nil {
+			return nil, 0, 0, err
+		}
+		v = append(v, s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, 0, 0, err
+	}
+
+	return v, rowCount, filterCount, nil
+}

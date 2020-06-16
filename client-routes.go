@@ -139,5 +139,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/credit/application/:ID", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(OneCreditApp))
 	mux.Post("/admin/credit/all-credit-apps-json", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllCreditAppsJSON))
 
+	mux.Get("/admin/credit/all-quick-quotes", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllQuickQuotes))
+	mux.Get("/admin/credit/quick-quote/:ID", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(OneQuickQuote))
+	mux.Post("/admin/credit/all-quick-quotes-json", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllQuickQuotesJSON))
+
 	return mux, nil
 }

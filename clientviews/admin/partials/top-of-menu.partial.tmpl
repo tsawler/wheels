@@ -35,9 +35,19 @@
                         class="fa arrow"></span></a>
             <ul class="nav nav-second-level collapse">
                 <li><a href="/admin/credit/all">All applications</a></li>
+                <li><a href="/admin/credit/all-quick-quotes">All quick quotes</a></li>
             </ul>
         </li>
     {{end}}
 
+    {{if hasRole "test_drive" .Auth.ID}}
+        <li id="test-drives" {{if eq .CurrentSegment "test-drives"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-calendar fa-fw"></i> <span class="nav-label">Test Drives</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/test-drives/all">All requests</a></li>
+            </ul>
+        </li>
+    {{end}}
 
 {{end}}

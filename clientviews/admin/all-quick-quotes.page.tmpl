@@ -1,9 +1,9 @@
 {{template "admin-base" .}}
 
-{{define "title"}}All Credit Applications - GoBlender Admin{{end}}
+{{define "title"}}All Quick Quotes - GoBlender Admin{{end}}
 
-{{define "admin-title"}}All Credit Applications{{end}}
-{{define "content-title"}}All Credit Applications{{end}}
+{{define "admin-title"}}All Quick Quotes Applications{{end}}
+{{define "content-title"}}All Quick Quotes{{end}}
 
 {{define "content"}}
     <div class="table-responsive">
@@ -11,8 +11,9 @@
             <thead>
             <tr>
                 <th>ID</th>
-                <th>First name</th>
-                <th>Last Name</th>
+                <th>Requested By</th>
+                <th>Email</th>
+                <th>Phone</th>
                 <th>Received</th>
             </tr>
             </thead>
@@ -29,7 +30,7 @@
         document.addEventListener("DOMContentLoaded", function (event) {
             $('#itable').DataTable({
                 "processing": true,
-                "order": [[3, "desc"]],
+                "order": [[4, "desc"]],
                 "serverSide": true,
                 "stateSave": true,
                 "paging": true,
@@ -37,7 +38,7 @@
                     "caseInsensitive": true
                 },
                 "ajax": {
-                    "url": "/admin/credit/all-credit-apps-json",
+                    "url": "/admin/credit/all-quick-quotes-json",
                     "type": "POST",
                     data: function (d) {
                         return $.extend({}, d, {
@@ -51,25 +52,19 @@
                         "name": "id",
                         "render": function (data, type, row, meta) {
                             var ID = row.id;
-                            return "<a href='/admin/credit/application/" + ID + "'>" + data + "</a>"
+                            return "<a href='/admin/credit/quick-quote/" + ID + "'>" + data + "</a>"
                         }
                     },
                     {
-                        "data": "first_name",
-                        "name": "first_name",
+                        "data": "users_name",
+                        "name": "users_name",
                         "render": function (data, type, row, meta) {
                             var ID = row.id;
-                            return "<a href='/admin/credit/application/" + ID + "'>" + data + "</a>"
+                            return "<a href='/admin/credit/quick-quote/" + ID + "'>" + data + "</a>"
                         }
                     },
-                    {
-                        "data": "last_name",
-                        "name": "last_name",
-                        "render": function (data, type, row, meta) {
-                            var ID = row.id;
-                            return "<a href='/admin/credit/application/" + ID + "'>" + data + "</a>"
-                        }
-                    },
+                    {"data": "email", "name": "email"},
+                    {"data": "phone", "name": "phone"},
                     {
                         "data": "created_at",
                         "name": "created_at",

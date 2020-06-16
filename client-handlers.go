@@ -38,6 +38,14 @@ type CreditAppJSON struct {
 	DataRows        []*clientmodels.CreditApp `json:"data"`
 }
 
+// QuickQuoteJSON holds the json for datatables
+type QuickQuoteJSON struct {
+	Draw            int64                      `json:"draw"`
+	RecordsTotal    int64                      `json:"recordsTotal"`
+	RecordsFiltered int64                      `json:"recordsFiltered"`
+	DataRows        []*clientmodels.QuickQuote `json:"data"`
+}
+
 // SortOrder struct for sorting images
 type SortOrder struct {
 	ImageID    string `json:"id"`
@@ -941,6 +949,69 @@ func AllCreditAppsJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	theData := CreditAppJSON{
+		Draw:            int64(draw),
+		RecordsTotal:    int64(rowCount),
+		RecordsFiltered: int64(filterCount),
+		DataRows:        v,
+	}
+
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
+// AllQuickQuotes displays all credit applications
+func AllQuickQuotes(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "all-quick-quotes.page.tmpl", &templates.TemplateData{})
+}
+
+// OneQuickQuote displays one quick quote
+func OneQuickQuote(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	c, _ := vehicleModel.GetCreditApp(id)
+
+	rowSet := make(map[string]interface{})
+	rowSet["app"] = c
+	helpers.Render(w, r, "one-credit-app.page.tmpl", &templates.TemplateData{
+		RowSets: rowSet,
+	})
+}
+
+// AllQuickQuotesJSON returns json for credit apps
+func AllQuickQuotesJSON(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dtinfo, err := datatables.ParseDatatablesRequest(r)
+	if err != nil {
+		app.ErrorLog.Print(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	draw := dtinfo.Draw
+
+	query, baseQuery, err := dtinfo.BuildQuery("quick_quotes")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// Do the queries and get back our data, the row count, and the filtered row count
+	v, rowCount, filterCount, err := vehicleModel.QuickQuotesJSON(query, baseQuery)
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	theData := QuickQuoteJSON{
 		Draw:            int64(draw),
 		RecordsTotal:    int64(rowCount),
 		RecordsFiltered: int64(filterCount),

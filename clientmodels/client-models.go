@@ -178,12 +178,12 @@ type TestDrive struct {
 
 // QuickQuote holds a quick quote
 type QuickQuote struct {
-	ID        int
-	UsersName string
-	Email     string
-	Phone     string
-	VehicleID int
-	Processed int
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int       `json:"id"`
+	UsersName string    `json:"id"`
+	Email     string    `json:"email"`
+	Phone     string    `json:"phone"`
+	VehicleID int       `json:"-"`
+	Processed int       `json:"-"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"-"`
 }
