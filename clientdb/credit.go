@@ -166,7 +166,7 @@ func (m *DBModel) GetQuickQuote(id int) (clientmodels.QuickQuote, error) {
 	}
 
 	if c.VehicleID > 0 {
-		v, err := m.GetVehicleByID(c.ID)
+		v, err := m.GetVehicleByID(c.VehicleID)
 		if err == nil {
 			c.Vehicle = v
 		}
@@ -263,7 +263,7 @@ func (m *DBModel) GetTestDrive(id int) (clientmodels.TestDrive, error) {
 	}
 
 	if c.VehicleID > 0 {
-		v, err := m.GetVehicleByID(c.ID)
+		v, err := m.GetVehicleByID(c.VehicleID)
 		if err == nil {
 			c.Vehicle = v
 		}
