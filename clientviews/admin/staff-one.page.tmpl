@@ -1,0 +1,99 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Staff - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Staff{{end}}
+{{define "content-title"}}Staff{{end}}
+
+{{define "content"}}
+    {{$o := index .RowSets "staff"}}
+    <form method="post" action="/admin/staff/{{$o.ID}}" novalidate class="needs-validation"
+          id="option-form">
+
+        <div class="row">
+            <div class="col-md-6">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                <div class="form-group">
+                    <label>First Name:</label>
+                    {{with .Form.Errors.Get "first_name"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="first_name" autocomplete="off" type='text'
+                           name='first_name' required
+                           value='{{$o.FirstName}}'>
+                    <div class="invalid-feedback">
+                        Please enter a value
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name:</label>
+                    {{with .Form.Errors.Get "last_name"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="last_name" autocomplete="off" type='text'
+                           name='last_name' required
+                           value='{{$o.LastName}}'>
+                    <div class="invalid-feedback">
+                        Please enter a value
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    {{with .Form.Errors.Get "email"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="email" autocomplete="off" type='email'
+                           name='email' required
+                           value='{{$o.Email}}'>
+                    <div class="invalid-feedback">
+                        Please enter a valid email address
+                    </div>
+                </div>
+
+                <div class="custom-control custom-switch">
+                    <input type="checkbox"
+                            {{if eq $o.Active 1}}
+                                checked
+                            {{end}}
+                           class="custom-control-input" value="1" id="active"
+                           name="active">
+                    <label class="custom-control-label"
+                           for="active">Active</label>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr>
+                <input type="submit" class="btn btn-primary" value="Save">
+                <a class="btn btn-warning" href="/admin/inventory/options/all">Cancel</a>
+            </div>
+        </div>
+
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+{{end}}

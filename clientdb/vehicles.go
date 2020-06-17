@@ -2427,7 +2427,6 @@ func (m *DBModel) GetOptions() ([]clientmodels.Option, error) {
 	}
 
 	return v, nil
-
 }
 
 func (m *DBModel) GetOneOption(id int) (clientmodels.Option, error) {
@@ -2482,6 +2481,136 @@ func (m *DBModel) InsertOption(o clientmodels.Option) error {
 
 	_, err := m.DB.ExecContext(ctx, stmt,
 		o.OptionName,
+		o.Active,
+		o.CreatedAt,
+		o.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetStaff returns slice of staff
+func (m *DBModel) GetStaff() ([]clientmodels.Employee, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Employee
+
+	query := `
+		select 
+		       id, 
+		       first_name, 
+		       last_name, 
+		       coalesce(email, ''),
+		       coalesce(image, ''), 
+		       coalesce(description, ''),
+		       active,
+		       created_at,
+		       updated_at
+		from 
+		     employees 
+		order by last_name`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Employee{}
+		err = rows.Scan(
+			&c.ID,
+			&c.FirstName,
+			&c.LastName,
+			&c.Email,
+			&c.Image,
+			&c.Description,
+			&c.Active,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+		v = append(v, *c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
+func (m *DBModel) UpdateStaff(o clientmodels.Employee) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update employees set 
+		first_name = ?,
+		last_name = ?,
+		email = ?,
+		image = ?,
+		description = ?,
+		active = ?,
+		updated_at = ?
+		where id = ?`
+
+	_, err := m.DB.ExecContext(ctx, query, o.FirstName, o.LastName, o.Email, o.Image, o.Description, o.Active, o.UpdatedAt, o.ID)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *DBModel) GetOneStaff(id int) (clientmodels.Employee, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o clientmodels.Employee
+
+	query := "select id, first_name, last_name, coalesce(image, ''), coalesce(email, ''), coalesce(description, ''), active, created_at, updated_at from employees where id = ?"
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&o.ID,
+		&o.FirstName,
+		&o.LastName,
+		&o.Image,
+		&o.Email,
+		&o.Description,
+		&o.Active,
+		&o.CreatedAt,
+		&o.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return o, err
+	}
+
+	return o, nil
+}
+
+func (m *DBModel) InsertStaff(o clientmodels.Employee) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+	INSERT INTO employees (first_name, last_name, image, email, description, active, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		o.FirstName,
+		o.LastName,
+		o.Image,
+		o.Email,
+		o.Description,
 		o.Active,
 		o.CreatedAt,
 		o.UpdatedAt,

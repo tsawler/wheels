@@ -133,6 +133,11 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOption))
 	mux.Post("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOptionPost))
 
+	// staff
+	mux.Get("/admin/staff/all", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(StaffAll))
+	mux.Get("/admin/staff/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneStaff))
+	mux.Post("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOptionPost))
+
 	/*
 		|--------------------------------------------------------------------------
 		| Credit Applications, test drives, quick quotes
