@@ -31,7 +31,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	|--------------------------------------------------------------------------*/
 
 	// credit app
-	mux.Get("/credit-application", standardMiddleWare.ThenFunc(CreditApp))
+	mux.Get("/get-pre-approved", standardMiddleWare.ThenFunc(CreditApp))
 	mux.Post("/credit-application", standardMiddleWare.ThenFunc(PostCreditApp))
 
 	mux.Post("/inventory/compare-vehicles", standardMiddleWare.ThenFunc(CompareVehicles))
