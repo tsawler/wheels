@@ -130,9 +130,6 @@ func PullFromPBS() (int, bool) {
 	}
 	defer resp.Body.Close()
 
-	infoLog.Println("Response status:", resp.Status)
-	infoLog.Println("Response status code:", resp.StatusCode)
-
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		errorLog.Println(err)
@@ -149,9 +146,7 @@ func PullFromPBS() (int, bool) {
 	count := 0
 	for _, x := range usedItems.Vehicles {
 		exists := vehicleModel.CheckIfVehicleExists(x.StockNumber)
-		infoLog.Println("Checking", x.StockNumber)
 		if !exists {
-			infoLog.Println("ADDING", x.StockNumber)
 			count++
 
 			// see if we have this make
@@ -238,9 +233,7 @@ func PullFromPBS() (int, bool) {
 					}
 				}
 			}
-			infoLog.Println("Inserted vehicle id", vid, " - stock no ", x.StockNumber)
 		}
-		infoLog.Println("-----------------------------------")
 	}
 
 	// now do NEW (for powersports)
@@ -282,13 +275,9 @@ func PullFromPBS() (int, bool) {
 		return 0, false
 	}
 
-	infoLog.Println("--------- Doing PowerSports -----------")
-
 	for _, x := range newItems.Vehicles {
 		exists := vehicleModel.CheckIfVehicleExists(x.StockNumber)
-		infoLog.Println("Checking", x.StockNumber)
 		if !exists {
-			infoLog.Println("ADDING", x.StockNumber)
 			count++
 
 			// see if we have this make
@@ -375,9 +364,7 @@ func PullFromPBS() (int, bool) {
 					}
 				}
 			}
-			infoLog.Println("Inserted vehicle id", vid, " - stock no ", x.StockNumber)
 		}
-		infoLog.Println("-----------------------------------")
 	}
 	return count, true
 }
