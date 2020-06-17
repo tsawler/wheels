@@ -64,6 +64,17 @@
                            for="active">Active</label>
                 </div>
 
+                <div class="form-group pt-3">
+                    <label>Description:</label>
+                    {{with .Form.Errors.Get "description"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input id="description" type="hidden" name="description"
+                           value="{{- if ne $o.Description "" -}}{{-  $o.Description -}}{{- end -}}"
+                    >
+                    <trix-editor class="trix-content" input="description"></trix-editor>
+                </div>
+
 
             </div>
         </div>
@@ -71,7 +82,7 @@
             <div class="col">
                 <hr>
                 <input type="submit" class="btn btn-primary" value="Save">
-                <a class="btn btn-warning" href="/admin/inventory/options/all">Cancel</a>
+                <a class="btn btn-warning" href="/admin/staff/all">Cancel</a>
             </div>
         </div>
 
