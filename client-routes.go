@@ -42,6 +42,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	// inventory filters
 	mux.Get("/inventory-filter/makes/:YEAR", dynamicMiddleware.ThenFunc(GetMakesForYear))
 	mux.Get("/inventory-filter/models/:ID", dynamicMiddleware.ThenFunc(GetModelsForMake))
+	mux.Get("/inventory-filter/models-for-admin/:ID", dynamicMiddleware.ThenFunc(GetModelsForMakeAdmin))
 
 	// all used vehicles
 	mux.Get("/used-vehicle-inventory", dynamicMiddleware.ThenFunc(DisplayAllVehicleInventory))

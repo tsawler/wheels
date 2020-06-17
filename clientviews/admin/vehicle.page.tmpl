@@ -429,7 +429,8 @@
                             <div class="form-group pt-3">
                                 <video playsinline="playsinline" controls
                                        width="500" style="max-width: 500px;">
-                                    <source src="/static/site-content/videos/{{$v.Video.FileName}}.mp4" type="video/mp4">
+                                    <source src="/static/site-content/videos/{{$v.Video.FileName}}.mp4"
+                                            type="video/mp4">
                                 </video>
                             </div>
                         {{end}}
@@ -485,12 +486,29 @@
     <script>
 
         let imageList;
+        let makesMenu = document.getElementById("vehicle_makes_id")
+        let modelsMenu = document.getElementById("vehicle_models_id")
 
         document.addEventListener("DOMContentLoaded", function () {
             let carVideoList = document.getElementById("car-video-list");
             tail.select(carVideoList, {search: true, width: '100%'});
             sortList();
             performSort();
+
+            makesMenu.addEventListener("change", function (el) {
+                console.log("make changed to", this.value);
+                fetch('/inventory-filter/models-for-admin/' + this.value)
+                    .then(response => response.json())
+                    .then(result => {
+                        let html = "";
+                        document.getElementById("vehicle_models_id").innerHTML = "";
+                        result.forEach(function (item) {
+                            console.log(item.id, "->", item.model)
+                            html += "<option value='" + item.id + "'>" + item.model + "</option>";
+                        })
+                        document.getElementById("vehicle_models_id").innerHTML = html;
+                    })
+            })
         });
 
         function val() {

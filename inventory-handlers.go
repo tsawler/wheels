@@ -175,6 +175,23 @@ func GetModelsForMake(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 }
 
+// GetModelsForMakeAdmin gets models for make
+func GetModelsForMakeAdmin(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	models, err := vehicleModel.ModelsForMakeIDAdmin(id)
+	if err != nil {
+		return
+	}
+
+	out, err := json.MarshalIndent(models, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_, _ = w.Write(out)
+}
+
 // GetMakesForYear gets makes for year
 func GetMakesForYear(w http.ResponseWriter, r *http.Request) {
 	year, _ := strconv.Atoi(r.URL.Query().Get(":YEAR"))

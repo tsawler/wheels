@@ -2221,6 +2221,40 @@ func (m *DBModel) ModelsForMakeID(id int) ([]clientmodels.Model, error) {
 	return models, nil
 }
 
+// ModelsForMakeID returns json for available models for specified make
+func (m *DBModel) ModelsForMakeIDAdmin(id int) ([]clientmodels.Model, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var models []clientmodels.Model
+	query := `select id, model from vehicle_models where vehicle_makes_id = ? 
+		order by model`
+	rows, err := m.DB.QueryContext(ctx, query, id)
+	if err != nil {
+		fmt.Println(err)
+		return models, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var y clientmodels.Model
+		err = rows.Scan(
+			&y.ID,
+			&y.Model,
+		)
+		if err != nil {
+			fmt.Println(err)
+		}
+		models = append(models, y)
+	}
+
+	if err = rows.Err(); err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
 // MakesForYear returns json for available makes for a specified year
 func (m *DBModel) MakesForYear(year int) ([]clientmodels.Make, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
