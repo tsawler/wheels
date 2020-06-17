@@ -1099,6 +1099,7 @@ func AllTestDrivesJSON(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 }
 
+// OptionsAll lists all options
 func OptionsAll(w http.ResponseWriter, r *http.Request) {
 	rowSets := make(map[string]interface{})
 	options, err := vehicleModel.GetOptions()
@@ -1114,6 +1115,7 @@ func OptionsAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DisplayOneOption displays option for add/edit
 func DisplayOneOption(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	rowSets := make(map[string]interface{})
@@ -1137,6 +1139,7 @@ func DisplayOneOption(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DisplayOneOptionPost updates an option
 func DisplayOneOptionPost(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	active := 0
@@ -1164,6 +1167,7 @@ func DisplayOneOptionPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/inventory/options/all", http.StatusSeeOther)
 }
 
+// StaffAll lists all staff
 func StaffAll(w http.ResponseWriter, r *http.Request) {
 	rowSets := make(map[string]interface{})
 	s, err := vehicleModel.GetStaff()
@@ -1202,6 +1206,7 @@ func DisplayOneStaff(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DisplayOneStaffPost updates staff
 func DisplayOneStaffPost(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	active := 0
