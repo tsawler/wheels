@@ -2927,6 +2927,7 @@ func (m *DBModel) UpdateSortOrderForStaff(id, order int) error {
 	return nil
 }
 
+// GetModelByName gets a model by name
 func (m *DBModel) GetModelByName(s string) int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2944,6 +2945,7 @@ func (m *DBModel) GetModelByName(s string) int {
 	return modelID
 }
 
+// GetMakeByName gets a make by name
 func (m *DBModel) GetMakeByName(s string) int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2961,6 +2963,7 @@ func (m *DBModel) GetMakeByName(s string) int {
 	return modelID
 }
 
+// InsertModel inserts a new model
 func (m *DBModel) InsertModel(mid int, s string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2983,6 +2986,7 @@ func (m *DBModel) InsertModel(mid int, s string) (int, error) {
 	return int(newID), nil
 }
 
+// InsertMake inserts a new make
 func (m *DBModel) InsertMake(s string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
