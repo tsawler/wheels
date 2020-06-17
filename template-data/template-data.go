@@ -23,7 +23,7 @@ func AddDefaultData(td *templates.TemplateData) *templates.TemplateData {
 	data["pending"] = pending
 
 	tradeIns := vehicleModel.CountTradeIns()
-	data["pending"] = tradeIns
+	data["trade_ins"] = tradeIns
 
 	forSale := vehicleModel.CountForSale()
 	data["for_sale"] = forSale

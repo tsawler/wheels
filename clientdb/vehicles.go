@@ -2892,3 +2892,81 @@ func (m *DBModel) UpdateSortOrderForStaff(id, order int) error {
 
 	return nil
 }
+
+func (m *DBModel) GetModelByName(s string) int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	fmt.Print("Checking model of", s)
+	query := `select id from vehicle_models where upper(model) = ?`
+	row := m.DB.QueryRowContext(ctx, query, strings.ToUpper(s))
+
+	var modelID int
+
+	err := row.Scan(&modelID)
+	if err != nil {
+		fmt.Println("*** Error getting make:", err)
+		return 0
+	}
+	return modelID
+}
+
+func (m *DBModel) GetMakeByName(s string) int {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	fmt.Print("Checking make of", s)
+	query := `select id from vehicle_makes where upper(make) = ?`
+	row := m.DB.QueryRowContext(ctx, query, strings.ToUpper(s))
+
+	var modelID int
+
+	err := row.Scan(&modelID)
+	if err != nil {
+		fmt.Println("*** Error getting model:", err)
+		return 0
+	}
+	return modelID
+}
+
+func (m *DBModel) InsertModel(mid int, s string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `insert into vehicle_models (vehicle_makes_id, model, created_at, updated_at
+			values (?, ?, ?, ?)`
+
+	result, err := m.DB.ExecContext(ctx, query, mid, s, time.Now(), time.Now())
+	if err != nil {
+		fmt.Print("Error inserting model", err)
+		return 0, err
+	}
+
+	newID, err := result.LastInsertId()
+	if err != nil {
+		fmt.Print("Error inserting model", err)
+		return 0, err
+	}
+
+	return int(newID), nil
+}
+
+func (m *DBModel) InsertMake(s string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `insert into vehicle_makes (make, created_at, updated_at
+			values (?, ?, ?)`
+
+	result, err := m.DB.ExecContext(ctx, query, s, time.Now(), time.Now())
+	if err != nil {
+		fmt.Print("Error inserting make", err)
+		return 0, err
+	}
+
+	newID, err := result.LastInsertId()
+	if err != nil {
+		fmt.Print("Error inserting make", err)
+		return 0, err
+	}
+
+	return int(newID), nil
+}

@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,7 +24,6 @@ var defaultOptions []int = []int{
 	62,
 	63,
 	65,
-	75,
 	76,
 	80,
 	81,
@@ -55,6 +57,8 @@ type PBSVehicle struct {
 	Cylinders     string        `json:"Cylinders"`
 	Transmission  string        `json:"Transmission"`
 	MSR           float64       `json:"MSR"`
+	Retail        float64       `json:"Retail"`
+	DriveWheel    string        `json:"DriveWheel"`
 }
 
 type PBSFeed struct {
@@ -70,6 +74,8 @@ type Query struct {
 	ModifiedSince        time.Time
 	ModifiedUntil        time.Time
 }
+
+const defaultDescription string = `Factory Warranty Plus Our 12 Month Huggable Guarantee!! COMPARE AT NEW MSRP "Pay Less-Owe Less"`
 
 func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 	lastPage := session.GetString(r.Context(), "last-page")
@@ -125,6 +131,8 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 		errorLog.Println(err)
 	}
 
+	//fmt.Print(string(body))
+
 	var usedItems PBSFeed
 	err = json.Unmarshal(body, &usedItems)
 	if err != nil {
@@ -136,11 +144,96 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 
 	count := 0
 	for _, x := range usedItems.Vehicles {
-		infoLog.Println(x.StockNumber)
 		exists := vehicleModel.CheckIfVehicleExists(x.StockNumber)
+		infoLog.Println("Checking", x.StockNumber)
 		if !exists {
-			infoLog.Println("we don't have", x.StockNumber)
+			infoLog.Println("ADDING", x.StockNumber)
 			count++
+
+			// see if we have this make
+			makeID := vehicleModel.GetMakeByName(x.Make)
+			if makeID == 0 {
+				// add new make
+				id, err := vehicleModel.InsertMake(x.Make)
+				if err != nil {
+					errorLog.Print(err)
+				}
+				makeID = id
+			}
+
+			// see if we have this model
+			modelID := vehicleModel.GetModelByName(x.Model)
+			if makeID == 0 {
+				// add new make
+				id, err := vehicleModel.InsertMake(x.Make)
+				if err != nil {
+					errorLog.Print(err)
+				}
+				modelID = id
+			}
+
+			if makeID == 0 || modelID == 0 {
+				errorLog.Print("Cannot process!")
+				continue
+			}
+
+			year, _ := strconv.Atoi(x.Year)
+
+			vehicleType := 0
+
+			if strings.ToUpper(x.VehicleType) == "CAR" {
+				vehicleType = 1
+			} else if strings.ToUpper(x.VehicleType) == "P" {
+				vehicleType = 1
+			} else if strings.ToUpper(x.VehicleType) == "PASSENGER" {
+				vehicleType = 1
+			} else if strings.ToUpper(x.VehicleType) == "T" {
+				vehicleType = 2
+			} else if strings.ToUpper(x.VehicleType) == "TRUCK" {
+				vehicleType = 2
+			} else {
+				vehicleType = 3
+			}
+
+			v := clientmodels.Vehicle{
+				StockNo:         x.StockNumber,
+				Vin:             x.VIN,
+				Odometer:        x.Odometer,
+				Year:            year,
+				VehicleMakesID:  makeID,
+				VehicleModelsID: modelID,
+				Trim:            x.Trim,
+				Engine:          x.Engine,
+				Transmission:    x.Transmission,
+				TotalMSR:        float32(x.MSR),
+				ExteriorColour:  x.ExteriorColor.Description,
+				InteriorColour:  x.InteriorColor.Description,
+				VehicleType:     vehicleType,
+				DriveTrain:      x.DriveWheel,
+				Status:          2,
+				Description:     defaultDescription,
+				CreatedAt:       time.Now(),
+				UpdatedAt:       time.Now(),
+			}
+
+			vid, err := vehicleModel.InsertVehicle(v)
+			if err != nil {
+				errorLog.Print(err)
+			} else {
+				for _, y := range defaultOptions {
+					o := clientmodels.VehicleOption{
+						VehicleID: vid,
+						OptionID:  y,
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
+					}
+					err := vehicleModel.InsertVehicleOption(o)
+					if err != nil {
+						errorLog.Print(err)
+					}
+				}
+			}
+			infoLog.Println("Inserted vehicle id", vid, " - stock no ", x.StockNumber)
 		}
 		infoLog.Println("-----------------------------------")
 	}
