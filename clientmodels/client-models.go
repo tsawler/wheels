@@ -189,3 +189,18 @@ type QuickQuote struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"-"`
 }
+
+// Employee holds an employee
+type Employee struct {
+	ID          int
+	FirstName   string
+	LastName    string
+	Image       string
+	Email       string
+	Position    string
+	Description string
+	Active      int
+	SortOrder   int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
