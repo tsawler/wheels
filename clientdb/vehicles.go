@@ -2621,7 +2621,7 @@ func (m *DBModel) InsertStaff(o clientmodels.Employee) (int, error) {
 	defer cancel()
 
 	stmt := `
-	INSERT INTO employees e (first_name, last_name, e.position, image, email, description, active, created_at, updated_at)
+	INSERT INTO employees (first_name, last_name, position, image, email, description, active, created_at, updated_at)
     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	result, err := m.DB.ExecContext(ctx, stmt,
