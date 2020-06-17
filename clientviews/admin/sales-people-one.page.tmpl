@@ -1,0 +1,98 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Sales Staff - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Sales Staff{{end}}
+{{define "content-title"}}Sales Staff{{end}}
+
+{{define "content"}}
+    {{$o := index .RowSets "staff"}}
+    <form method="post" action="/admin/sales-people/{{$o.ID}}" novalidate class="needs-validation"
+          enctype="multipart/form-data" id="option-form">
+
+        <div class="row">
+            <div class="col-md-6">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                <div class="form-group">
+                    <label>Name:</label>
+                    {{with .Form.Errors.Get "name"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="name" autocomplete="off" type='text'
+                           name='name' required
+                           value='{{$o.Name}}'>
+                    <div class="invalid-feedback">
+                        Please enter a value
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone (11 digits, i.e. 15065551212):</label>
+                    {{with .Form.Errors.Get "phone"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="phone" autocomplete="off" type='text'
+                           name='phone' required
+                           value='{{$o.Phone}}'>
+                    <div class="invalid-feedback">
+                        Please enter a 10 digit phone number, i.e. 15065551212
+                    </div>
+                </div>
+
+                {{if ne $o.Image ""}}
+                    <img src="/static/site-content/salesstaff/{{$o.Image}}" alt="staff" class="img-thumbnail mb-3"
+                         style="max-width: 250px;">
+                {{end}}
+
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="image" name="image"
+                               accept=".png, .jpg, .jpeg, .gif">
+                        <label class="custom-file-label" for="image">Choose image..</label>
+                    </div>
+                </div>
+
+                <div class="custom-control custom-switch">
+                    <input type="checkbox"
+                            {{if eq $o.Active 1}}
+                                checked
+                            {{end}}
+                           class="custom-control-input" value="1" id="active"
+                           name="active">
+                    <label class="custom-control-label"
+                           for="active">Active</label>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr>
+                <input type="submit" class="btn btn-primary" value="Save">
+                <a class="btn btn-warning" href="/admin/sales-people/all">Cancel</a>
+            </div>
+        </div>
+
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+{{end}}

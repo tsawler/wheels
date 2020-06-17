@@ -2551,6 +2551,7 @@ func (m *DBModel) GetStaff() ([]clientmodels.Employee, error) {
 	return v, nil
 }
 
+// UpdateStaff updates staff
 func (m *DBModel) UpdateStaff(o clientmodels.Employee) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2586,6 +2587,7 @@ func (m *DBModel) UpdateStaff(o clientmodels.Employee) error {
 	return nil
 }
 
+// GetOneStaff gets one staff
 func (m *DBModel) GetOneStaff(id int) (clientmodels.Employee, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2649,4 +2651,90 @@ func (m *DBModel) InsertStaff(o clientmodels.Employee) (int, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+// GetSalesPeople returns slice of sales staff
+func (m *DBModel) GetSalesPeople() ([]clientmodels.SalesStaff, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.SalesStaff
+
+	query := `
+		select 
+		       id, 
+		       salesperson_name, 
+		       slug, 
+		       coalesce(email, ''),
+		       coalesce(image, ''), 
+		       coalesce(phone, ''),
+		       active,
+		       created_at,
+		       updated_at
+		from 
+		     sales 
+		order by salesperson_name`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.SalesStaff{}
+		err = rows.Scan(
+			&c.ID,
+			&c.Name,
+			&c.Slug,
+			&c.Email,
+			&c.Image,
+			&c.Phone,
+			&c.Active,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+		v = append(v, *c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
+// GetOneSalesStaff gets one sales staff
+func (m *DBModel) GetOneSalesStaff(id int) (clientmodels.SalesStaff, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o clientmodels.SalesStaff
+
+	query := `select id, salesperson_name, slug , coalesce(image, ''), coalesce(email, ''), 
+		coalesce(phone, ''), active, created_at, updated_at from sales where id = ?`
+
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&o.ID,
+		&o.Name,
+		&o.Slug,
+		&o.Image,
+		&o.Email,
+		&o.Phone,
+		&o.Active,
+		&o.CreatedAt,
+		&o.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return o, err
+	}
+
+	return o, nil
 }

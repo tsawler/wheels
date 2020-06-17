@@ -1277,3 +1277,42 @@ func DisplayOneStaffPost(w http.ResponseWriter, r *http.Request) {
 	session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, "/admin/staff/all", http.StatusSeeOther)
 }
+
+// SalesPeopleAll lists all sales staff
+func SalesPeopleAll(w http.ResponseWriter, r *http.Request) {
+	rowSets := make(map[string]interface{})
+	s, err := vehicleModel.GetSalesPeople()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["staff"] = s
+
+	helpers.Render(w, r, "sales-people-all.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}
+
+func DisplayOneSalesStaff(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	rowSets := make(map[string]interface{})
+
+	var o clientmodels.SalesStaff
+
+	if id > 0 {
+		op, err := vehicleModel.GetOneSalesStaff(id)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		o = op
+	}
+	rowSets["staff"] = o
+
+	helpers.Render(w, r, "sales-people-one.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+		Form:    forms.New(nil),
+	})
+}

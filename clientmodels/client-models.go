@@ -133,12 +133,15 @@ type Video struct {
 
 // SalesStaff holds sales people
 type SalesStaff struct {
-	ID    int
-	Name  string
-	Slug  string
-	Email string
-	Phone string
-	Image string
+	ID        int
+	Name      string
+	Slug      string
+	Email     string
+	Phone     string
+	Image     string
+	Active    int
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // CreditApp holds a credit application

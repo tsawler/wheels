@@ -51,6 +51,17 @@
     {{end}}
 
     {{if hasRole "staff" .Auth.ID}}
+        <li id="sales-people" {{if eq .CurrentSegment "sales-people"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-users fa-fw"></i> <span class="nav-label">Sales People</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/sales-people/all">All sales people</a></li>
+                <li><a href="/admin/sales-people/0">Add sales person</a></li>
+            </ul>
+        </li>
+    {{end}}
+
+    {{if hasRole "staff" .Auth.ID}}
         <li id="staff" {{if eq .CurrentSegment "staff"}} class="active" {{end}}>
             <a href="#!"><i class="fa fa-users fa-fw"></i> <span class="nav-label">Staff</span> <span
                         class="fa arrow"></span></a>
