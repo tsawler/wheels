@@ -1097,3 +1097,18 @@ func AllTestDrivesJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(out)
 }
+
+func OptionalAll(w http.ResponseWriter, r *http.Request) {
+	rowSets := make(map[string]interface{})
+	options, err := vehicleModel.GetOptions()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["options"] = options
+
+	helpers.Render(w, r, "options-all.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}

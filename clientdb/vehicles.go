@@ -2381,3 +2381,51 @@ func (m *DBModel) CountSoldThisMonthPowerSports() int {
 
 	return soldThisMonth
 }
+
+// GetOptions returns slice of vehicles by type
+func (m *DBModel) GetOptions() ([]clientmodels.Option, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Option
+
+	query := `
+		select 
+		       id, 
+		       option_name, 
+		       active,
+		       created_at,
+		       updated_at
+		from 
+		     options 
+		order by option_name`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Option{}
+		err = rows.Scan(
+			&c.ID,
+			&c.OptionName,
+			&c.Active,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+		v = append(v, *c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+
+}

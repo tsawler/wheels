@@ -128,6 +128,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/inventory/vehicles/all-vehicles-trade-ins", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AllVehiclesTradeIns))
 	mux.Post("/admin/inventory/all-vehicles-trade-ins-json", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AllVehiclesTradeInsJSON))
 
+	// options
+	mux.Get("/admin/inventory/options/all", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(OptionalAll))
+
 	/*
 		|--------------------------------------------------------------------------
 		| Credit Applications, test drives, quick quotes
