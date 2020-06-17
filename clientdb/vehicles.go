@@ -2455,11 +2455,40 @@ func (m *DBModel) GetOneOption(id int) (clientmodels.Option, error) {
 }
 
 func (m *DBModel) UpdateOption(o clientmodels.Option) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
+	query := `update options set 
+		option_name = ?,
+		active = ?,
+		updated_at = ?
+		where id = ?`
+
+	_, err := m.DB.ExecContext(ctx, query, o.OptionName, o.Active, o.UpdatedAt)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 	return nil
 }
 
-func (m *DBModel) InsertOption(o clientmodels.Option) (int, error) {
+func (m *DBModel) InsertOption(o clientmodels.Option) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
-	return 0, nil
+	stmt := `
+	INSERT INTO options (option_name, active, created_at, updated_at)
+    VALUES(?, ?, ?, ?)`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		o.OptionName,
+		o.Active,
+		o.CreatedAt,
+		o.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
