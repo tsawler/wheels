@@ -1098,7 +1098,7 @@ func AllTestDrivesJSON(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 }
 
-func OptionalAll(w http.ResponseWriter, r *http.Request) {
+func OptionslAll(w http.ResponseWriter, r *http.Request) {
 	rowSets := make(map[string]interface{})
 	options, err := vehicleModel.GetOptions()
 	if err != nil {
@@ -1109,6 +1109,22 @@ func OptionalAll(w http.ResponseWriter, r *http.Request) {
 	rowSets["options"] = options
 
 	helpers.Render(w, r, "options-all.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}
+
+func DisplayOneOption(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	rowSets := make(map[string]interface{})
+	o, err := vehicleModel.GetOneOption(id)
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["option"] = o
+
+	helpers.Render(w, r, "option.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
 	})
 }

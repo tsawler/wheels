@@ -22,7 +22,7 @@
             {{range $options}}
                 <tr>
                     <td><a href='/admin/inventory/options/{{.ID}}'>{{.ID}}</a></td>
-                    <td><a href='/admin/inventory/{{.ID}}'>{{.OptionName}}</a></td>
+                    <td><a href='/admin/inventory/options/{{.ID}}'>{{.OptionName}}</a></td>
                     <td>
                         {{if eq .Active 1}}
                             <span class="badge badge-primary">Active</span>

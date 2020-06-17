@@ -2429,3 +2429,37 @@ func (m *DBModel) GetOptions() ([]clientmodels.Option, error) {
 	return v, nil
 
 }
+
+func (m *DBModel) GetOneOption(id int) (clientmodels.Option, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o clientmodels.Option
+
+	query := "select id, option_name, active, created_at, updated_at from options where id = ?"
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&o.ID,
+		&o.OptionName,
+		&o.Active,
+		&o.CreatedAt,
+		&o.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return o, err
+	}
+
+	return o, nil
+}
+
+func (m *DBModel) UpdateOption(o clientmodels.Option) error {
+
+	return nil
+}
+
+func (m *DBModel) InsertOption(o clientmodels.Option) (int, error) {
+
+	return 0, nil
+}
