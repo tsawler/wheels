@@ -2508,6 +2508,7 @@ func (m *DBModel) GetStaff() ([]clientmodels.Employee, error) {
 		       coalesce(image, ''), 
 		       coalesce(description, ''),
 		       active,
+		       sort_order,
 		       created_at,
 		       updated_at
 		from 
@@ -2530,6 +2531,7 @@ func (m *DBModel) GetStaff() ([]clientmodels.Employee, error) {
 			&c.Image,
 			&c.Description,
 			&c.Active,
+			&c.SortOrder,
 			&c.CreatedAt,
 			&c.UpdatedAt,
 		)
@@ -2575,7 +2577,9 @@ func (m *DBModel) GetOneStaff(id int) (clientmodels.Employee, error) {
 
 	var o clientmodels.Employee
 
-	query := "select id, first_name, last_name, coalesce(image, ''), coalesce(email, ''), coalesce(description, ''), active, created_at, updated_at from employees where id = ?"
+	query := `select id, first_name, last_name, coalesce(image, ''), coalesce(email, ''), 
+		coalesce(description, ''), active, sort_order, created_at, updated_at from employees where id = ?`
+
 	row := m.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&o.ID,
@@ -2585,6 +2589,7 @@ func (m *DBModel) GetOneStaff(id int) (clientmodels.Employee, error) {
 		&o.Email,
 		&o.Description,
 		&o.Active,
+		&o.SortOrder,
 		&o.CreatedAt,
 		&o.UpdatedAt,
 	)
