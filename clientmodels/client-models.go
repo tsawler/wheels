@@ -207,3 +207,21 @@ type Employee struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
+
+type Testimonial struct {
+	ID        int
+	Label     string
+	Url       string
+	Active    int
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type Word struct {
+	ID        int
+	Title     string
+	Content   string
+	Active    int
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}

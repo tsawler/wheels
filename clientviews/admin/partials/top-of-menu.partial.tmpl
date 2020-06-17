@@ -73,4 +73,17 @@
         </li>
     {{end}}
 
+    {{if hasRole "word" .Auth.ID}}
+        <li id="testimonials" {{if eq .CurrentSegment "testimonials"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-bullhorn fa-fw"></i> <span class="nav-label">Testimonials</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/testimonials/all">All Testimonials</a></li>
+                <li><a href="/admin/testimonials/0">Add Testimonial</a></li>
+                <li><a href="/admin/testimonials/all-word-of-moutn">All word of mouth</a></li>
+                <li><a href="/admin/testimonials/all-word-of-mouth/0">Add word of mouth</a></li>
+            </ul>
+        </li>
+    {{end}}
+
 {{end}}
