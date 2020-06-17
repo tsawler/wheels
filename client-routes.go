@@ -129,7 +129,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Post("/admin/inventory/all-vehicles-trade-ins-json", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AllVehiclesTradeInsJSON))
 
 	// options
-	mux.Get("/admin/inventory/options/all", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(OptionslAll))
+	mux.Get("/admin/inventory/options/all", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(OptionsAll))
 	mux.Get("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOption))
 	mux.Post("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOptionPost))
 

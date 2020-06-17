@@ -1098,7 +1098,7 @@ func AllTestDrivesJSON(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(out)
 }
 
-func OptionslAll(w http.ResponseWriter, r *http.Request) {
+func OptionsAll(w http.ResponseWriter, r *http.Request) {
 	rowSets := make(map[string]interface{})
 	options, err := vehicleModel.GetOptions()
 	if err != nil {
