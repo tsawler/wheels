@@ -225,7 +225,7 @@ func SendFriend(w http.ResponseWriter, r *http.Request) {
 
 // CreditApp displays credit app page
 func CreditApp(w http.ResponseWriter, r *http.Request) {
-	pg, err := repo.DB.GetPageBySlug("credit-application")
+	pg, err := repo.DB.GetPageBySlug("get-pre-approved")
 
 	if err != nil {
 		helpers.ServerError(w, err)
