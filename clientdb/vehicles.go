@@ -2077,7 +2077,7 @@ func (m *DBModel) InsertVehicleImage(vi clientmodels.Image) error {
 	return nil
 }
 
-// DeleteEvent deletes a calendar event
+// DeleteEvent deletes a vehicle image
 func (m *DBModel) DeleteVehicleImage(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2788,4 +2788,30 @@ func (m *DBModel) InsertSalesStaff(o clientmodels.SalesStaff) (int, error) {
 	id, err := result.LastInsertId()
 	fmt.Println("returning id of", int(id), "from repo")
 	return int(id), nil
+}
+
+// DeleteSalesStaff deletes a sales person
+func (m *DBModel) DeleteSalesStaff(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := "delete from sales where id = ?"
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteStaff deletes a staff person
+func (m *DBModel) DeleteStaff(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := "delete from employees where id = ?"
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

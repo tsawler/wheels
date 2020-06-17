@@ -70,6 +70,9 @@
             <div class="col">
                 <hr>
                 <input type="submit" class="btn btn-primary" value="Save">
+                {{if gt $o.ID 0}}
+                    <a class="btn btn-danger" href="javascript:" onclick="confirmDelete({{$o.ID}})">Delete</a>
+                {{end}}
                 <a class="btn btn-warning" href="/admin/sales-people/all">Cancel</a>
             </div>
         </div>
@@ -94,5 +97,17 @@
                 });
             }, false);
         })();
+
+        async function confirmDelete(x) {
+            attention.confirm({
+                html: "Are you sure you want to delete this sales person?",
+                icon: 'warning',
+                callback: function (result) {
+                    if (result !== false) {
+                        location.href = "/admin/sales-people/delete/" + x;
+                    }
+                }
+            });
+        }
     </script>
 {{end}}

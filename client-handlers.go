@@ -1394,3 +1394,10 @@ func DisplayOneSalesStaffPost(w http.ResponseWriter, r *http.Request) {
 	session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, "/admin/sales-people/all", http.StatusSeeOther)
 }
+
+func DeleteSalesPerson(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	_ = vehicleModel.DeleteSalesStaff(id)
+	session.Put(r.Context(), "flash", "Changes saved")
+	http.Redirect(w, r, "/admin/sales-people/all", http.StatusSeeOther)
+}
