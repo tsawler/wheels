@@ -13,6 +13,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	fileServer := http.FileServer(http.Dir("./client/clienthandlers/public/"))
 	mux.Get("/client/static/", http.StripPrefix("/client/static", fileServer))
 
+	fileServer = http.FileServer(http.Dir("./ui/static/site-content/"))
+	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
+
 	/*--------------------------------------------------------------------------
 	| TUS web hook
 	|--------------------------------------------------------------------------
