@@ -2504,6 +2504,7 @@ func (m *DBModel) GetStaff() ([]clientmodels.Employee, error) {
 		       id, 
 		       first_name, 
 		       last_name, 
+		       coalesce(position, ''),
 		       coalesce(email, ''),
 		       coalesce(image, ''), 
 		       coalesce(description, ''),
@@ -2527,6 +2528,7 @@ func (m *DBModel) GetStaff() ([]clientmodels.Employee, error) {
 			&c.ID,
 			&c.FirstName,
 			&c.LastName,
+			&c.Position,
 			&c.Email,
 			&c.Image,
 			&c.Description,
@@ -2553,9 +2555,10 @@ func (m *DBModel) UpdateStaff(o clientmodels.Employee) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `update employees set 
-		first_name = ?,
+	query := `update employees e set 
+		e.first_name = ?,
 		last_name = ?,
+		e.position = ?,
 		email = ?,
 		image = ?,
 		description = ?,
@@ -2564,7 +2567,18 @@ func (m *DBModel) UpdateStaff(o clientmodels.Employee) error {
 		updated_at = ?
 		where id = ?`
 
-	_, err := m.DB.ExecContext(ctx, query, o.FirstName, o.LastName, o.Email, o.Image, o.Description, o.Active, o.SortOrder, o.UpdatedAt, o.ID)
+	_, err := m.DB.ExecContext(ctx, query,
+		o.FirstName,
+		o.LastName,
+		o.Position,
+		o.Email,
+		o.Image,
+		o.Description,
+		o.Active,
+		o.SortOrder,
+		o.UpdatedAt,
+		o.ID,
+	)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -2578,14 +2592,15 @@ func (m *DBModel) GetOneStaff(id int) (clientmodels.Employee, error) {
 
 	var o clientmodels.Employee
 
-	query := `select id, first_name, last_name, coalesce(image, ''), coalesce(email, ''), 
-		coalesce(description, ''), active, sort_order, created_at, updated_at from employees where id = ?`
+	query := `select id, first_name, last_name, coalesce(e.position, ''), coalesce(image, ''), coalesce(email, ''), 
+		coalesce(description, ''), active, sort_order, created_at, updated_at from employees e where id = ?`
 
 	row := m.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(
 		&o.ID,
 		&o.FirstName,
 		&o.LastName,
+		&o.Position,
 		&o.Image,
 		&o.Email,
 		&o.Description,
@@ -2608,12 +2623,13 @@ func (m *DBModel) InsertStaff(o clientmodels.Employee) error {
 	defer cancel()
 
 	stmt := `
-	INSERT INTO employees (first_name, last_name, image, email, description, active, created_at, updated_at)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
+	INSERT INTO employees e (first_name, last_name, e.position, image, email, description, active, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := m.DB.ExecContext(ctx, stmt,
 		o.FirstName,
 		o.LastName,
+		o.Position,
 		o.Image,
 		o.Email,
 		o.Description,

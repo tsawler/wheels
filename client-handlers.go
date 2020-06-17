@@ -1200,3 +1200,41 @@ func DisplayOneStaff(w http.ResponseWriter, r *http.Request) {
 		Form:    forms.New(nil),
 	})
 }
+
+func DisplayOneStaffPost(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	active := 0
+
+	form := forms.New(r.PostForm, app.Database)
+	if form.Has("active", r) {
+		active = 1
+	}
+
+	var o clientmodels.Employee
+
+	if id > 0 {
+		o, _ = vehicleModel.GetOneStaff(id)
+	} else {
+		o.CreatedAt = time.Now()
+	}
+
+	o.FirstName = form.Get("first_name")
+	o.LastName = form.Get("last_name")
+	o.Email = form.Get("email")
+	o.Position = form.Get("position")
+	o.Description = form.Get("description")
+	o.Active = active
+	o.UpdatedAt = time.Now()
+
+	if id > 0 {
+		err := vehicleModel.UpdateStaff(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+	} else {
+		_ = vehicleModel.InsertStaff(o)
+	}
+
+	session.Put(r.Context(), "flash", "Changes saved")
+	http.Redirect(w, r, "/admin/staff/all", http.StatusSeeOther)
+}

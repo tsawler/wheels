@@ -129,9 +129,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	| Staff
 	|--------------------------------------------------------------------------*/
 
-	mux.Get("/admin/staff/all", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(StaffAll))
-	mux.Get("/admin/staff/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneStaff))
-	mux.Post("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOptionPost))
+	mux.Get("/admin/staff/all", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(StaffAll))
+	mux.Get("/admin/staff/:ID", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DisplayOneStaff))
+	mux.Post("/admin/staff/:ID", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DisplayOneStaffPost))
 
 	/*--------------------------------------------------------------------------
 	| Credit Applications, test drives, quick quotes

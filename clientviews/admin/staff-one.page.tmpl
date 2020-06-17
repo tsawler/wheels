@@ -54,6 +54,19 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Position:</label>
+                    {{with .Form.Errors.Get "position"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="position" autocomplete="off" type='text'
+                           name='position' required
+                           value='{{$o.Position}}'>
+                    <div class="invalid-feedback">
+                        Please enter a value
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label>Email:</label>
                     {{with .Form.Errors.Get "email"}}
                         <label class='text-danger'>{{.}}</label>
