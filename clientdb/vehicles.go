@@ -2560,10 +2560,11 @@ func (m *DBModel) UpdateStaff(o clientmodels.Employee) error {
 		image = ?,
 		description = ?,
 		active = ?,
+		sort_order = ?,
 		updated_at = ?
 		where id = ?`
 
-	_, err := m.DB.ExecContext(ctx, query, o.FirstName, o.LastName, o.Email, o.Image, o.Description, o.Active, o.UpdatedAt, o.ID)
+	_, err := m.DB.ExecContext(ctx, query, o.FirstName, o.LastName, o.Email, o.Image, o.Description, o.Active, o.SortOrder, o.UpdatedAt, o.ID)
 	if err != nil {
 		fmt.Println(err)
 		return err
