@@ -6,10 +6,50 @@
 {{define "content-title"}}Option{{end}}
 
 {{define "content"}}
+    {{$o := index .RowSets "option"}}
+    <div class="row">
+        <div class="col-md-6">
 
-    <hr>
-    <a class="btn btn-primary" href="/admin/inventory/options/all">Back</a>
 
+            <form method="post" action="/admin/inventory/option/{{$o.ID}}" novalidate class="needs-validation"
+                  id="option-form">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                <div class="form-group">
+                    <label>Option:</label>
+                    {{with .Form.Errors.Get "option"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="option_name" autocomplete="off" type='text'
+                           name='option_name' required
+                           value='{{$o.OptionName}}'>
+                    <div class="invalid-feedback">
+                        Please enter a value
+                    </div>
+                </div>
+
+                <div class="custom-control custom-switch">
+                    <input type="checkbox"
+                            {{if eq $o.Active 1}}
+                                checked
+                            {{end}}
+                           class="custom-control-input" value="1" id="active"
+                           name="active">
+                    <label class="custom-control-label"
+                           for="active">Active</label>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <hr>
+            <input type="submit" class="btn btn-primary" value="Save">
+            <a class="btn btn-warning" href="/admin/inventory/options/all">Cancel</a>
+
+        </div>
+    </div>
 {{end}}
 
 {{define "js"}}

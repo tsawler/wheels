@@ -1126,5 +1126,6 @@ func DisplayOneOption(w http.ResponseWriter, r *http.Request) {
 
 	helpers.Render(w, r, "option.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
+		Form:    forms.New(nil),
 	})
 }
