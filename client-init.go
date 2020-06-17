@@ -54,4 +54,10 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 	// Create client middleware
 	NewClientMiddleware(app)
 	template_data.NewTemplateData(parentDriver.SQL)
+
+	infoLog.Println("Scheduling PBS....")
+	_, _ = app.Scheduler.AddFunc("@hourly", func() {
+		PullFromPBS()
+	})
+
 }

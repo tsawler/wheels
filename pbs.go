@@ -84,13 +84,23 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 		lastPage = "/"
 	}
 
+	count, done := PullFromPBS()
+	if !done {
+		session.Put(r.Context(), "error", "Error connecting to PBS. Try again later")
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+
+	session.Put(r.Context(), "flash", fmt.Sprintf("Refreshed from PBS. %d items added.", count))
+	http.Redirect(w, r, lastPage, http.StatusSeeOther)
+}
+
+func PullFromPBS() (int, bool) {
 	// read u/p from .env
 	err := godotenv.Load("./.env")
 	if err != nil {
 		errorLog.Println("Error loading .env file")
-		session.Put(r.Context(), "error", "Error loading .env file")
-		http.Redirect(w, r, lastPage, http.StatusSeeOther)
-		return
+		return 0, false
 	}
 
 	userName := os.Getenv("PBSUSER")
@@ -109,18 +119,14 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := json.MarshalIndent(parameters, "", "    ")
 	if err != nil {
 		errorLog.Println(err)
-		session.Put(r.Context(), "error", "error unmarshalling ")
-		http.Redirect(w, r, lastPage, http.StatusSeeOther)
-		return
+		return 0, false
 	}
 
 	resp, err := http.Post(fmt.Sprintf("https://%s:%s@partnerhub.pbsdealers.com/api/json/reply/VehicleGet", userName, password),
 		"application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		errorLog.Println(err)
-		session.Put(r.Context(), "error", "Error Connecting to PBS!")
-		http.Redirect(w, r, lastPage, http.StatusSeeOther)
-		return
+		return 0, false
 	}
 	defer resp.Body.Close()
 
@@ -130,17 +136,14 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		errorLog.Println(err)
+		return 0, false
 	}
-
-	//fmt.Print(string(body))
 
 	var usedItems PBSFeed
 	err = json.Unmarshal(body, &usedItems)
 	if err != nil {
 		errorLog.Println(err)
-		session.Put(r.Context(), "error", "Error unmarshalling json from PBS!")
-		http.Redirect(w, r, lastPage, http.StatusSeeOther)
-		return
+		return 0, false
 	}
 
 	count := 0
@@ -215,6 +218,7 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 				Description:     defaultDescription,
 				CreatedAt:       time.Now(),
 				UpdatedAt:       time.Now(),
+				Cost:            float32(x.Retail),
 			}
 
 			vid, err := vehicleModel.InsertVehicle(v)
@@ -253,24 +257,21 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 	reqBody2, err := json.MarshalIndent(parameters, "", "    ")
 	if err != nil {
 		errorLog.Println(err)
-		session.Put(r.Context(), "error", "error unmarshalling ")
-		http.Redirect(w, r, lastPage, http.StatusSeeOther)
-		return
+		return 0, false
 	}
 
 	resp2, err := http.Post(fmt.Sprintf("https://%s:%s@partnerhub.pbsdealers.com/api/json/reply/VehicleGet", userName, password),
 		"application/json", bytes.NewBuffer(reqBody2))
 	if err != nil {
 		errorLog.Println(err)
-		session.Put(r.Context(), "error", "Error Connecting to PBS!")
-		http.Redirect(w, r, lastPage, http.StatusSeeOther)
-		return
+		return 0, false
 	}
 	defer resp2.Body.Close()
 
 	body, err = ioutil.ReadAll(resp2.Body)
 	if err != nil {
 		errorLog.Println(err)
+		return 0, false
 	}
 
 	var newItems PBSFeed
@@ -278,9 +279,7 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &newItems)
 	if err != nil {
 		errorLog.Println(err)
-		session.Put(r.Context(), "error", "Error unmarshalling json from PBS!")
-		http.Redirect(w, r, lastPage, http.StatusSeeOther)
-		return
+		return 0, false
 	}
 
 	infoLog.Println("--------- Doing PowerSports -----------")
@@ -356,6 +355,7 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 				Description:     defaultDescription,
 				CreatedAt:       time.Now(),
 				UpdatedAt:       time.Now(),
+				Cost:            float32(x.Retail),
 			}
 
 			vid, err := vehicleModel.InsertVehicle(v)
@@ -379,7 +379,5 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 		}
 		infoLog.Println("-----------------------------------")
 	}
-
-	session.Put(r.Context(), "flash", fmt.Sprintf("Refreshed from PBS. %d items added.", count))
-	http.Redirect(w, r, lastPage, http.StatusSeeOther)
+	return count, true
 }
