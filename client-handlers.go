@@ -1129,3 +1129,25 @@ func DisplayOneOption(w http.ResponseWriter, r *http.Request) {
 		Form:    forms.New(nil),
 	})
 }
+
+func DisplayOneOptionPost(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	active := 0
+
+	form := forms.New(r.PostForm, app.Database)
+	if form.Has("active", r) {
+		active = 1
+	}
+
+	o := clientmodels.Option{
+		ID:         id,
+		OptionName: form.Get("option_name"),
+		Active:     active,
+		UpdatedAt:  time.Now(),
+	}
+
+	_ = vehicleModel.UpdateOption(o)
+
+	session.Put(r.Context(), "flash", "Changes saved")
+	http.Redirect(w, r, "/admin/inventory/options/all", http.StatusSeeOther)
+}

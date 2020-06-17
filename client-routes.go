@@ -131,6 +131,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	// options
 	mux.Get("/admin/inventory/options/all", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(OptionslAll))
 	mux.Get("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOption))
+	mux.Post("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOptionPost))
 
 	/*
 		|--------------------------------------------------------------------------
