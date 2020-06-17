@@ -8,6 +8,7 @@ import (
 	"github.com/tsawler/goblender/pkg/datatables"
 	"github.com/tsawler/goblender/pkg/forms"
 	"github.com/tsawler/goblender/pkg/helpers"
+	"github.com/tsawler/goblender/pkg/images"
 	"github.com/tsawler/goblender/pkg/templates"
 	"net/http"
 	"os"
@@ -1232,7 +1233,40 @@ func DisplayOneStaffPost(w http.ResponseWriter, r *http.Request) {
 			errorLog.Println(err)
 		}
 	} else {
-		_ = vehicleModel.InsertStaff(o)
+		newID, err := vehicleModel.InsertStaff(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+		id = newID
+	}
+
+	if form.HasFile("image", r) {
+		// have an image
+		fileName, fileNameDisplay, err := helpers.UploadOneFile(r, "./tmp/")
+		if err != nil {
+			errorLog.Println(err)
+		} else {
+			sourceDir := "./tmp"
+			destDir := "./ui/static/site-content/staff"
+			err = images.MakeThumbFromStaticFile(sourceDir, destDir, fileName, 600, 500)
+			if err != nil {
+				app.ErrorLog.Println("error making image")
+			}
+			oldLocation := fmt.Sprintf("./ui/static/site-content/staff/%s", fileName)
+			newLocation := fmt.Sprintf("./ui/static/site-content/staff/%s", fileNameDisplay)
+			err = MoveFile(oldLocation, newLocation)
+			if err != nil {
+				app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
+			}
+			err = images.MakeThumbFromStaticFile(destDir, fmt.Sprintf("%s/thumbs/", destDir), fileNameDisplay, 100, 100)
+			if err != nil {
+				app.ErrorLog.Println("error making thumbnail")
+			}
+
+			s, _ := vehicleModel.GetOneStaff(id)
+			s.Image = fileNameDisplay
+			_ = vehicleModel.UpdateStaff(s)
+		}
 	}
 
 	session.Put(r.Context(), "flash", "Changes saved")

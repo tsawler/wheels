@@ -21,6 +21,7 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 	// make sure the directories we need are there
 	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/inventory/")
 	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/staff/")
+	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/staff/thumbs")
 
 	// conf is the application config, from goBlender
 	app = conf

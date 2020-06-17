@@ -2618,7 +2618,7 @@ func (m *DBModel) GetOneStaff(id int) (clientmodels.Employee, error) {
 	return o, nil
 }
 
-func (m *DBModel) InsertStaff(o clientmodels.Employee) error {
+func (m *DBModel) InsertStaff(o clientmodels.Employee) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -2638,8 +2638,15 @@ func (m *DBModel) InsertStaff(o clientmodels.Employee) error {
 		o.UpdatedAt,
 	)
 	if err != nil {
-		return err
+		return 0, err
 	}
+	stmt = "SELECT LAST_INSERT_ID()"
+	row := m.DB.QueryRowContext(ctx, stmt)
 
-	return nil
+	var id int
+	err = row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
