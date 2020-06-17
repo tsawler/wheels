@@ -50,4 +50,16 @@
         </li>
     {{end}}
 
+    {{if hasRole "staff" .Auth.ID}}
+        <li id="staff" {{if eq .CurrentSegment "staff"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-users fa-fw"></i> <span class="nav-label">Staff</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/staff/all">All staff</a></li>
+                <li><a href="/admin/staff/0">Add staff</a></li>
+                <li><a href="/admin/staff/sort-order">Sort Order</a></li>
+            </ul>
+        </li>
+    {{end}}
+
 {{end}}
