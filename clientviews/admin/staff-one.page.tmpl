@@ -8,11 +8,24 @@
 {{define "content"}}
     {{$o := index .RowSets "staff"}}
     <form method="post" action="/admin/staff/{{$o.ID}}" novalidate class="needs-validation"
-          id="option-form">
+          enctype="multipart/form-data" id="option-form">
 
         <div class="row">
             <div class="col-md-6">
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                {{if ne $o.Image ""}}
+                    <img src="/static/site-content/staff/{{$o.Image}}" alt="staff" class="img-thumbnail mb-3"
+                         style="max-width: 250px;">
+                {{end}}
+
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="image" name="image"
+                               accept=".png, .jpg, .jpeg, .gif">
+                        <label class="custom-file-label" for="image">Choose image..</label>
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <label>First Name:</label>

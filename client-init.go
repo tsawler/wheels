@@ -19,7 +19,8 @@ var vehicleModel *clientdb.DBModel
 // ClientInit gives client code access to goBlender configuration
 func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DBRepo) {
 	// make sure the directories we need are there
-	helpers.CreateDirIfNotExist("./ui/static/site-content/inventory/")
+	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/inventory/")
+	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/staff/")
 
 	// conf is the application config, from goBlender
 	app = conf
