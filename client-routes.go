@@ -13,24 +13,19 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	fileServer := http.FileServer(http.Dir("./client/clienthandlers/public/"))
 	mux.Get("/client/static/", http.StripPrefix("/client/static", fileServer))
 
-	/*
-		|--------------------------------------------------------------------------
-		| TUS web hook
-		|--------------------------------------------------------------------------
-		| Web hook for tusd (overrides default handler in goBlender).
-		| Handles uploads of images, files, videos for standard goBlender
-		| functionality, and additional functionality specific to this site.
-		| Authentication is handled the same way it is for goBlender.
-		|
-	*/
+	/*--------------------------------------------------------------------------
+	| TUS web hook
+	|--------------------------------------------------------------------------
+	| Web hook for tusd (overrides default handler in goBlender).
+	| Handles uploads of images, files, videos for standard goBlender
+	| functionality, and additional functionality specific to this site.
+	| Authentication is handled the same way it is for goBlender. */
+
 	mux.Post("/tusd/hook", standardMiddleWare.ThenFunc(TusWebHook(app)))
 
-	/*
-		|--------------------------------------------------------------------------
-		| Public Routes // TODO
-		|--------------------------------------------------------------------------
-		|
-	*/
+	/*--------------------------------------------------------------------------
+	| Public Routes
+	|--------------------------------------------------------------------------*/
 
 	// credit app
 	mux.Get("/credit-application", standardMiddleWare.ThenFunc(CreditApp))
@@ -68,15 +63,12 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	// show vehicle
 	mux.Get("/:CATEGORY/view/:ID/:SLUG", dynamicMiddleware.ThenFunc(DisplayOneVehicle))
 
-	/*
-		|--------------------------------------------------------------------------
-		| Vehicle Administration routes
-		|--------------------------------------------------------------------------
-		| These routes require authentication and a specific role assigned to a
-		| user before they can be accessed. Any attempt to access them without the
-		| proper authentication/role results in an "Unauthorized" http response.
-		|
-	*/
+	/*--------------------------------------------------------------------------
+	| Vehicle Administration routes
+	|--------------------------------------------------------------------------
+	| These routes require authentication and a specific role assigned to a
+	| user before they can be accessed. Any attempt to access them without the
+	| proper authentication/role results in an "Unauthorized" http response. */
 
 	// json for vehicle admin
 	mux.Post("/admin/vehicle-images-json/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(VehicleImagesJSON))
@@ -133,17 +125,17 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOption))
 	mux.Post("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOptionPost))
 
-	// staff
+	/*---------------------------------------------------------------------------
+	| Staff
+	|--------------------------------------------------------------------------*/
+
 	mux.Get("/admin/staff/all", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(StaffAll))
 	mux.Get("/admin/staff/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneStaff))
 	mux.Post("/admin/inventory/options/:ID", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayOneOptionPost))
 
-	/*
-		|--------------------------------------------------------------------------
-		| Credit Applications, test drives, quick quotes
-		|--------------------------------------------------------------------------
-		|
-	*/
+	/*--------------------------------------------------------------------------
+	| Credit Applications, test drives, quick quotes
+	|--------------------------------------------------------------------------*/
 
 	mux.Get("/admin/credit/all", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(AllCreditApplications))
 	mux.Get("/admin/credit/application/:ID", dynamicMiddleware.Append(mw.Auth).Append(CreditRole).ThenFunc(OneCreditApp))
