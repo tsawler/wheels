@@ -95,6 +95,7 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, lastPage, http.StatusSeeOther)
 }
 
+// PullFromPBS pulls data from PBS
 func PullFromPBS() (int, bool) {
 	// read u/p from .env
 	err := godotenv.Load("./.env")
