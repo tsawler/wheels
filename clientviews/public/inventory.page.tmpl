@@ -225,10 +225,10 @@
                             <a href="{{index $.StringMap "pager-url"}}/{{index $.StringMap "item-link-prefix"}}/{{.ID}}/{{slug .Year}}-{{slug .Make.Make}}-{{slug .Model.Model}}">
                                 {{if gt $imageLength 0}}
                                     {{$img := index .Images 0}}
-                                    <img src="https://www.wheelsanddeals.ca/storage/inventory/{{.ID}}/thumbs/{{$img.Image}}"
+                                    <img src="/static/site-content/inventory/{{.ID}}/thumbs/{{$img.Image}}"
                                          class="img-fluid" alt="image">
                                 {{else}}
-                                    <img src="https://www.wheelsanddeals.ca/vendor/wheelspackage/hug-in-progress.jpg"
+                                    <img src="/client/static/hug-in-progress.jpg"
                                          class="img-fluid"
                                          style="min-width: 300px;">
                                 {{end}}
