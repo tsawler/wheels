@@ -1200,6 +1200,28 @@ func SortStaff(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// SortStaffPost sorts staff
+func SortStaffPost(w http.ResponseWriter, r *http.Request) {
+	sortList := r.Form.Get("sort_list")
+	var sorted []SortOrder
+	err := json.Unmarshal([]byte(sortList), &sorted)
+	if err != nil {
+		app.ErrorLog.Println(err)
+	}
+
+	for _, v := range sorted {
+		imageID, _ := strconv.Atoi(v.ImageID)
+		err := vehicleModel.UpdateSortOrderForStaff(imageID, v.StepNumber)
+		if err != nil {
+			app.ErrorLog.Println(err)
+		}
+	}
+
+	session.Put(r.Context(), "flash", "Sort order saved")
+	http.Redirect(w, r, "/admin/staff/sort-order", http.StatusSeeOther)
+}
+
+// DisplayOneStaff displays staff for add/edit
 func DisplayOneStaff(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	rowSets := make(map[string]interface{})

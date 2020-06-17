@@ -2875,3 +2875,20 @@ func (m *DBModel) DeleteStaff(id int) error {
 	}
 	return nil
 }
+
+// UpdateSortOrderForStaff updates sort order for staff
+func (m *DBModel) UpdateSortOrderForStaff(id, order int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update employees set 
+		sort_order = ?
+		where id = ?`
+	_, err := m.DB.ExecContext(ctx, query, order, id)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}

@@ -131,6 +131,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	mux.Get("/admin/staff/all", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(StaffAll))
 	mux.Get("/admin/staff/sort-order", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(SortStaff))
+	mux.Post("/admin/staff/sort-order", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(SortStaffPost))
 	mux.Get("/admin/staff/:ID", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DisplayOneStaff))
 	mux.Get("/admin/staff/delete/:ID", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DeleteStaff))
 	mux.Get("/admin/staff/sort-order", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DeleteStaff))
