@@ -77,6 +77,7 @@ type Query struct {
 
 const defaultDescription string = `Factory Warranty Plus Our 12 Month Huggable Guarantee!! COMPARE AT NEW MSRP "Pay Less-Owe Less"`
 
+// RefreshFromPBS pulls feed from PBS
 func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 	lastPage := session.GetString(r.Context(), "last-page")
 	if lastPage == "" {
@@ -144,6 +145,147 @@ func RefreshFromPBS(w http.ResponseWriter, r *http.Request) {
 
 	count := 0
 	for _, x := range usedItems.Vehicles {
+		exists := vehicleModel.CheckIfVehicleExists(x.StockNumber)
+		infoLog.Println("Checking", x.StockNumber)
+		if !exists {
+			infoLog.Println("ADDING", x.StockNumber)
+			count++
+
+			// see if we have this make
+			makeID := vehicleModel.GetMakeByName(x.Make)
+			if makeID == 0 {
+				// add new make
+				id, err := vehicleModel.InsertMake(x.Make)
+				if err != nil {
+					errorLog.Print(err)
+				}
+				makeID = id
+			}
+
+			// see if we have this model
+			modelID := vehicleModel.GetModelByName(x.Model)
+			if makeID == 0 {
+				// add new make
+				id, err := vehicleModel.InsertMake(x.Make)
+				if err != nil {
+					errorLog.Print(err)
+				}
+				modelID = id
+			}
+
+			if makeID == 0 || modelID == 0 {
+				errorLog.Print("Cannot process!")
+				continue
+			}
+
+			year, _ := strconv.Atoi(x.Year)
+
+			vehicleType := 0
+
+			if strings.ToUpper(x.VehicleType) == "CAR" {
+				vehicleType = 1
+			} else if strings.ToUpper(x.VehicleType) == "P" {
+				vehicleType = 1
+			} else if strings.ToUpper(x.VehicleType) == "PASSENGER" {
+				vehicleType = 1
+			} else if strings.ToUpper(x.VehicleType) == "T" {
+				vehicleType = 2
+			} else if strings.ToUpper(x.VehicleType) == "TRUCK" {
+				vehicleType = 2
+			} else {
+				vehicleType = 3
+			}
+
+			v := clientmodels.Vehicle{
+				StockNo:         x.StockNumber,
+				Vin:             x.VIN,
+				Odometer:        x.Odometer,
+				Year:            year,
+				VehicleMakesID:  makeID,
+				VehicleModelsID: modelID,
+				Trim:            x.Trim,
+				Engine:          x.Engine,
+				Transmission:    x.Transmission,
+				TotalMSR:        float32(x.MSR),
+				ExteriorColour:  x.ExteriorColor.Description,
+				InteriorColour:  x.InteriorColor.Description,
+				VehicleType:     vehicleType,
+				DriveTrain:      x.DriveWheel,
+				Status:          2,
+				Description:     defaultDescription,
+				CreatedAt:       time.Now(),
+				UpdatedAt:       time.Now(),
+			}
+
+			vid, err := vehicleModel.InsertVehicle(v)
+			if err != nil {
+				errorLog.Print(err)
+			} else {
+				for _, y := range defaultOptions {
+					o := clientmodels.VehicleOption{
+						VehicleID: vid,
+						OptionID:  y,
+						CreatedAt: time.Now(),
+						UpdatedAt: time.Now(),
+					}
+					err := vehicleModel.InsertVehicleOption(o)
+					if err != nil {
+						errorLog.Print(err)
+					}
+				}
+			}
+			infoLog.Println("Inserted vehicle id", vid, " - stock no ", x.StockNumber)
+		}
+		infoLog.Println("-----------------------------------")
+	}
+
+	// now do NEW (for powersports)
+	parameters = Query{
+		SerialNumber:         "2675",
+		Year:                 "",
+		Status:               "New",
+		IncludeInactive:      false,
+		IncludeBuildVehicles: false,
+		ModifiedSince:        time.Now().Add(-24 * time.Hour),
+		ModifiedUntil:        time.Now(),
+	}
+
+	reqBody2, err := json.MarshalIndent(parameters, "", "    ")
+	if err != nil {
+		errorLog.Println(err)
+		session.Put(r.Context(), "error", "error unmarshalling ")
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+
+	resp2, err := http.Post(fmt.Sprintf("https://%s:%s@partnerhub.pbsdealers.com/api/json/reply/VehicleGet", userName, password),
+		"application/json", bytes.NewBuffer(reqBody2))
+	if err != nil {
+		errorLog.Println(err)
+		session.Put(r.Context(), "error", "Error Connecting to PBS!")
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+	defer resp2.Body.Close()
+
+	body, err = ioutil.ReadAll(resp2.Body)
+	if err != nil {
+		errorLog.Println(err)
+	}
+
+	var newItems PBSFeed
+
+	err = json.Unmarshal(body, &newItems)
+	if err != nil {
+		errorLog.Println(err)
+		session.Put(r.Context(), "error", "Error unmarshalling json from PBS!")
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+
+	infoLog.Println("--------- Doing PowerSports -----------")
+
+	for _, x := range newItems.Vehicles {
 		exists := vehicleModel.CheckIfVehicleExists(x.StockNumber)
 		infoLog.Println("Checking", x.StockNumber)
 		if !exists {

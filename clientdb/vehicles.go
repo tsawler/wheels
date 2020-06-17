@@ -2896,7 +2896,7 @@ func (m *DBModel) UpdateSortOrderForStaff(id, order int) error {
 func (m *DBModel) GetModelByName(s string) int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	fmt.Print("Checking model of", s)
+	fmt.Println("Checking model of", s)
 	query := `select id from vehicle_models where upper(model) = ?`
 	row := m.DB.QueryRowContext(ctx, query, strings.ToUpper(s))
 
@@ -2913,7 +2913,7 @@ func (m *DBModel) GetModelByName(s string) int {
 func (m *DBModel) GetMakeByName(s string) int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	fmt.Print("Checking make of", s)
+	fmt.Println("Checking make of", s)
 	query := `select id from vehicle_makes where upper(make) = ?`
 	row := m.DB.QueryRowContext(ctx, query, strings.ToUpper(s))
 
