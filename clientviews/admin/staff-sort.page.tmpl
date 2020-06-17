@@ -1,0 +1,70 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Sort Staff - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Sort Staff{{end}}
+{{define "content-title"}}Sort Staff{{end}}
+
+{{define "content"}}
+    <form action="/admin/staff/sort-order" method="post">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+        <div class="row">
+            <div class="col-md-6">
+                <input type="hidden" class="form-control" name="sort_list" id="sort-list" value="">
+                <ul class="list-group" id="staff-list">
+                    {{$staff := index .RowSets "staff"}}
+                    {{range $staff}}
+                        <li data-id="{{.ID}}" class="list-group-item">{{.LastName}}, {{.FirstName}}</li>
+                    {{end}}
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr>
+                <input type="submit" value="Save" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        let staffList;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            sortList();
+            performSort();
+        })
+
+        function sortList() {
+            var elementExists = !!document.getElementById("staff-list");
+            if (elementExists) {
+                var el = document.getElementById('staff-list');
+                staffList = Sortable.create(el, {
+                    animation: 150,
+                    chosenClass: 'sortable-chosen',
+                    onUpdate: function (event) {
+                        performSort();
+                    },
+                    onAdd: function (event) {
+                        performSort();
+                    },
+                    onRemove: function (event) {
+                        performSort();
+                    }
+                });
+            }
+        }
+
+        function performSort() {
+            let items = staffList.toArray();
+            let obj = [];
+            for (let i = 0; i < items.length; i++) {
+                obj.push({id: items[i], order: (i + 1)});
+            }
+            document.getElementById("sort-list").value = JSON.stringify(obj);
+        }
+    </script>
+{{end}}

@@ -1184,6 +1184,22 @@ func StaffAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// SortStaff displays staff for sorting
+func SortStaff(w http.ResponseWriter, r *http.Request) {
+	rowSets := make(map[string]interface{})
+	s, err := vehicleModel.GetStaffForSorting()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["staff"] = s
+
+	helpers.Render(w, r, "staff-sort.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}
+
 func DisplayOneStaff(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	rowSets := make(map[string]interface{})

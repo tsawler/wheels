@@ -2488,6 +2488,66 @@ func (m *DBModel) InsertOption(o clientmodels.Option) error {
 	return nil
 }
 
+// GetStaffForSorting returns slice of staff
+func (m *DBModel) GetStaffForSorting() ([]clientmodels.Employee, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Employee
+
+	query := `
+		select 
+		       id, 
+		       first_name, 
+		       last_name, 
+		       coalesce(position, ''),
+		       coalesce(email, ''),
+		       coalesce(image, ''), 
+		       coalesce(description, ''),
+		       active,
+		       sort_order,
+		       created_at,
+		       updated_at
+		from 
+		     employees 
+		where active = 1
+		order by sort_order`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Employee{}
+		err = rows.Scan(
+			&c.ID,
+			&c.FirstName,
+			&c.LastName,
+			&c.Position,
+			&c.Email,
+			&c.Image,
+			&c.Description,
+			&c.Active,
+			&c.SortOrder,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+		v = append(v, *c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
 // GetStaff returns slice of staff
 func (m *DBModel) GetStaff() ([]clientmodels.Employee, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
