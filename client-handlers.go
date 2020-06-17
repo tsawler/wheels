@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/gosimple/slug"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tsawler/goblender/pkg/datatables"
 	"github.com/tsawler/goblender/pkg/forms"
@@ -1294,6 +1295,7 @@ func SalesPeopleAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DisplayOneSalesStaff displays staff for add/edit
 func DisplayOneSalesStaff(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	rowSets := make(map[string]interface{})
@@ -1315,4 +1317,80 @@ func DisplayOneSalesStaff(w http.ResponseWriter, r *http.Request) {
 		RowSets: rowSets,
 		Form:    forms.New(nil),
 	})
+}
+
+// DisplayOneSalesStaffPost updates sales staff
+func DisplayOneSalesStaffPost(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	active := 0
+
+	form := forms.New(r.PostForm, app.Database)
+	if form.Has("active", r) {
+		active = 1
+	}
+
+	var o clientmodels.SalesStaff
+
+	if id > 0 {
+		o, _ = vehicleModel.GetOneSalesStaff(id)
+	} else {
+		o.CreatedAt = time.Now()
+	}
+
+	slugified := slug.Make(form.Get("name"))
+
+	o.Name = form.Get("name")
+	o.Slug = slugified
+	o.Email = ""
+	o.Phone = form.Get("phone")
+	o.Active = active
+	o.UpdatedAt = time.Now()
+
+	if id > 0 {
+		err := vehicleModel.UpdateSalesStaff(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+	} else {
+		newID, err := vehicleModel.InsertSalesStaff(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+		infoLog.Println("Setting id to", id)
+		id = newID
+	}
+
+	if form.HasFile("image", r) {
+		infoLog.Println("Uploading image")
+		// have an image
+		fileName, fileNameDisplay, err := helpers.UploadOneFile(r, "./tmp/")
+		if err != nil {
+			errorLog.Println(err)
+		} else {
+			fmt.Println("in else")
+			sourceDir := "./tmp"
+			destDir := "./ui/static/site-content/salesstaff"
+			err = images.MakeThumbFromStaticFile(sourceDir, destDir, fileName, 500, 1074)
+			if err != nil {
+				app.ErrorLog.Println("error making image")
+			}
+			oldLocation := fmt.Sprintf("./ui/static/site-content/salesstaff/%s", fileName)
+			newLocation := fmt.Sprintf("./ui/static/site-content/salesstaff/%s", fileNameDisplay)
+			err = MoveFile(oldLocation, newLocation)
+			if err != nil {
+				app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
+			}
+
+			infoLog.Print("getting id of", id)
+			s, _ := vehicleModel.GetOneSalesStaff(id)
+			s.Image = fileNameDisplay
+			err = vehicleModel.UpdateSalesStaff(s)
+			if err != nil {
+				errorLog.Println(err)
+			}
+		}
+	}
+
+	session.Put(r.Context(), "flash", "Changes saved")
+	http.Redirect(w, r, "/admin/sales-people/all", http.StatusSeeOther)
 }

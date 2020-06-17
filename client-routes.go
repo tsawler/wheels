@@ -135,7 +135,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	mux.Get("/admin/sales-people/all", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(SalesPeopleAll))
 	mux.Get("/admin/sales-people/:ID", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DisplayOneSalesStaff))
-	mux.Post("/admin/staff/:ID", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DisplayOneStaffPost))
+	mux.Post("/admin/sales-people/:ID", dynamicMiddleware.Append(mw.Auth).Append(StaffRole).ThenFunc(DisplayOneSalesStaffPost))
 
 	/*--------------------------------------------------------------------------
 	| Credit Applications, test drives, quick quotes

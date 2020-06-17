@@ -1896,7 +1896,7 @@ func (m *DBModel) InsertVehicle(v clientmodels.Vehicle) (int, error) {
 		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 
-	_, err := m.DB.ExecContext(ctx,
+	result, err := m.DB.ExecContext(ctx,
 		stmt,
 		v.StockNo,
 		v.Cost,
@@ -1929,16 +1929,12 @@ func (m *DBModel) InsertVehicle(v clientmodels.Vehicle) (int, error) {
 		return 0, err
 	}
 
-	stmt = "SELECT LAST_INSERT_ID()"
-	row := m.DB.QueryRowContext(ctx, stmt)
-
-	var id int
-	err = row.Scan(&id)
+	id, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
 
-	return id, nil
+	return int(id), nil
 }
 
 // UpdateVehicle updates a vehicle in the database
@@ -2628,7 +2624,7 @@ func (m *DBModel) InsertStaff(o clientmodels.Employee) (int, error) {
 	INSERT INTO employees e (first_name, last_name, e.position, image, email, description, active, created_at, updated_at)
     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	_, err := m.DB.ExecContext(ctx, stmt,
+	result, err := m.DB.ExecContext(ctx, stmt,
 		o.FirstName,
 		o.LastName,
 		o.Position,
@@ -2642,15 +2638,12 @@ func (m *DBModel) InsertStaff(o clientmodels.Employee) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	stmt = "SELECT LAST_INSERT_ID()"
-	row := m.DB.QueryRowContext(ctx, stmt)
 
-	var id int
-	err = row.Scan(&id)
+	id, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
-	return id, nil
+	return int(id), nil
 }
 
 // GetSalesPeople returns slice of sales staff
@@ -2737,4 +2730,62 @@ func (m *DBModel) GetOneSalesStaff(id int) (clientmodels.SalesStaff, error) {
 	}
 
 	return o, nil
+}
+
+// UpdateSalesStaff updates staff
+func (m *DBModel) UpdateSalesStaff(o clientmodels.SalesStaff) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update sales e set 
+		e.salesperson_name = ?,
+		slug = ?,
+		phone = ?,
+		image = ?,
+		active = ?,
+		updated_at = ?
+		where id = ?`
+
+	_, err := m.DB.ExecContext(ctx, query,
+		o.Name,
+		o.Slug,
+		o.Phone,
+		o.Image,
+		o.Active,
+		o.UpdatedAt,
+		o.ID,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (m *DBModel) InsertSalesStaff(o clientmodels.SalesStaff) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+	INSERT INTO sales (salesperson_name, slug, email, phone, active, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?)`
+
+	result, err := m.DB.ExecContext(ctx, stmt,
+		o.Name,
+		o.Slug,
+		o.Email,
+		o.Phone,
+		o.Active,
+		o.CreatedAt,
+		o.UpdatedAt,
+	)
+	if err != nil {
+		fmt.Println("error inserting", err)
+		return 0, err
+	}
+	fmt.Println("getting new id")
+
+	id, err := result.LastInsertId()
+	fmt.Println("returning id of", int(id), "from repo")
+	return int(id), nil
 }
