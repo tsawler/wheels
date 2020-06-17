@@ -2464,7 +2464,7 @@ func (m *DBModel) UpdateOption(o clientmodels.Option) error {
 		updated_at = ?
 		where id = ?`
 
-	_, err := m.DB.ExecContext(ctx, query, o.OptionName, o.Active, o.UpdatedAt)
+	_, err := m.DB.ExecContext(ctx, query, o.OptionName, o.Active, o.UpdatedAt, o.ID)
 	if err != nil {
 		fmt.Println(err)
 		return err

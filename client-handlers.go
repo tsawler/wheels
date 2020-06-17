@@ -1116,11 +1116,17 @@ func OptionslAll(w http.ResponseWriter, r *http.Request) {
 func DisplayOneOption(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	rowSets := make(map[string]interface{})
-	o, err := vehicleModel.GetOneOption(id)
-	if err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
-		return
+
+	var o clientmodels.Option
+
+	if id > 0 {
+		op, err := vehicleModel.GetOneOption(id)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		o = op
 	}
 	rowSets["option"] = o
 
@@ -1144,9 +1150,14 @@ func DisplayOneOptionPost(w http.ResponseWriter, r *http.Request) {
 		OptionName: form.Get("option_name"),
 		Active:     active,
 		UpdatedAt:  time.Now(),
+		CreatedAt:  time.Now(),
 	}
 
-	_ = vehicleModel.UpdateOption(o)
+	if id > 0 {
+		_ = vehicleModel.UpdateOption(o)
+	} else {
+		_ = vehicleModel.InsertOption(o)
+	}
 
 	session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, "/admin/inventory/options/all", http.StatusSeeOther)
