@@ -42,6 +42,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/get-pre-approved", standardMiddleWare.ThenFunc(CreditApp))
 	mux.Post("/credit-application", standardMiddleWare.ThenFunc(PostCreditApp))
 
+	// vehicle popups
 	mux.Post("/inventory/compare-vehicles", standardMiddleWare.ThenFunc(CompareVehicles))
 	mux.Post("/wheels/quick-quote", standardMiddleWare.ThenFunc(QuickQuote))
 	mux.Post("/wheels/test-drive", standardMiddleWare.ThenFunc(TestDrive))
