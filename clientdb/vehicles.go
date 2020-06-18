@@ -3128,3 +3128,121 @@ func (m *DBModel) InsertTestimonial(o clientmodels.Testimonial) error {
 
 	return nil
 }
+
+// GetAllWordOfMouth returns slice of word of mouth
+func (m *DBModel) GetAllWordOfMouth() ([]clientmodels.Word, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Word
+
+	query := `
+		select 
+		       id, 
+		       title, 
+		       content, 
+		       active,
+		       created_at,
+		       updated_at
+		from 
+		     words 
+		order by created_at desc`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Word{}
+		err = rows.Scan(
+			&c.ID,
+			&c.Title,
+			&c.Content,
+			&c.Active,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+		v = append(v, *c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
+// GetOneWordOfMouth returns one word of mouth
+func (m *DBModel) GetOneWordOfMouth(id int) (clientmodels.Word, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o clientmodels.Word
+
+	query := "select id, title, content, active, created_at, updated_at from words where id = ?"
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&o.ID,
+		&o.Title,
+		&o.Content,
+		&o.Active,
+		&o.CreatedAt,
+		&o.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return o, err
+	}
+
+	return o, nil
+}
+
+// UpdateWordOfMouth updates a word of mouth
+func (m *DBModel) UpdateWordOfMouth(o clientmodels.Word) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update words set 
+		title = ?,
+		content = ?,
+		active = ?,
+		updated_at = ?
+		where id = ?`
+
+	_, err := m.DB.ExecContext(ctx, query, o.Title, o.Content, o.Active, o.UpdatedAt, o.ID)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+// InsertWordOfMouth inserts a word of mouth
+func (m *DBModel) InsertWordOfMouth(o clientmodels.Word) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+	INSERT INTO words (title, content, active, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?)`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		o.Title,
+		o.Content,
+		o.Active,
+		o.CreatedAt,
+		o.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

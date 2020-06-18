@@ -1526,3 +1526,81 @@ func DisplayOneTestimonialPost(w http.ResponseWriter, r *http.Request) {
 	session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, "/admin/testimonials/all", http.StatusSeeOther)
 }
+
+// TestimonialsAllAdmin lists all testimonials in admin
+func WordAllAdmin(w http.ResponseWriter, r *http.Request) {
+	rowSets := make(map[string]interface{})
+	s, err := vehicleModel.GetAllWordOfMouth()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["staff"] = s
+
+	helpers.Render(w, r, "word-all.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}
+
+// DisplayOneTestimonial displays staff for add/edit
+func DisplayOneWord(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	rowSets := make(map[string]interface{})
+
+	var o clientmodels.Word
+
+	if id > 0 {
+		op, err := vehicleModel.GetOneWordOfMouth(id)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		o = op
+	}
+	rowSets["testimonial"] = o
+
+	helpers.Render(w, r, "word-one.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+		Form:    forms.New(nil),
+	})
+}
+
+func DisplayOneWordPost(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	active := 0
+
+	form := forms.New(r.PostForm, app.Database)
+	if form.Has("active", r) {
+		active = 1
+	}
+
+	var o clientmodels.Word
+
+	if id > 0 {
+		o, _ = vehicleModel.GetOneWordOfMouth(id)
+	} else {
+		o.CreatedAt = time.Now()
+	}
+
+	o.Title = form.Get("title")
+	o.Content = form.Get("content")
+	o.Active = active
+	o.UpdatedAt = time.Now()
+
+	if id > 0 {
+		err := vehicleModel.UpdateWordOfMouth(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+	} else {
+		err := vehicleModel.InsertWordOfMouth(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+	}
+
+	session.Put(r.Context(), "flash", "Changes saved")
+	http.Redirect(w, r, "/admin/testimonials/word-of-mouth/all", http.StatusSeeOther)
+}

@@ -169,5 +169,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/testimonials/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(DisplayOneTestimonial))
 	mux.Post("/admin/testimonials/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(DisplayOneTestimonialPost))
 
+	mux.Get("/admin/testimonials/word-of-mouth/all", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(WordAllAdmin))
+	mux.Get("/admin/testimonials/word-of-mouth/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(DisplayOneWord))
+	mux.Post("/admin/testimonials/word-of-mouth/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(DisplayOneWordPost))
+
 	return mux, nil
 }

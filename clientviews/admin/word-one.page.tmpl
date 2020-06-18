@@ -1,0 +1,81 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Huggable Word of Mouth - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Huggable Word of Mouth{{end}}
+{{define "content-title"}}Huggable Word of Mouth{{end}}
+
+{{define "content"}}
+    {{$o := index .RowSets "testimonial"}}
+    <form method="post" action="/admin/testimonials/word-of-mouth/{{$o.ID}}" novalidate class="needs-validation" id="test-form">
+
+        <div class="row">
+            <div class="col-md-6">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+
+                <div class="form-group">
+                    <label>Title:</label>
+                    {{with .Form.Errors.Get "title"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input class="form-control" id="title" autocomplete="off" type='text'
+                           name='title' required
+                           value='{{$o.Title}}'>
+                    <div class="invalid-feedback">
+                        Please enter a value
+                    </div>
+                </div>
+
+                <div class="form-group pt-3">
+                    <label>Content:</label>
+                    {{with .Form.Errors.Get "content"}}
+                        <label class='text-danger'>{{.}}</label>
+                    {{end}}
+                    <input id="content" type="hidden" name="content"
+                           value="{{- if ne $o.Content "" -}}{{-  $o.Content -}}{{- end -}}"
+                    >
+                    <trix-editor class="trix-content" input="content"></trix-editor>
+                </div>
+
+                <div class="custom-control custom-switch">
+                    <input type="checkbox"
+                            {{if eq $o.Active 1}}
+                                checked
+                            {{end}}
+                           class="custom-control-input" value="1" id="active"
+                           name="active">
+                    <label class="custom-control-label"
+                           for="active">Active</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <hr>
+                <input type="submit" class="btn btn-primary" value="Save">
+                <a class="btn btn-warning" href="/admin/testimonials/all">Cancel</a>
+            </div>
+        </div>
+
+    </form>
+{{end}}
+
+{{define "js"}}
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+{{end}}
