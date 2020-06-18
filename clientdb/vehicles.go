@@ -2970,7 +2970,7 @@ func (m *DBModel) InsertModel(mid int, s string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `insert into vehicle_models (vehicle_makes_id, model, created_at, updated_at
+	query := `insert into vehicle_models (vehicle_makes_id, model, created_at, updated_at)
 			values (?, ?, ?, ?)`
 
 	result, err := m.DB.ExecContext(ctx, query, mid, s, time.Now(), time.Now())
@@ -2993,7 +2993,7 @@ func (m *DBModel) InsertMake(s string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `insert into vehicle_makes (make, created_at, updated_at
+	query := `insert into vehicle_makes (make, created_at, updated_at)
 			values (?, ?, ?)`
 
 	result, err := m.DB.ExecContext(ctx, query, s, time.Now(), time.Now())
