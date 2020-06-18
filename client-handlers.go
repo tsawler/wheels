@@ -330,7 +330,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	// handle panorama
 	if form.HasFile("panorama", r) {
 		// we have a panorama
-		fileName, _, _ := helpers.UploadOneFile(r, "./tmp")
+		fileName, _, _ := helpers.UploadOneFile(r, "./tmp/")
 
 		oldLocation := fmt.Sprintf("./tmp/%s", fileName)
 		newLocation := fmt.Sprintf("./ui/static/site-content/panoramas/%d-%s", vehicleID, fileName)
