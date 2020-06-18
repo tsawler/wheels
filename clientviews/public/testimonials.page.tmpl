@@ -137,7 +137,7 @@
 
 
 {{define "body"}}
-    {{$words := index .RowSets "words"}}
+    {{$testimonials := index .RowSets "testimonials"}}
     {{$currentPage := index .IntMap "current-page"}}
     {{$num := index .IntMap "num"}}
 
@@ -145,15 +145,15 @@
     <div class="container is-content-1200">
         <div class="row">
             <div class="col">
-                {{paginate $currentPage $num 10 "/huggable-word-of-mouth" "blog-pager"}}
+                {{paginate $currentPage $num 10 "/customer-testimonials" "blog-pager"}}
 
-                {{range $words}}
-                    <h3>{{.Title}}</h3>
-                    <p>{{safeHTML .Content}}</p>
+                {{range $testimonials}}
+                    <h3>{{.Label}}</h3>
+                    <div class="embed-responsive embed-responsive-16by9"><iframe src="{{.Url}}" allowfullscreen="" width="560" height="315" frameborder="0"></iframe></div>
                     <hr>
                 {{end}}
 
-                {{paginate $currentPage $num 10 "/huggable-word-of-mouth" "blog-pager"}}
+                {{paginate $currentPage $num 10 "/customer-testimonials" "blog-pager"}}
             </div>
         </div>
     </div>
@@ -208,6 +208,7 @@
     {{ .Page.JS}}
 
     <script>
+
 
     </script>
 

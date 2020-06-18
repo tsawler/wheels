@@ -34,6 +34,10 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/huggable-word-of-mouth", dynamicMiddleware.ThenFunc(AllWordsPublic))
 	mux.Get("/huggable-word-of-mouth/:pageIndex", dynamicMiddleware.ThenFunc(AllWordsPublic))
 
+	// testimonials
+	mux.Get("/customer-testimonials", dynamicMiddleware.ThenFunc(AllTestimonialsPublic))
+	mux.Get("/customer-testimonials/:pageIndex", dynamicMiddleware.ThenFunc(AllTestimonialsPublic))
+
 	// credit app
 	mux.Get("/get-pre-approved", standardMiddleWare.ThenFunc(CreditApp))
 	mux.Post("/credit-application", standardMiddleWare.ThenFunc(PostCreditApp))
