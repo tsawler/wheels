@@ -3246,3 +3246,57 @@ func (m *DBModel) InsertWordOfMouth(o clientmodels.Word) error {
 
 	return nil
 }
+
+func (m *DBModel) AllWordOfMouthPaginated(limit, offset int) ([]clientmodels.Word, int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var w []clientmodels.Word
+
+	stmt := "select count(id) from words p where p.active = 1"
+	countRow := m.DB.QueryRowContext(ctx, stmt)
+
+	var num int
+	err := countRow.Scan(&num)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	stmt = `
+		SELECT 
+		p.id,
+		p.title,
+		p.content,
+		p.active,
+		p.created_at,
+		p.updated_at
+		FROM words p 
+		where active = 1
+		ORDER BY created_at desc
+		limit ? offset ?
+`
+	prows, err := m.DB.QueryContext(ctx, stmt, limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer prows.Close()
+
+	for prows.Next() {
+		s := &clientmodels.Word{}
+		err = prows.Scan(
+			&s.ID,
+			&s.Title,
+			&s.Content,
+			&s.Active,
+			&s.CreatedAt,
+			&s.UpdatedAt)
+		if err != nil {
+			return nil, 0, err
+		}
+		// Append it to the slice.
+
+		w = append(w, *s)
+	}
+
+	return w, num, nil
+}
