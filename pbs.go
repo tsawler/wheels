@@ -196,25 +196,26 @@ func PullFromPBS() (int, bool) {
 			}
 
 			v := clientmodels.Vehicle{
-				StockNo:         x.StockNumber,
-				Vin:             x.VIN,
-				Odometer:        x.Odometer,
-				Year:            year,
-				VehicleMakesID:  makeID,
-				VehicleModelsID: modelID,
-				Trim:            x.Trim,
+				Cost:            float32(x.Retail),
+				CreatedAt:       time.Now(),
+				Description:     defaultDescription,
+				DriveTrain:      x.DriveWheel,
 				Engine:          x.Engine,
-				Transmission:    x.Transmission,
-				TotalMSR:        float32(x.MSR),
 				ExteriorColour:  x.ExteriorColor.Description,
 				InteriorColour:  x.InteriorColor.Description,
-				VehicleType:     vehicleType,
-				DriveTrain:      x.DriveWheel,
+				Odometer:        x.Odometer,
 				Status:          2,
-				Description:     defaultDescription,
-				CreatedAt:       time.Now(),
+				StockNo:         x.StockNumber,
+				TotalMSR:        float32(x.MSR),
+				Transmission:    x.Transmission,
+				Trim:            x.Trim,
 				UpdatedAt:       time.Now(),
-				Cost:            float32(x.Retail),
+				Used:            1,
+				VehicleMakesID:  makeID,
+				VehicleModelsID: modelID,
+				VehicleType:     vehicleType,
+				Vin:             x.VIN,
+				Year:            year,
 			}
 
 			vid, err := vehicleModel.InsertVehicle(v)
@@ -294,7 +295,7 @@ func PullFromPBS() (int, bool) {
 
 			// see if we have this model
 			modelID := vehicleModel.GetModelByName(x.Model)
-			if makeID == 0 {
+			if modelID == 0 {
 				// add new make
 				id, err := vehicleModel.InsertMake(x.Make)
 				if err != nil {
@@ -327,25 +328,26 @@ func PullFromPBS() (int, bool) {
 			}
 
 			v := clientmodels.Vehicle{
-				StockNo:         x.StockNumber,
-				Vin:             x.VIN,
-				Odometer:        x.Odometer,
-				Year:            year,
-				VehicleMakesID:  makeID,
-				VehicleModelsID: modelID,
-				Trim:            x.Trim,
+				Cost:            float32(x.Retail),
+				CreatedAt:       time.Now(),
+				Description:     defaultDescription,
+				DriveTrain:      x.DriveWheel,
 				Engine:          x.Engine,
-				Transmission:    x.Transmission,
-				TotalMSR:        float32(x.MSR),
 				ExteriorColour:  x.ExteriorColor.Description,
 				InteriorColour:  x.InteriorColor.Description,
-				VehicleType:     vehicleType,
-				DriveTrain:      x.DriveWheel,
+				Odometer:        x.Odometer,
 				Status:          2,
-				Description:     defaultDescription,
-				CreatedAt:       time.Now(),
+				StockNo:         x.StockNumber,
+				TotalMSR:        float32(x.MSR),
+				Transmission:    x.Transmission,
+				Trim:            x.Trim,
 				UpdatedAt:       time.Now(),
-				Cost:            float32(x.Retail),
+				Used:            0,
+				VehicleMakesID:  makeID,
+				VehicleModelsID: modelID,
+				VehicleType:     vehicleType,
+				Vin:             x.VIN,
+				Year:            year,
 			}
 
 			vid, err := vehicleModel.InsertVehicle(v)
