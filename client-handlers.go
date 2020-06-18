@@ -330,8 +330,32 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	// handle panorama
 	if form.HasFile("panorama", r) {
 		// we have a panorama
-		// TODO
+		fileName, _, _ := helpers.UploadOneFile(r, "./tmp")
+
+		oldLocation := fmt.Sprintf("./tmp/%s", fileName)
+		newLocation := fmt.Sprintf("./ui/static/site-content/panoramas/%d-%s", vehicleID, fileName)
+
+		err := MoveFile(oldLocation, newLocation)
+		if err != nil {
+			app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
+		}
+
+		// update in DB
+		vp := clientmodels.Panorama{
+			VehicleID: vehicleID,
+			Panorama:  fmt.Sprintf("%d-%s", vehicleID, fileName),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+
+		v.Panorama = vp
+
+		err = vehicleModel.UpdatePanorama(vp)
+		if err != nil {
+			errorLog.Println(err)
+		}
 	}
+
 	// redirect
 	session.Put(r.Context(), "flash", "Changes saved")
 	if action == 1 {
@@ -339,7 +363,6 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s/%d", category, segment, src, vehicleID), http.StatusSeeOther)
-
 }
 
 // AllVehicles displays all vehicles

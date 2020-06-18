@@ -1526,7 +1526,7 @@ func (m *DBModel) GetVehicleByID(id int) (clientmodels.Vehicle, error) {
 
 	panRow := m.DB.QueryRowContext(ctx, query, id)
 	var pan clientmodels.Panorama
-	err = panRow.Scan(&pan.ID, &pan.VehicleID, &pan.File, &pan.CreatedAt, &pan.UpdatedAt)
+	err = panRow.Scan(&pan.ID, &pan.VehicleID, &pan.Panorama, &pan.CreatedAt, &pan.UpdatedAt)
 
 	if err == nil {
 		c.Panorama = pan
@@ -3367,4 +3367,29 @@ func (m *DBModel) AllTestimonialsPaginated(limit, offset int) ([]clientmodels.Te
 	}
 
 	return w, num, nil
+}
+
+func (m *DBModel) UpdatePanorama(vp clientmodels.Panorama) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `delete from vehicle_panoramas where vehicle_id = ?`
+	_, err := m.DB.ExecContext(ctx, query, vp.VehicleID)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	stmt := `
+	INSERT INTO vehicle_panoramas (vehicle_id, panorama, created_at, updated_at)
+    VALUES(?, ?, ?, ?)`
+
+	_, err = m.DB.ExecContext(ctx, stmt,
+		vp.VehicleID,
+		vp.Panorama,
+		vp.CreatedAt,
+		vp.UpdatedAt,
+	)
+
+	return nil
 }

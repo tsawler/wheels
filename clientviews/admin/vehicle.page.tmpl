@@ -57,7 +57,7 @@
 
     <form method="post"
           action="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}"
-          id="vehicle-form" novalidate class="needs-validation">
+          id="vehicle-form" novalidate class="needs-validation" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <ul class="nav nav-tabs" id="prefTabs" role="tablist">
             <li class="nav-item">

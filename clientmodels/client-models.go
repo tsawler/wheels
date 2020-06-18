@@ -58,7 +58,7 @@ type Vehicle struct {
 type Panorama struct {
 	ID        int
 	VehicleID int
-	File      string
+	Panorama  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
