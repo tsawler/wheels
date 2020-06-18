@@ -20,6 +20,7 @@ var vehicleModel *clientdb.DBModel
 func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DBRepo) {
 	// make sure the directories we need are there
 	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/inventory/")
+	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/panoramas/")
 	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/salesstaff/")
 	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/staff/")
 	_ = helpers.CreateDirIfNotExist("./ui/static/site-content/staff/thumbs")

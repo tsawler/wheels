@@ -327,6 +327,11 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// handle panorama
+	if form.HasFile("panorama", r) {
+		// we have a panorama
+		// TODO
+	}
 	// redirect
 	session.Put(r.Context(), "flash", "Changes saved")
 	if action == 1 {
