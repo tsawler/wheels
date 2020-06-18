@@ -1489,6 +1489,7 @@ func DisplayOneTestimonial(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DisplayOneTestimonialPost posts a testimonial
 func DisplayOneTestimonialPost(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	active := 0
@@ -1567,6 +1568,7 @@ func DisplayOneWord(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DisplayOneWordPost posts word of mouth
 func DisplayOneWordPost(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	active := 0
