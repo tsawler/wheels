@@ -1433,6 +1433,7 @@ func DisplayOneSalesStaffPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/sales-people/all", http.StatusSeeOther)
 }
 
+// DeleteSalesPerson deletes sales
 func DeleteSalesPerson(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	_ = vehicleModel.DeleteSalesStaff(id)
@@ -1440,9 +1441,88 @@ func DeleteSalesPerson(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/sales-people/all", http.StatusSeeOther)
 }
 
+// DeleteStaff deletes a staff
 func DeleteStaff(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	_ = vehicleModel.DeleteStaff(id)
 	session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, "/admin/staff/all", http.StatusSeeOther)
+}
+
+// TestimonialsAllAdmin lists all testimonials in admin
+func TestimonialsAllAdmin(w http.ResponseWriter, r *http.Request) {
+	rowSets := make(map[string]interface{})
+	s, err := vehicleModel.GetAllTestimonials()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["staff"] = s
+
+	helpers.Render(w, r, "testimonials-all.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}
+
+// DisplayOneTestimonial displays staff for add/edit
+func DisplayOneTestimonial(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	rowSets := make(map[string]interface{})
+
+	var o clientmodels.Testimonial
+
+	if id > 0 {
+		op, err := vehicleModel.GetOneTestimonial(id)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		o = op
+	}
+	rowSets["testimonial"] = o
+
+	helpers.Render(w, r, "testimonial-one.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+		Form:    forms.New(nil),
+	})
+}
+
+func DisplayOneTestimonialPost(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	active := 0
+
+	form := forms.New(r.PostForm, app.Database)
+	if form.Has("active", r) {
+		active = 1
+	}
+
+	var o clientmodels.Testimonial
+
+	if id > 0 {
+		o, _ = vehicleModel.GetOneTestimonial(id)
+	} else {
+		o.CreatedAt = time.Now()
+	}
+
+	o.Label = form.Get("label")
+	o.Url = form.Get("url")
+	o.Active = active
+	o.UpdatedAt = time.Now()
+
+	if id > 0 {
+		err := vehicleModel.UpdateTestimonial(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+	} else {
+		err := vehicleModel.InsertTestimonial(o)
+		if err != nil {
+			errorLog.Println(err)
+		}
+	}
+
+	session.Put(r.Context(), "flash", "Changes saved")
+	http.Redirect(w, r, "/admin/testimonials/all", http.StatusSeeOther)
 }

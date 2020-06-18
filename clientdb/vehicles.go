@@ -2459,6 +2459,7 @@ func (m *DBModel) GetOptions() ([]clientmodels.Option, error) {
 	return v, nil
 }
 
+// GetOneOption gets one option
 func (m *DBModel) GetOneOption(id int) (clientmodels.Option, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2483,6 +2484,7 @@ func (m *DBModel) GetOneOption(id int) (clientmodels.Option, error) {
 	return o, nil
 }
 
+// UpdateOption updates one option
 func (m *DBModel) UpdateOption(o clientmodels.Option) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -3007,4 +3009,122 @@ func (m *DBModel) InsertMake(s string) (int, error) {
 	}
 
 	return int(newID), nil
+}
+
+// GetAllTestimonials returns slice of testimonials
+func (m *DBModel) GetAllTestimonials() ([]clientmodels.Testimonial, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Testimonial
+
+	query := `
+		select 
+		       id, 
+		       label, 
+		       url, 
+		       active,
+		       created_at,
+		       updated_at
+		from 
+		     testimonials 
+		order by created_at desc`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Testimonial{}
+		err = rows.Scan(
+			&c.ID,
+			&c.Label,
+			&c.Url,
+			&c.Active,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+		v = append(v, *c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
+// GetOneTestimonial returns one testimonial
+func (m *DBModel) GetOneTestimonial(id int) (clientmodels.Testimonial, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o clientmodels.Testimonial
+
+	query := "select id, label, url, active, created_at, updated_at from testimonials where id = ?"
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&o.ID,
+		&o.Label,
+		&o.Url,
+		&o.Active,
+		&o.CreatedAt,
+		&o.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return o, err
+	}
+
+	return o, nil
+}
+
+// UpdateTestimonial updates a testimonial
+func (m *DBModel) UpdateTestimonial(o clientmodels.Testimonial) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `update testimonials set 
+		label = ?,
+		url = ?,
+		active = ?,
+		updated_at = ?
+		where id = ?`
+
+	_, err := m.DB.ExecContext(ctx, query, o.Label, o.Url, o.Active, o.UpdatedAt, o.ID)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+// InsertTestimonial inserts a testimonial
+func (m *DBModel) InsertTestimonial(o clientmodels.Testimonial) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+	INSERT INTO testimonials (label, url, active, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?)`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		o.Label,
+		o.Url,
+		o.Active,
+		o.CreatedAt,
+		o.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
