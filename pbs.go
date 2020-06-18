@@ -163,9 +163,9 @@ func PullFromPBS() (int, bool) {
 
 			// see if we have this model
 			modelID := vehicleModel.GetModelByName(x.Model)
-			if makeID == 0 {
+			if modelID == 0 {
 				// add new make
-				id, err := vehicleModel.InsertMake(x.Make)
+				id, err := vehicleModel.InsertModel(makeID, x.Model)
 				if err != nil {
 					errorLog.Print(err)
 				}
@@ -297,7 +297,7 @@ func PullFromPBS() (int, bool) {
 			modelID := vehicleModel.GetModelByName(x.Model)
 			if modelID == 0 {
 				// add new make
-				id, err := vehicleModel.InsertMake(x.Make)
+				id, err := vehicleModel.InsertModel(makeID, x.Model)
 				if err != nil {
 					errorLog.Print(err)
 				}
