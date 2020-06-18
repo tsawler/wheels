@@ -1520,7 +1520,20 @@ func (m *DBModel) GetVehicleByID(id int) (clientmodels.Vehicle, error) {
 		fmt.Println(err)
 	}
 
-	c.Images = vehicleImages
+	// get panorama, if any
+	query = `select id, vehicle_id, panorama, created_at, updated_at 
+		from vehicle_panoramas where vehicle_id = ?`
+
+	panRow := m.DB.QueryRowContext(ctx, query, id)
+	var pan clientmodels.Panorama
+	err = panRow.Scan(&pan.ID, &pan.VehicleID, &pan.File, &pan.CreatedAt, &pan.UpdatedAt)
+
+	if err == nil {
+		c.Panorama = pan
+	} else {
+		fmt.Println(err)
+	}
+
 	return c, nil
 }
 

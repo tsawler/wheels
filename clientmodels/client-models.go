@@ -50,8 +50,17 @@ type Vehicle struct {
 	VehicleType       int              `xml:"-"`
 	VehicleTypeString string           `xml:"vehicle_type"`
 	Video             VehicleVideo     `xml:"-"`
+	Panorama          Panorama         `xml:"-"`
 	Vin               string           `xml:"Vin"`
 	Year              int              `xml:"Year"`
+}
+
+type Panorama struct {
+	ID        int
+	VehicleID int
+	File      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // Option holds vehicle options
@@ -116,19 +125,19 @@ type VehicleVideo struct {
 
 // Video holds a video
 type Video struct {
-	ID                      int
-	VideoName               string
-	FileName                string
-	Public                  int
-	Description             string
-	CategoryID              int
-	SortOrder               int
-	Thumb                   string
-	ConvertedForStreamingAt time.Time
-	Duration                int
-	Is360                   int
-	CreatedAt               time.Time
-	UpdatedAt               time.Time
+	ID                    int
+	VideoName             string
+	FileName              string
+	Public                int
+	Description           string
+	CategoryID            int
+	SortOrder             int
+	Thumb                 string
+	ConvertedForStreaming int
+	Duration              int
+	Is360                 int
+	CreatedAt             time.Time
+	UpdatedAt             time.Time
 }
 
 // SalesStaff holds sales people

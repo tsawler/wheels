@@ -446,6 +446,16 @@
                                 </select>
                             </div>
                         </div>
+
+                        <div class="form-group pt-3">
+                            <label>Panorama:</label>
+                            <div>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="panorama" id="panorama">
+                                    <label class="custom-file-label" for="panorama">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -490,6 +500,7 @@
         let modelsMenu = document.getElementById("vehicle_models_id")
 
         document.addEventListener("DOMContentLoaded", function () {
+            bsCustomFileInput.init();
             let carVideoList = document.getElementById("car-video-list");
             tail.select(carVideoList, {search: true, width: '100%'});
             sortList();
