@@ -2,6 +2,7 @@ package clientmodels
 
 import "time"
 
+// VehicleJSON describes vehicle json
 type VehicleJSON struct {
 	ID        int       `json:"id"`
 	StockNo   string    `json:"stock_no"`
@@ -55,6 +56,7 @@ type Vehicle struct {
 	Year              int              `xml:"Year"`
 }
 
+// Panorama holds a panoramic image
 type Panorama struct {
 	ID        int
 	VehicleID int
@@ -217,6 +219,7 @@ type Employee struct {
 	UpdatedAt   time.Time
 }
 
+// Testimonial holds a testimonial
 type Testimonial struct {
 	ID        int
 	Label     string
@@ -226,6 +229,7 @@ type Testimonial struct {
 	UpdatedAt time.Time
 }
 
+// Word holds a word of mouth
 type Word struct {
 	ID        int
 	Title     string
@@ -235,6 +239,7 @@ type Word struct {
 	UpdatedAt time.Time
 }
 
+// Finder holds a vehicle finder request
 type Finder struct {
 	ID            int
 	FirstName     string
