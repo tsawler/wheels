@@ -6,8 +6,15 @@
 {{end}}
 
 {{define "css"}}
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
     <style>
+        #panorama {
+            width: 600px;
+            height: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         video {
             width: 100% !important;
             height: auto !important;
@@ -146,6 +153,14 @@
                             </div>
                         {{end}}
 
+                        {{if ne $item.Panorama.Panorama ""}}
+                            <div class="row">
+                                <div class="col text-center mb-4">
+                                    <div id="panorama"></div>
+                                </div>
+                            </div>
+                        {{end}}
+
                         <div class="row">
                             <div class="col-md-12">
                                 {{safeHTML $item.Description}}
@@ -159,7 +174,7 @@
                         </div>
                         <div class="row">
                             {{range $item.VehicleOptions}}
-                            <div class="col-md-3">&bull; {{.OptionName}}</div>
+                                <div class="col-md-3">&bull; {{.OptionName}}</div>
                             {{end}}
                         </div>
 
@@ -177,7 +192,8 @@
                                         {{if ne $item.HandPicked 1}}
                                             <strong><span class="text-danger">Certified Vehicle</span></strong><br>
                                         {{else}}
-                                            <strong><span class="text-danger">MVI Select Plus Vehicle</span></strong><br>
+                                            <strong><span class="text-danger">MVI Select Plus Vehicle</span></strong>
+                                            <br>
                                         {{end}}
                                         <strong>Stock #:</strong> {{$item.StockNo}}<br>
                                         <strong>Drivetrain:</strong> {{$item.DriveTrain}}<br>
@@ -349,12 +365,20 @@
 
 
 {{define "js"}}
-
-
+    {{$item := index .RowSets "item"}}
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.min.js"
             integrity="sha256-voP3sbDhk+YDZKsGO8dpMGk9qzne1cf3f1CRgjwRnrk=" crossorigin="anonymous"></script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            pannellum.viewer('panorama', {
+                "type": "equirectangular",
+                "panorama": "{{.ServerUrl}}/static/site-content/panoramas/{{$item.Panorama.Panorama}}",
+                "autoLoad": true
+            });
+        })
+
         async function printVehicle(x) {
             attention.confirm({
                 html: "Are you sure download the vehicle information as a PDF?",

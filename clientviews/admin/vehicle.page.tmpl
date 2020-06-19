@@ -1,8 +1,14 @@
 {{template "admin-base" .}}
 
 {{define "css"}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
     <link href="/static/js/ts/bootstrap4/tail.select-default.min.css" rel="stylesheet">
     <style>
+
+        #panorama {
+            width: 600px;
+            height: 400px;
+        }
 
         #image-list li {
             padding-left: 0.3em;
@@ -447,11 +453,16 @@
                             </div>
                         </div>
 
+                        {{if ne $v.Panorama.Panorama ""}}
+                        <div id="panorama"></div>
+                        {{end}}
+
                         <div class="form-group pt-3">
                             <label>Panorama:</label>
                             <div>
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="panorama" id="panorama" accept="image/*">
+                                    <input type="file" class="custom-file-input" name="panorama" id="panorama"
+                                           accept="image/*">
                                     <label class="custom-file-label" for="panorama">Choose file</label>
                                 </div>
                             </div>
@@ -493,6 +504,7 @@
     {{$v := index .RowSets "vehicle"}}
     <script src="/static/js/tus.min.js"></script>
     <script src="/static/js/ts/tail.select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     <script>
 
         let imageList;
@@ -505,6 +517,14 @@
             tail.select(carVideoList, {search: true, width: '100%'});
             sortList();
             performSort();
+
+            {{if ne $v.Panorama.Panorama ""}}
+            pannellum.viewer('panorama', {
+                "type": "equirectangular",
+                "panorama": "{{.ServerUrl}}/static/site-content/panoramas/{{$v.Panorama.Panorama}}",
+                // "autoLoad": true
+            });
+            {{end}}
 
             makesMenu.addEventListener("change", function (el) {
                 console.log("make changed to", this.value);
