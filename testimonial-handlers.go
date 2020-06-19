@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// AllWordsPublic displays all vehicles
+// AllWordsPublic displays all word of mouth
 func AllWordsPublic(w http.ResponseWriter, r *http.Request) {
 	slug := "huggable-word-of-mouth"
 
@@ -74,7 +74,7 @@ func AllWordsPublic(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// AllTestimonialsPublic displays all vehicles
+// AllTestimonialsPublic displays all testimonials
 func AllTestimonialsPublic(w http.ResponseWriter, r *http.Request) {
 	slug := "customer-testimonials"
 
