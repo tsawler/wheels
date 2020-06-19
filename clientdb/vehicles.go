@@ -603,10 +603,14 @@ func (m *DBModel) GetVehiclesForSaleByType(vehicleType int) ([]clientmodels.Vehi
 }
 
 // AllVehiclesPaginated returns paginated slice of vehicles, by type
-func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, make, model, price int) ([]clientmodels.Vehicle, int, error) {
+func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, make, model, price int, handPicked bool) ([]clientmodels.Vehicle, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	extraWhere := ""
+	if handPicked {
+		extraWhere = " and hand_picked = 1"
+	}
 	var v []clientmodels.Vehicle
 
 	where := ""
@@ -616,7 +620,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 	}
 
 	if make > 0 {
-		where = fmt.Sprintf("%s and v.vehicle_makes_id = %d", where, make)
+		where = fmt.Sprintf("%s and v.vehicle_makes_id = %d %s", where, make, extraWhere)
 	}
 
 	if model > 0 {
@@ -640,7 +644,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			vehicles v 
 		where 
 			status = 1 
-			and vehicle_type < 7 %s`, where)
+			and vehicle_type < 7 %s %s`, where, extraWhere)
 		nRows = m.DB.QueryRowContext(ctx, stmt)
 	} else if vehicleTypeID < 1000 {
 		// suvs
@@ -651,7 +655,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			vehicles v 
 		where 
 			status = 1 
-			and vehicle_type = ? %s`, where)
+			and vehicle_type = ? %s %s`, where, extraWhere)
 		nRows = m.DB.QueryRowContext(ctx, stmt, vehicleTypeID)
 
 	} else if vehicleTypeID == 1000 {
@@ -724,7 +728,8 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			and status = 1
 			%s
 			%s
-		limit ? offset ?`, where, orderBy)
+			%s
+		limit ? offset ?`, where, extraWhere, orderBy)
 		rows, err = m.DB.QueryContext(ctx, query, perPage, offset)
 		if err != nil {
 			fmt.Println(err)
@@ -768,102 +773,11 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			and status = 1
 			%s
 			%s
-		limit ? offset ?`, where, orderBy)
+			%s
+		limit ? offset ?`, where, extraWhere, orderBy)
 		rows, err = m.DB.QueryContext(ctx, query, vehicleTypeID, perPage, offset)
 		if err != nil {
 			fmt.Println(err)
-			return nil, 0, err
-		}
-	} else if vehicleTypeID == 1000 {
-		query = fmt.Sprintf(`
-		select 
-		       id, 
-		       stock_no, 
-		       coalesce(cost, 0),
-		       vin, 
-		       coalesce(odometer, 0),
-		       coalesce(year, 0),
-		       coalesce(trim, ''),
-		       vehicle_type,
-		       coalesce(body, ''),
-		       coalesce(seating_capacity,''),
-		       coalesce(drive_train,''),
-		       coalesce(engine,''),
-		       coalesce(exterior_color,''),
-		       coalesce(interior_color,''),
-		       coalesce(transmission,''),
-		       coalesce(options,''),
-		       coalesce(model_number, ''),
-		       coalesce(total_msr,0.0),
-		       v.status,
-		       coalesce(description, ''),
-		       vehicle_makes_id,
-		       vehicle_models_id,
-		       hand_picked,
-		       used,
-		       coalesce(price_for_display,''),
-		       created_at,
-		       updated_at
-		from 
-		     vehicles v 
-		where
-			vehicle_type in (8, 11, 12, 16, 7, 17, 14)
-			and status = 1
-			and v.used = 1
-			%s
-			%s
-		limit ? offset ?`, where, orderBy)
-
-		rows, err = m.DB.QueryContext(ctx, query, perPage, offset)
-		if err != nil {
-			fmt.Println(err)
-			rows.Close()
-			return nil, 0, err
-		}
-	} else if vehicleTypeID == 1001 {
-		query = fmt.Sprintf(`
-		select 
-		       id, 
-		       stock_no, 
-		       coalesce(cost, 0),
-		       vin, 
-		       coalesce(odometer, 0),
-		       coalesce(year, 0),
-		       coalesce(trim, ''),
-		       vehicle_type,
-		       coalesce(body, ''),
-		       coalesce(seating_capacity,''),
-		       coalesce(drive_train,''),
-		       coalesce(engine,''),
-		       coalesce(exterior_color,''),
-		       coalesce(interior_color,''),
-		       coalesce(transmission,''),
-		       coalesce(options,''),
-		       coalesce(model_number, ''),
-		       coalesce(total_msr,0.0),
-		       v.status,
-		       coalesce(description, ''),
-		       vehicle_makes_id,
-		       vehicle_models_id,
-		       hand_picked,
-		       used,
-		       coalesce(price_for_display,''),
-		       created_at,
-		       updated_at
-		from 
-		     vehicles v 
-		where
-			vehicle_type in (13, 10, 9, 15)
-			and status = 1
-			and v.used = 1
-			%s
-			%s
-		limit ? offset ?`, where, orderBy)
-
-		rows, err = m.DB.QueryContext(ctx, query, perPage, offset)
-		if err != nil {
-			fmt.Println(err)
-			rows.Close()
 			return nil, 0, err
 		}
 	}

@@ -18,7 +18,7 @@ func DisplayAllVehicleInventory(w http.ResponseWriter, r *http.Request) {
 	vehicleType := 0
 	templateName := "inventory.page.tmpl"
 
-	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory")
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory", false)
 }
 
 // DisplaySUVInventory shows suv inventory
@@ -30,7 +30,7 @@ func DisplaySUVInventory(w http.ResponseWriter, r *http.Request) {
 	vehicleType := 5
 	templateName := "inventory.page.tmpl"
 
-	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-suvs-fredericton")
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-suvs-fredericton", false)
 }
 
 // DisplayCarInventory shows car inventory
@@ -42,7 +42,7 @@ func DisplayCarInventory(w http.ResponseWriter, r *http.Request) {
 	vehicleType := 1
 	templateName := "inventory.page.tmpl"
 
-	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-cars-fredericton")
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-cars-fredericton", false)
 }
 
 // DisplayTruckInventory shows truck inventory
@@ -54,7 +54,7 @@ func DisplayTruckInventory(w http.ResponseWriter, r *http.Request) {
 	vehicleType := 2
 	templateName := "inventory.page.tmpl"
 
-	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-trucks-fredericton")
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-trucks-fredericton", false)
 }
 
 // DisplayMinivanInventory shows minivan inventory
@@ -66,7 +66,7 @@ func DisplayMinivanInventory(w http.ResponseWriter, r *http.Request) {
 	vehicleType := 6
 	templateName := "inventory.page.tmpl"
 
-	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-minivans-fredericton")
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-minivans-fredericton", false)
 }
 
 // MVI Select shows budget priced used cars inventory
@@ -75,14 +75,14 @@ func DisplayMVISelect(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/budget-priced-used-cars"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := 6
+	vehicleType := 0
 	templateName := "inventory.page.tmpl"
 
-	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "budget-priced-used-cars")
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "budget-priced-used-cars", true)
 }
 
 // renderInventory renders inventory for a product type
-func renderInventory(r *http.Request, stringMap map[string]string, vehicleType int, w http.ResponseWriter, intMap map[string]int, templateName, slug string) {
+func renderInventory(r *http.Request, stringMap map[string]string, vehicleType int, w http.ResponseWriter, intMap map[string]int, templateName, slug string, handPicked bool) {
 	var offset int
 	var selectedYear, selectedMake, selectedModel, selectedPrice int
 	pagerSuffix := ""
@@ -111,7 +111,7 @@ func renderInventory(r *http.Request, stringMap map[string]string, vehicleType i
 	perPage := 10
 	offset = (pageIndex - 1) * perPage
 
-	vehicles, num, err := vehicleModel.AllVehiclesPaginated(vehicleType, perPage, offset, selectedYear, selectedMake, selectedModel, selectedPrice)
+	vehicles, num, err := vehicleModel.AllVehiclesPaginated(vehicleType, perPage, offset, selectedYear, selectedMake, selectedModel, selectedPrice, handPicked)
 	if err != nil {
 		errorLog.Println(err)
 		helpers.ClientError(w, http.StatusBadRequest)
