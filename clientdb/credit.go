@@ -236,6 +236,7 @@ func (m *DBModel) QuickQuotesJSON(query, baseQuery string) ([]*clientmodels.Quic
 	return v, rowCount, filterCount, nil
 }
 
+// GetTestDrive returns one test drive request
 func (m *DBModel) GetTestDrive(id int) (clientmodels.TestDrive, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()

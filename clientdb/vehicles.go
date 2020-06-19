@@ -2217,6 +2217,7 @@ func (m *DBModel) MakesForYear(year int) ([]clientmodels.Make, error) {
 	return makes, nil
 }
 
+// CountSoldThisMonth counts sold this month
 func (m *DBModel) CountSoldThisMonth() int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2238,6 +2239,7 @@ func (m *DBModel) CountSoldThisMonth() int {
 	return soldThisMonth
 }
 
+// CountPending counts pending
 func (m *DBModel) CountPending() int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2258,6 +2260,7 @@ func (m *DBModel) CountPending() int {
 	return pending
 }
 
+// CountTradeIns counts trade ins
 func (m *DBModel) CountTradeIns() int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2278,6 +2281,7 @@ func (m *DBModel) CountTradeIns() int {
 	return pending
 }
 
+// CountForSale counts for sale
 func (m *DBModel) CountForSale() int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2298,6 +2302,7 @@ func (m *DBModel) CountForSale() int {
 	return forSale
 }
 
+// CountForSalePowerSports counts for sale in power sports
 func (m *DBModel) CountForSalePowerSports() int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2318,6 +2323,7 @@ func (m *DBModel) CountForSalePowerSports() int {
 	return forSale
 }
 
+// CountSoldThisMonthPowerSports counts sold power sports for thsis mounth
 func (m *DBModel) CountSoldThisMonthPowerSports() int {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -2430,6 +2436,7 @@ func (m *DBModel) UpdateOption(o clientmodels.Option) error {
 	return nil
 }
 
+// InsertOption inserts an option
 func (m *DBModel) InsertOption(o clientmodels.Option) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -3229,6 +3236,7 @@ func (m *DBModel) AllWordOfMouthPaginated(limit, offset int) ([]clientmodels.Wor
 	return w, num, nil
 }
 
+// AllTestimonialsPaginated returns paginated list of testimonials
 func (m *DBModel) AllTestimonialsPaginated(limit, offset int) ([]clientmodels.Testimonial, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -3283,6 +3291,7 @@ func (m *DBModel) AllTestimonialsPaginated(limit, offset int) ([]clientmodels.Te
 	return w, num, nil
 }
 
+// UpdatePanorama updates a panorama
 func (m *DBModel) UpdatePanorama(vp clientmodels.Panorama) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
