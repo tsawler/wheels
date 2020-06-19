@@ -371,3 +371,18 @@ func PostCreditApp(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+// VehicleFinder displays vehicle finder page
+func VehicleFinder(w http.ResponseWriter, r *http.Request) {
+	pg, err := repo.DB.GetPageBySlug("vehicle-finder")
+
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	helpers.Render(w, r, "vehicle-finder.page.tmpl", &templates.TemplateData{
+		Form: forms.New(nil),
+		Page: pg,
+	})
+}
