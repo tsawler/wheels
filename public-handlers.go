@@ -440,13 +440,13 @@ func VehicleFinderPost(w http.ResponseWriter, r *http.Request) {
 	)
 
 	var cc []string
-	//cc = append(cc, "wheelsanddeals@pbssystems.com")
+	cc = append(cc, "wheelsanddeals@pbssystems.com")
 	//cc = append(cc, "john.eliakis@wheelsanddeals.ca")
-	cc = append(cc, "chelsea.gilbert@wheelsanddeals.ca")
+	//cc = append(cc, "")
 
 	mailMessage := channel_data.MailData{
 		ToName:      "",
-		ToAddress:   "alex.gilbert@wheelsanddeals.ca",
+		ToAddress:   "chelsea.gilbert@wheelsanddeals.ca",
 		FromName:    app.PreferenceMap["smtp-from-name"],
 		FromAddress: app.PreferenceMap["smtp-from-email"],
 		Subject:     "Wheels and Deals Vehicle Finder Request",
