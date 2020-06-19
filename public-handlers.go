@@ -386,3 +386,115 @@ func VehicleFinder(w http.ResponseWriter, r *http.Request) {
 		Page: pg,
 	})
 }
+
+// VehicleFinderPost handles ajax post of vehicle finder
+func VehicleFinderPost(w http.ResponseWriter, r *http.Request) {
+	form := forms.New(r.PostForm)
+	form.Required("first_name", "last_name", "email", "phone", "g-recaptcha-response")
+
+	form.RecaptchaValid(r.RemoteAddr)
+
+	if !form.Valid() {
+		theData := JSONResponse{
+			OK:      false,
+			Message: "Form error",
+		}
+
+		// build the json response from the struct
+		out, err := json.MarshalIndent(theData, "", "    ")
+		if err != nil {
+			helpers.ServerError(w, err)
+			return
+		}
+
+		// send json to client
+		w.Header().Set("Content-Type", "application/json")
+		_, err = w.Write(out)
+		if err != nil {
+			errorLog.Println(err)
+		}
+		return
+	}
+
+	// create email
+	content := fmt.Sprintf(`
+		<p>
+			<strong>Wheels and Deals Vehicle Finder Request</strong>:<br><br>
+			<strong>Name:</strong> %s  %s<br>
+			<strong>Email:</strong> %s <br>
+			<strong>Phone:</strong> %s <br>
+			<strong>Best Contact Method:</strong> %s<br>
+			<strong>Year</strong>: %s<br>
+			<strong>Make</strong>: %s<br>
+			<strong>Model</strong>: %s<br>
+		</p>
+`,
+		form.Get("first_name"),
+		form.Get("last_name"),
+		form.Get("email"),
+		form.Get("phone"),
+		form.Get("contact_method"),
+		form.Get("year"),
+		form.Get("make"),
+		form.Get("model"),
+	)
+
+	var cc []string
+	//cc = append(cc, "wheelsanddeals@pbssystems.com")
+	//cc = append(cc, "john.eliakis@wheelsanddeals.ca")
+	cc = append(cc, "chelsea.gilbert@wheelsanddeals.ca")
+
+	mailMessage := channel_data.MailData{
+		ToName:      "",
+		ToAddress:   "alex.gilbert@wheelsanddeals.ca",
+		FromName:    app.PreferenceMap["smtp-from-name"],
+		FromAddress: app.PreferenceMap["smtp-from-email"],
+		Subject:     "Wheels and Deals Vehicle Finder Request",
+		Content:     template.HTML(content),
+		Template:    "bootstrap.mail.tmpl",
+		CC:          cc,
+	}
+
+	infoLog.Println("Sending email")
+
+	helpers.SendEmail(mailMessage)
+
+	// save the application
+	finder := clientmodels.Finder{
+		FirstName:     form.Get("first_name"),
+		LastName:      form.Get("last_name"),
+		Email:         form.Get("email"),
+		Phone:         form.Get("phone"),
+		ContactMethod: form.Get("contact_method"),
+		Year:          form.Get("year"),
+		Make:          form.Get("make"),
+		Model:         form.Get("model"),
+		Processed:     0,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
+	}
+
+	err := vehicleModel.InsertFinder(finder)
+	if err != nil {
+		errorLog.Println(err)
+	}
+
+	theData := JSONResponse{
+		OK: true,
+	}
+
+	// build the json response from the struct
+	out, err := json.MarshalIndent(theData, "", "    ")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	// send json to client
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(out)
+	if err != nil {
+		errorLog.Println(err)
+	}
+
+}

@@ -3400,8 +3400,8 @@ func (m *DBModel) InsertFinder(o clientmodels.Finder) error {
 	defer cancel()
 
 	stmt := `
-	INSERT INTO words (first_name, last_name, email, phone, contact_method, year, make, model, created_at, updated_at)
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?. ?)`
+	INSERT INTO finders (first_name, last_name, email, phone, contact_method, year, make, model, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := m.DB.ExecContext(ctx, stmt,
 		o.FirstName,

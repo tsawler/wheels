@@ -32,6 +32,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	// vehicle finder
 	mux.Get("/vehicle-finder", standardMiddleWare.ThenFunc(VehicleFinder))
+	mux.Post("/vehicle-finder", standardMiddleWare.ThenFunc(VehicleFinderPost))
 
 	// word of mouth
 	mux.Get("/huggable-word-of-mouth", dynamicMiddleware.ThenFunc(AllWordsPublic))
