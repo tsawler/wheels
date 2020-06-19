@@ -133,7 +133,7 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				last4 := fileName[dot:len(fileName)]
 				slugified := fmt.Sprintf("%s%s", slug.Make(rootName), last4)
 				oldLocation := fmt.Sprintf("%s/%s", app.TusDir, payload.Upload.ID)
-				newLocation := fmt.Sprintf("%s/%s/%s", payload.Upload.MetaData.UploadTo, slugified)
+				newLocation := fmt.Sprintf("%s/%s", payload.Upload.MetaData.UploadTo, slugified)
 
 				err := MoveFile(oldLocation, newLocation)
 				if err != nil {
