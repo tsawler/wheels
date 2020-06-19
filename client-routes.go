@@ -77,6 +77,10 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/used-minivans-fredericton", dynamicMiddleware.ThenFunc(DisplayMinivanInventory))
 	mux.Get("/used-minivans-fredericton/:pageIndex", dynamicMiddleware.ThenFunc(DisplayMinivanInventory))
 
+	// mvi select
+	mux.Get("/budget-priced-used-cars", dynamicMiddleware.ThenFunc(DisplayMVISelect))
+	mux.Get("/budget-priced-used-cars/:pageIndex", dynamicMiddleware.ThenFunc(DisplayMVISelect))
+
 	// show vehicle
 	mux.Get("/:CATEGORY/view/:ID/:SLUG", dynamicMiddleware.ThenFunc(DisplayOneVehicle))
 

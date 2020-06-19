@@ -69,6 +69,18 @@ func DisplayMinivanInventory(w http.ResponseWriter, r *http.Request) {
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-minivans-fredericton")
 }
 
+// MVI Select shows budget priced used cars inventory
+func DisplayMVISelect(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["pager-url"] = "/budget-priced-used-cars"
+	intMap := make(map[string]int)
+	intMap["show-makes"] = 1
+	vehicleType := 6
+	templateName := "inventory.page.tmpl"
+
+	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "budget-priced-used-cars")
+}
+
 // renderInventory renders inventory for a product type
 func renderInventory(r *http.Request, stringMap map[string]string, vehicleType int, w http.ResponseWriter, intMap map[string]int, templateName, slug string) {
 	var offset int
