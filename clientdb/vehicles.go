@@ -3393,3 +3393,133 @@ func (m *DBModel) UpdatePanorama(vp clientmodels.Panorama) error {
 
 	return nil
 }
+
+// InsertFinder inserts a vehicle finder request
+func (m *DBModel) InsertFinder(o clientmodels.Finder) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+	INSERT INTO words (first_name, last_name, email, phone, contact_method, year, make, model, created_at, updated_at)
+    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?. ?)`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		o.FirstName,
+		o.LastName,
+		o.Email,
+		o.Phone,
+		o.ContactMethod,
+		o.Year,
+		o.Make,
+		o.Model,
+		o.CreatedAt,
+		o.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetOneFinder returns one finder
+func (m *DBModel) GetOneFinder(id int) (clientmodels.Finder, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o clientmodels.Finder
+
+	query := `select 
+		id,
+		coalesce(first_name,  ''),
+		coalesce(last_name,  ''),
+		coalesce(email,  ''),
+		coalesce(phone, ''), 
+		coalesce(contact_method, ''), 
+		coalesce(year, ''), 
+		coalesce(make, ''), 
+		coalesce(model, ''),
+		created_at, 
+		updated_at 
+		from finders where id = ?`
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&o.ID,
+		&o.FirstName,
+		&o.LastName,
+		&o.Email,
+		&o.Phone,
+		&o.ContactMethod,
+		&o.Year,
+		&o.Make,
+		&o.Model,
+		&o.CreatedAt,
+		&o.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return o, err
+	}
+
+	return o, nil
+}
+
+// GetAllFinders returns slice of finders
+func (m *DBModel) GetAllFinders() ([]clientmodels.Finder, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Finder
+
+	query := `
+			select 
+		       	id, 
+		       	coalesce(first_name,  ''),
+				coalesce(last_name,  ''),
+				coalesce(email,  ''),
+				coalesce(phone, ''), 
+				coalesce(contact_method, ''), 
+				coalesce(year, ''), 
+				coalesce(make, ''), 
+				coalesce(model, ''),
+		       created_at,
+		       updated_at
+			from 
+				 finders 
+			order by created_at desc`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Finder{}
+		err = rows.Scan(
+			&c.ID,
+			&c.FirstName,
+			&c.LastName,
+			&c.Email,
+			&c.Phone,
+			&c.ContactMethod,
+			&c.Year,
+			&c.Make,
+			&c.Model,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+		v = append(v, *c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}

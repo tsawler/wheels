@@ -50,6 +50,16 @@
         </li>
     {{end}}
 
+    {{if hasRole "finder" .Auth.ID}}
+        <li id="finder" {{if eq .CurrentSegment "vehicle-finder"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-question-circle-o fa-fw"></i> <span class="nav-label">Vehicle Finder</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/vehicle-finder/all">All requests</a></li>
+            </ul>
+        </li>
+    {{end}}
+
     {{if hasRole "staff" .Auth.ID}}
         <li id="sales-people" {{if eq .CurrentSegment "sales-people"}} class="active" {{end}}>
             <a href="#!"><i class="fa fa-users fa-fw"></i> <span class="nav-label">Sales People</span> <span

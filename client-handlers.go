@@ -1572,7 +1572,7 @@ func WordAllAdmin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// DisplayOneTestimonial displays staff for add/edit
+// DisplayOneWord displays one
 func DisplayOneWord(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
 	rowSets := make(map[string]interface{})
@@ -1633,4 +1633,43 @@ func DisplayOneWordPost(w http.ResponseWriter, r *http.Request) {
 
 	session.Put(r.Context(), "flash", "Changes saved")
 	http.Redirect(w, r, "/admin/testimonials/word-of-mouth/all", http.StatusSeeOther)
+}
+
+func AllFinders(w http.ResponseWriter, r *http.Request) {
+	rowSets := make(map[string]interface{})
+	s, err := vehicleModel.GetAllFinders()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["finders"] = s
+
+	helpers.Render(w, r, "finder-all.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
+}
+
+// DisplayOneFinder displays staff for add/edit
+func DisplayOneFinder(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
+	rowSets := make(map[string]interface{})
+
+	var o clientmodels.Finder
+
+	if id > 0 {
+		op, err := vehicleModel.GetOneFinder(id)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		o = op
+	}
+	rowSets["app"] = o
+
+	helpers.Render(w, r, "finder-one.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+		Form:    forms.New(nil),
+	})
 }

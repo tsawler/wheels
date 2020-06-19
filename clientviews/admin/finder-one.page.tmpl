@@ -1,0 +1,27 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Vehicle Finder Request - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Vehicle Finder Request{{end}}
+{{define "content-title"}}Vehicle Finder Request{{end}}
+
+{{define "content"}}
+    {{$app := index .RowSets "app"}}
+
+    <strong>First Name:</strong> {{$app.FirstName}}<br>
+    <strong>Last Name:</strong> {{$app.LastName}}<br>
+    <strong>Email:</strong> <a href="mailto:{{$app.Email}}">{{$app.Email}}</a><br>
+    <strong>Phone:</strong> {{$app.Phone}}<br>
+    <strong>Best Contact Method:</strong> {{$app.ContactMethod}}<br>
+    <strong>Year</strong> {{$app.Year}}<br>
+    <strong>Make:</strong> {{$app.Make}}<br>
+    <strong>Model:</strong> {{$app.Model}}<br>
+    <strong>Received:</strong> {{humanDateTime $app.CreatedAt}}<br>
+    <hr>
+    <a class="btn btn-primary" href="/admin/vehicle-finder/all">Back</a>
+
+{{end}}
+
+{{define "js"}}
+
+{{end}}

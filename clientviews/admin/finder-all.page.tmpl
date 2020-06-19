@@ -1,0 +1,42 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Vehicle Finder Requests - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Vehicle Finder Requests{{end}}
+{{define "content-title"}}Vehicle Finder Requests{{end}}
+
+{{define "content"}}
+    <div class="table-responsive">
+        <table id="itable" class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Received</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{$staff := index .RowSets "finders"}}
+            {{range $staff}}
+                <tr>
+                    <td><a href='/admin/vehicle-finder/{{.ID}}'>{{.ID}}</a></td>
+                    <td><a href='/admin/vehicle-finder/{{.ID}}'>{{.LastName}}</a></td>
+                    <td><a href='/admin/vehicle-finder/{{.ID}}'>{{.FirstName}}</a></td>
+                    <td>{{humanDateTime .CreatedAt}}</td>
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+{{end}}
+
+{{define "js"}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            $('#itable').DataTable({
+                "order": [[3, "desc"]],
+            });
+        });
+    </script>
+{{end}}

@@ -234,3 +234,18 @@ type Word struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type Finder struct {
+	ID            int
+	FirstName     string
+	LastName      string
+	Email         string
+	Phone         string
+	ContactMethod string
+	Year          string
+	Make          string
+	Model         string
+	Processed     int
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}

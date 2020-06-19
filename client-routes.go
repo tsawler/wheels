@@ -182,5 +182,11 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/testimonials/word-of-mouth/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(DisplayOneWord))
 	mux.Post("/admin/testimonials/word-of-mouth/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(DisplayOneWordPost))
 
+	/*--------------------------------------------------------------------------
+	| Vehicle finders
+	|--------------------------------------------------------------------------*/
+	mux.Get("/admin/vehicle-finder/all", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(AllFinders))
+	mux.Get("/admin/vehicle-finder/:ID", dynamicMiddleware.Append(mw.Auth).Append(TestDriveRole).ThenFunc(DisplayOneFinder))
+
 	return mux, nil
 }
