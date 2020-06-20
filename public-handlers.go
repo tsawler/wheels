@@ -498,3 +498,26 @@ func VehicleFinderPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+// OurTeam displays our team page
+func OurTeam(w http.ResponseWriter, r *http.Request) {
+	pg, err := repo.DB.GetPageBySlug("our-team")
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	team, err := vehicleModel.GetStaffForPublic()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	rowSets := make(map[string]interface{})
+	rowSets["team"] = team
+
+	helpers.Render(w, r, "vehicle-finder.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+		Page:    pg,
+	})
+}
