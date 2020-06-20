@@ -14,12 +14,15 @@ Add PBS and other authentications to the `.env` file:
 PBSUSER=username
 PBSPASS=somepassword
 
+CARGURUHOST=ftp.cargurus.com
 CARGURUSUSER=
 CARGURUSPASS=
 
+KIJIJIHOST=ftp.cargigi.com
 KIJIJIUSER=
 KIJIJIPASS=
 
+KIJIJIPSHOST=cargigi.com
 KIJIJIPSUSER=
 KIJIJIPSPASS=
 ~~~
