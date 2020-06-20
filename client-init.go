@@ -61,4 +61,27 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 		PullFromPBS()
 	})
 
+	infoLog.Println("Scheduling Push to CarGurus....")
+	_, _ = app.Scheduler.AddFunc("@daily", func() {
+		PushToCarGurus()
+	})
+
+	infoLog.Println("Scheduling Push to Kijiji....")
+	_, _ = app.Scheduler.AddFunc("@daily", func() {
+		PushToKijiji()
+	})
+
+	infoLog.Println("Scheduling Push to Kijiji (PowerSports)....")
+	_, _ = app.Scheduler.AddFunc("@daily", func() {
+		PushToKijiPowerSports()
+	})
+
+	_, _ = app.Scheduler.AddFunc("0 3 * * ?", func() {
+		CleanImages()
+	})
+
+	_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
+		CleanVideos()
+	})
+
 }

@@ -15,7 +15,7 @@ func DisplayAllVehicleInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/used-vehicle-inventory"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := AllVehicles
+	vehicleType := All
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory", false)
@@ -75,7 +75,7 @@ func DisplayMVISelect(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/budget-priced-used-cars"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := AllVehicles
+	vehicleType := All
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "budget-priced-used-cars", true)

@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	AllVehicles   = 0
+	All           = 0
 	ATVBruteForce = 8
 	ATVMule       = 11
 	ATVTeryx      = 12
