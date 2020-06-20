@@ -23,6 +23,9 @@ func CreateWindowSticker(v clientmodels.Vehicle) (*gofpdf.Fpdf, error) {
 		pdf.AddPage()
 		importer.UseImportedTemplate(pdf, t, 0, 0, 215.9, 0)
 
+		// draw highlight
+		pdf.Image("./client/clienthandlers/pdf-templates/hl2.png", 173, 19, 33, 8, false, "", 0, "")
+
 		// write make/model/year/trim
 		pdf.SetFont("Arial", "BI", 24)
 		pdf.Write(0, fmt.Sprintf("%d %s %s %s", v.Year, v.Make.Make, v.Model.Model, v.Trim))
