@@ -310,3 +310,7 @@ func CleanImages() {
 func CleanVideos() {
 
 }
+
+func CleanPanoramas() {
+
+}

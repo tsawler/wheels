@@ -76,6 +76,7 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 		PushToKijiPowerSports()
 	})
 
+	infoLog.Println("Scheduling image/video cleanup....")
 	_, _ = app.Scheduler.AddFunc("0 3 * * ?", func() {
 		CleanImages()
 	})
@@ -84,4 +85,7 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 		CleanVideos()
 	})
 
+	_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
+		CleanPanoramas()
+	})
 }
