@@ -146,14 +146,16 @@
 
             {{range $team}}
             <div class="col-md-4 margin20">
-                <div class="team-wrap">
+                <div class="team-wrap text-center">
                     <img src="/storage/staff/{{.Image}}" class="img img-fluid center-block" alt="">
                     <h4><a class="text-danger" href="#staff_{{.ID}}" data-toggle="collapse">{{.FirstName}} {{.LastName}}</a></h4>
-                    <span><strong>{{.Position}}</strong></span>
+                    <span class="text-uppercase"><strong>{{.Position}}</strong></span>
                     <div class="collapse" id="staff_{{.ID}}">
+                        <div class="text-left">
                             {{safeHTML .Description}}
+                        </div>
                         <ul class="list-inline">
-                            <li><a href="#"><i class="fa fa-envelope"></i> {{.Email}}</a></li>
+                            <li><a href="#" class="text-danger"><i class="fa fa-envelope"></i> {{.Email}}</a></li>
                         </ul>
                     </div>
                 </div>
