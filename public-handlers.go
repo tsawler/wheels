@@ -516,7 +516,7 @@ func OurTeam(w http.ResponseWriter, r *http.Request) {
 	rowSets := make(map[string]interface{})
 	rowSets["team"] = team
 
-	helpers.Render(w, r, "vehicle-finder.page.tmpl", &templates.TemplateData{
+	helpers.Render(w, r, "our-team.page.tmpl", &templates.TemplateData{
 		RowSets: rowSets,
 		Page:    pg,
 	})

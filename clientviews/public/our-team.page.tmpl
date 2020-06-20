@@ -1,0 +1,296 @@
+{{template "base" .}}
+
+{{define "title"}}{{ index (.Page.TitleMap) $.Lang}}{{end}}
+
+{{define "css"}}
+    {{ .Page.PageStyles}}
+    {{ .Page.CSS}}
+    <style>
+        .is-wrapper {
+            height: auto;
+        }
+    </style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"
+          integrity="sha256-yMjaV542P+q1RnH6XByCPDfUFhmOafWbeLPmqKh11zo=" crossorigin="anonymous"/>
+{{end}}
+
+{{define "flyout"}}
+    {{if .IsAuthenticated}}
+        {{if hasRole "pages" .Auth.ID}}
+            <div id="page-details-opener" class='d-none'>
+                <a href="#!"
+                   data-toggle="modal" data-backdrop="true" data-target="#edit-page-details"><i
+                            class="fa fa-chevron-left"></i></a>
+            </div>
+
+            <div class="modal fade" id="edit-page-details" tabindex="-1" role="dialog"
+                 aria-labelledby="edit-page-details"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-slideout modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Page Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="thetitledata">Page Name: </label>
+                                <input type="text" class="form-control required" name="page_title" id="thetitledata"
+                                       value="{{.Page.PageTitle}}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="meta_tags">Meta Tags: </label>
+                                <input type="text" class="form-control required" name="meta_tags" id="meta_tags"
+                                       value="{{.Page.MetaTags}}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="meta">Meta Description: </label>
+                                <textarea class="form-control required" name="meta" id="meta">{{.Page.Meta}}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="active">Page Status:</label>
+                                <select class="form-control" name="active" id="active">
+                                    <option value="1" {{if eq .Page.Active 1}}selected{{end}}>Active</option>
+                                    {{if gt .Page.ID 1}}
+                                        <option value="0" {{if eq .Page.Active 0}}selected{{end}}>Inactive</option>
+                                    {{end}}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="access_level">Access Level:</label>
+                                <select class="form-control" name="access_level" id="access_level">
+                                    <option value="0" {{if eq .Page.AccessLevel 0}}selected{{end}}>Public Access
+                                    </option>
+                                    {{if gt .Page.ID 1}}
+                                        <option value="1" {{if eq .Page.AccessLevel 1}}selected{{end}}>Account
+                                            Required
+                                        </option>
+                                        <option value="3" {{if eq .Page.AccessLevel 3}}selected{{end}}>Administrators
+                                            Only
+                                        </option>
+                                    {{end}}
+                                </select>
+                            </div>
+
+                            {{if gt .Page.ID 0}}
+                                <div class="form-group">
+                                    <label for="slider">Slider?</label>
+                                    <select class="form-control" name="slider" id="slider">
+                                        <option value="0" {{if eq .Page.HasSlider 0}}selected{{end}}>No</option>
+                                        <option value="1" {{if eq .Page.HasSlider 1}}selected{{end}}>Yes</option>
+                                    </select>
+                                </div>
+
+                                <div id="sliderDiv" class="text-center form-group d-none">
+                                    <a class="btn btn-info btn-sm" style="color: white;" href="#!" id="sliderBtn">Manage
+                                        Slider</a>
+                                </div>
+                            {{end}}
+
+                            <div class="form-group text-center">
+                                <a class="btn btn-info btn-sm text-white" style="color: white;" href="#!"
+                                   onclick="showMenuOptions()">Menu Settings</a>
+                            </div>
+
+                            <div class="form-group text-center">
+                                {{if gt .Page.ID 0}}
+                                    <a class="btn btn-info btn-sm text-white" style="color: white;" href="#!"
+                                       onclick="showOpenGraphModal()">Sharing Image</a>
+                                    <br>
+                                {{end}}
+                            </div>
+
+                            <div class="form-group text-center">
+                                <a href="#!" onclick="openJSModal()" class="edit-js-css" id="jsBtn">
+                                    <i class="edit-js-css ion ion-social-javascript"></i>
+                                </a>
+
+                                &nbsp;
+                                <a href="#!" class="edit-js-css" id="cssBtn" onclick="openCSSModal()">
+                                    <i class="edit-js-css ion ion-social-css3"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{end}}
+    {{end}}
+{{end}}
+
+
+{{define "content"}}
+
+    <div id="content_edit" class="is-wrapper">
+        {{ index .Page.ContentMap .Lang}}
+    </div>
+
+{{end}}
+
+
+{{define "body"}}
+    {{$team := index .RowSets "team"}}
+
+
+    <div class="clearfix"></div>
+    <div class="container is-content-1200">
+        <div class="row">
+
+            {{range $team}}
+            <div class="col-md-4 margin20">
+                <div class="team-wrap">
+                    <img src="/storage/staff/{{.Image}}" class="img img-fluid center-block" alt="">
+                    <h4><a class="text-danger" href="#staff_{{.ID}}" data-toggle="collapse">{{.FirstName}} {{.LastName}}</a></h4>
+                    <span><strong>{{.Position}}</strong></span>
+                    <div class="collapse" id="staff_{{.ID}}">
+                            {{safeHTML .Description}}
+                        <ul class="list-inline">
+                            <li><a href="#"><i class="fa fa-envelope"></i> {{.Email}}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {{end}}
+
+        </div>
+    </div>
+    <div>&nbsp;</div>
+    <div class="clearfix"></div>
+{{end}}
+
+{{define "buttons"}}
+    {{if .IsAuthenticated}}
+        {{if hasRole "pages" .Auth.ID}}
+            <div id="bottomSaveBar" class="d-none show-on-edit">
+                <div class="bottomBar text-center">
+                    <div class="row justify-content-between">
+
+                        <div class="col-3">
+                            {{if or (gt .Page.ID 1) (ne .Page.Immutable 1)}}
+                                <a class="btn btn-danger mb5 btn-rounded text-white ml-5" href="#!"
+                                   onclick="deletePage()">Delete</a>
+                            {{end}}
+                        </div>
+
+                        <div class="col-3">
+                            {{if gt .Page.ID 1}}
+                                <a class="btn btn-info mb5 btn-rounded text-white" href="/{{ .Page.Slug}}">Cancel</a>
+                            {{else}}
+                                <a class="btn btn-info mb5 btn-rounded text-white" href="/">Cancel</a>
+                            {{end}}
+
+                            <button id="btnSave" type="button" onclick="saveEditedPage()"
+                                    class="btn btn-success mb5 btn-rounded">Save
+                            </button>
+                        </div>
+
+                        <div class="col-3">
+                            <a class="btn btn-outline-info mr-5" href="#!" onclick="saveAsTemplate()"><i
+                                        class="fa fa-save"></i>
+                                Template</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{end}}
+    {{end}}
+{{end}}
+
+
+{{define "js"}}
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+    {{ .Page.JS}}
+
+    <script>
+
+
+    </script>
+
+    {{if .IsAuthenticated}}
+        <form method="post" name="hiddensavepage" id="hiddensavepage" action="/admin/pages/ajax/savepage">
+            <input type="hidden" name="page_id" value="{{.Page.ID}}" id="hidden_page_id">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            <input type="hidden" name="thedata" id="hidden_thedata">
+            <input type="hidden" name="meta_tags" id="hidden_meta_tags">
+            <input type="hidden" name="meta" id="hidden_meta">
+            <input type="hidden" name="active" id="hidden_active">
+            <input type="hidden" name="page_title" id="hidden_thetitledata">
+            <input type="hidden" name="has_slider" id="hidden_has_slider">
+            <input type="hidden" name="page_styles" id="hidden_page_styles">
+            <input type="hidden" name="draft" id="draft" value="0">
+            <input type="hidden" name="access_level" id="hidden_access_level" value="0">
+            <input type="hidden" name="page_js" id="hidden_page_js" value="{{ base64 .Page.JS }}">
+            <input type="hidden" name="page_css" id="hidden_page_css" value="{{ base64 .Page.CSS }}">
+            <input type="hidden" name="menu_bg_color" id="hidden_menu_bg_color" value="{{.Page.MenuColor }}">
+            <input type="hidden" name="menu_transparent" id="hidden_menu_transparent"
+                   value="{{ .Page.MenuTransparent }}">
+            <input type="hidden" name="seo_image" id="hidden_seo_image" value="{{ .Page.SEOImage }}">
+        </form>
+
+        {{ if .Page }}
+            {{if hasRole "menus" .Auth.ID}}
+                {{template "menu-modal-js" .}}
+            {{end}}
+
+            {{if hasRole "pages" .Auth.ID}}
+                {{template "css-js-modal" .}}
+                {{template "vcms-edit-page-js" .}}
+                {{template "slider-modal" .}}
+                {{template "slider-text-modal" .}}
+                {{template "menu-custom-modal" .}}
+                {{template "open-graph-page-modal" .}}
+
+                <script>
+                    {{if gt .Page.ID 0}}
+                    $(document).ready(function () {
+                        $("#seo-image").change(function () {
+
+                            let fd = new FormData();
+                            fd.append('image', $('#seo-image')[0].files[0]);
+                            fd.append("page_id", {{.Page.ID}});
+                            fd.append("csrf_token", '{{.CSRFToken}}');
+                            $.ajax({
+                                type: "POST",
+                                enctype: 'multipart/form-data',
+                                url: "/admin/pages/upload-seo-image",
+                                data: fd,
+                                processData: false,
+                                contentType: false,
+                                cache: false,
+                                success: (data) => {
+                                    successAlert("SEO Image saved!");
+                                    let r = Math.random().toString(36).substring(7);
+                                    $("#seo-share").attr("src", "/static/site-content/page-uploads/{{.Page.ID}}/share.jpg?id=" + r);
+                                    $("#hidden_seo_image").val(1);
+                                },
+                                error: function (xhr, status, error) {
+                                    errorAlert("Something went wrong. Is your image at least 1200x1080?")
+                                }
+                            });
+                        });
+                    });
+                    {{end}}
+                </script>
+
+                {{if index .StringMap "edit"}}
+                    <script>
+                        $(document).ready(function () {
+                            makePageEditable();
+                        });
+                    </script>
+                {{end}}
+            {{end}}
+        {{end}}
+    {{end}}
+{{end}}
