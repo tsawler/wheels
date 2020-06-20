@@ -15,7 +15,7 @@ func DisplayAllVehicleInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/used-vehicle-inventory"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := 0
+	vehicleType := AllVehicles
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-vehicle-inventory", false)
@@ -27,7 +27,7 @@ func DisplaySUVInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/used-suvs-fredericton"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := 5
+	vehicleType := SUV
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-suvs-fredericton", false)
@@ -39,7 +39,7 @@ func DisplayCarInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/used-cars-fredericton"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := 1
+	vehicleType := Car
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-cars-fredericton", false)
@@ -51,7 +51,7 @@ func DisplayTruckInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/used-trucks-fredericton"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := 2
+	vehicleType := Truck
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-trucks-fredericton", false)
@@ -63,7 +63,7 @@ func DisplayMinivanInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/used-minivans-fredericton"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := 6
+	vehicleType := MiniVan
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "used-minivans-fredericton", false)
@@ -75,7 +75,7 @@ func DisplayMVISelect(w http.ResponseWriter, r *http.Request) {
 	stringMap["pager-url"] = "/budget-priced-used-cars"
 	intMap := make(map[string]int)
 	intMap["show-makes"] = 1
-	vehicleType := 0
+	vehicleType := AllVehicles
 	templateName := "inventory.page.tmpl"
 
 	renderInventory(r, stringMap, vehicleType, w, intMap, templateName, "budget-priced-used-cars", true)
@@ -127,6 +127,7 @@ func renderInventory(r *http.Request, stringMap map[string]string, vehicleType i
 	intMap["make"] = selectedMake
 	intMap["model"] = selectedModel
 	intMap["price"] = selectedPrice
+	intMap["vehicle-type"] = vehicleType
 
 	pg, err := repo.DB.GetPageBySlug(slug)
 	if err != nil {

@@ -14,26 +14,6 @@ type DBModel struct {
 	DB *sql.DB
 }
 
-const (
-	ATVBruteForce = 8
-	ATVMule       = 11
-	ATVTeryx      = 12
-	Car           = 1
-	ElectricBike  = 16
-	JetSki        = 13
-	Mercury       = 10
-	Motorcycle    = 7
-	Other         = 3
-	PontoonBoat   = 9
-	PowerBoat     = 15
-	Scooter       = 17
-	SUV           = 5
-	Trailer       = 14
-	Truck         = 2
-	Van           = 6
-	Unknown       = 4
-)
-
 // AllActiveOptions returns slice of all active options
 func (m *DBModel) AllActiveOptions() ([]clientmodels.Option, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
