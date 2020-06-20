@@ -56,8 +56,8 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Post("/wheels/send-to-friend", standardMiddleWare.ThenFunc(SendFriend))
 
 	// inventory filters
-	mux.Get("/inventory-filter/makes/:YEAR", dynamicMiddleware.ThenFunc(GetMakesForYear))
-	mux.Get("/inventory-filter/models/:ID", dynamicMiddleware.ThenFunc(GetModelsForMake))
+	mux.Get("/inventory-filter/makes/:YEAR/:type", dynamicMiddleware.ThenFunc(GetMakesForYear))
+	mux.Get("/inventory-filter/models/:ID/:type", dynamicMiddleware.ThenFunc(GetModelsForMake))
 	mux.Get("/inventory-filter/models-for-admin/:ID", dynamicMiddleware.ThenFunc(GetModelsForMakeAdmin))
 
 	// all used vehicles

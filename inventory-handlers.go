@@ -174,7 +174,8 @@ func renderInventory(r *http.Request, stringMap map[string]string, vehicleType i
 // GetModelsForMake gets models for make
 func GetModelsForMake(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
-	models, err := vehicleModel.ModelsForMakeID(id)
+	vehicleTypeID, _ := strconv.Atoi(r.URL.Query().Get(":type"))
+	models, err := vehicleModel.ModelsForMakeID(id, vehicleTypeID)
 	if err != nil {
 		return
 	}
@@ -208,7 +209,8 @@ func GetModelsForMakeAdmin(w http.ResponseWriter, r *http.Request) {
 // GetMakesForYear gets makes for year
 func GetMakesForYear(w http.ResponseWriter, r *http.Request) {
 	year, _ := strconv.Atoi(r.URL.Query().Get(":YEAR"))
-	makes, err := vehicleModel.MakesForYear(year)
+	vehicleTypeID, _ := strconv.Atoi(r.URL.Query().Get(":type"))
+	makes, err := vehicleModel.MakesForYear(year, vehicleTypeID)
 	if err != nil {
 		return
 	}

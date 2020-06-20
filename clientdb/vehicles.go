@@ -955,17 +955,22 @@ func (m *DBModel) GetYearsForVehicleType(id int) ([]int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	where := "vehicle_type < 7"
+	if id > 0 {
+		where = fmt.Sprintf("vehicle_type = %d", id)
+	}
+
 	var years []int
-	query := `
+	query := fmt.Sprintf(`
 			select distinct 
 				v.year
 			from 
 				vehicles v
 			where
-				vehicle_type < 7
+				%s
 				and v.status = 1
 			order by 
-				year desc`
+				year desc`, where)
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
 		fmt.Println(err)
@@ -1032,18 +1037,23 @@ func (m *DBModel) GetMakesForVehicleType(id int) ([]clientmodels.Make, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	where := "and vehicle_type < 7"
+	if id > 0 {
+		where = fmt.Sprintf("and vehicle_type = %d", id)
+	}
+
 	var makes []clientmodels.Make
 	query := ""
 
-	query = `
+	query = fmt.Sprintf(`
 		select  
 			m.id, m.make
 		from 
 			vehicle_makes m
 		where
-			m.id in (select v.vehicle_makes_id from vehicles v where status = 1 and vehicle_type < 7)
+			m.id in (select v.vehicle_makes_id from vehicles v where status = 1 %s)
 		order by 
-			m.make`
+			m.make`, where)
 
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -2091,14 +2101,19 @@ func (m *DBModel) UpdateSortOrderForImage(id, order int) error {
 }
 
 // ModelsForMakeID returns json for available models for specified make
-func (m *DBModel) ModelsForMakeID(id int) ([]clientmodels.Model, error) {
+func (m *DBModel) ModelsForMakeID(id, vehicleTypeID int) ([]clientmodels.Model, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	where := "and vehicle_type < 7"
+	if vehicleTypeID > 0 {
+		where = fmt.Sprintf("and vehicle_type = %d", vehicleTypeID)
+	}
+
 	var models []clientmodels.Model
-	query := `select id, model from vehicle_models where vehicle_makes_id = ? and 
-		id in (select vehicle_models_id from vehicles where status = 1)
-		order by model`
+	query := fmt.Sprintf(`select id, model from vehicle_models where vehicle_makes_id = ? and 
+		id in (select vehicle_models_id from vehicles where status = 1 %s)
+		order by model`, where)
 	rows, err := m.DB.QueryContext(ctx, query, id)
 	if err != nil {
 		fmt.Println(err)
@@ -2160,14 +2175,19 @@ func (m *DBModel) ModelsForMakeIDAdmin(id int) ([]clientmodels.Model, error) {
 }
 
 // MakesForYear returns json for available makes for a specified year
-func (m *DBModel) MakesForYear(year int) ([]clientmodels.Make, error) {
+func (m *DBModel) MakesForYear(year, vehicleTypeID int) ([]clientmodels.Make, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	where := "and vehicle_type < 7"
+	if vehicleTypeID > 0 {
+		where = fmt.Sprintf("and vehicle_type = %d", vehicleTypeID)
+	}
+
 	var makes []clientmodels.Make
-	query := `select id, make from vehicle_makes 
-		where id in (select vehicle_makes_id from vehicles where status = 1 and year = ? and vehicle_type < 7)
-		order by make`
+	query := fmt.Sprintf(`select id, make from vehicle_makes 
+		where id in (select vehicle_makes_id from vehicles where status = 1 and year = ? %s)
+		order by make`, where)
 	rows, err := m.DB.QueryContext(ctx, query, year)
 	if err != nil {
 		fmt.Println(err)

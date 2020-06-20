@@ -15,9 +15,8 @@
         $("[data-hide]").removeClass("hidden");
 
         yearsMenu.addEventListener("change", function(el){
-            console.log("year changed to", this.value);
             if (this.value > 0) {
-                fetch('/inventory-filter/makes/' + this.value)
+                fetch('/inventory-filter/makes/' + this.value + "/" + document.getElementById("filter_vehicle_type").value)
                     .then(response => response.json())
                     .then(result => {
                         let html = "<option value='0'>All Makes</option>";
@@ -33,9 +32,8 @@
         })
 
         makesMenu.addEventListener("change", function(el){
-            console.log("make changed to", this.value);
             if (this.value > 0) {
-                fetch('/inventory-filter/models/' + this.value)
+                fetch('/inventory-filter/models/' + this.value + "/" + document.getElementById("filter_vehicle_type").value)
                     .then(response => response.json())
                     .then(result => {
                         let html = "<option value='0'>All models</option>";
