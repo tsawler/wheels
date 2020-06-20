@@ -14,6 +14,26 @@ type DBModel struct {
 	DB *sql.DB
 }
 
+const (
+	ATVBruteForce = 8
+	ATVMule       = 11
+	ATVTeryx      = 12
+	Car           = 1
+	ElectricBike  = 16
+	JetSki        = 13
+	Mercury       = 10
+	Motorcycle    = 7
+	Other         = 3
+	PontoonBoat   = 9
+	PowerBoat     = 15
+	Scooter       = 17
+	SUV           = 5
+	Trailer       = 14
+	Truck         = 2
+	Van           = 6
+	Unknown       = 4
+)
+
 // AllActiveOptions returns slice of all active options
 func (m *DBModel) AllActiveOptions() ([]clientmodels.Option, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -646,7 +666,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			status = 1 
 			and vehicle_type < 7 %s %s`, where, extraWhere)
 		nRows = m.DB.QueryRowContext(ctx, stmt)
-	} else if vehicleTypeID < 1000 {
+	} else {
 		// suvs
 		stmt = fmt.Sprintf(`
 		select 
@@ -658,28 +678,6 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			and vehicle_type = ? %s %s`, where, extraWhere)
 		nRows = m.DB.QueryRowContext(ctx, stmt, vehicleTypeID)
 
-	} else if vehicleTypeID == 1000 {
-		stmt = fmt.Sprintf(`
-		select 
-			count(v.id) 
-		from 
-			vehicles v 
-		where 
-			status = 1 
-			and vehicle_type in (8, 11, 12, 16, 13, 10, 7, 9, 15, 17, 14) %s 
-			and v.used = 1`, where)
-		nRows = m.DB.QueryRowContext(ctx, stmt)
-	} else if vehicleTypeID == 1001 {
-		stmt = fmt.Sprintf(`
-		select 
-			count(v.id) 
-		from 
-			vehicles v 
-		where 
-			status = 1 
-			and vehicle_type in (13, 10, 9, 15) %s 
-			and v.used = 1`, where)
-		nRows = m.DB.QueryRowContext(ctx, stmt)
 	}
 
 	var num int
@@ -735,8 +733,7 @@ func (m *DBModel) AllVehiclesPaginated(vehicleTypeID, perPage, offset, year, mak
 			fmt.Println(err)
 			return nil, 0, err
 		}
-	} else if vehicleTypeID < 1000 {
-		// suvs
+	} else {
 		query = fmt.Sprintf(`
 		select 
 		       id, 
