@@ -73,7 +73,7 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 
 	infoLog.Println("Scheduling Push to Kijiji (PowerSports)....")
 	_, _ = app.Scheduler.AddFunc("@daily", func() {
-		PushToKijiPowerSports()
+		PushToKijijiPowerSports()
 	})
 
 	infoLog.Println("Scheduling image/video cleanup....")
