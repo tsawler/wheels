@@ -292,7 +292,7 @@ func PullFromPBS() (int, bool) {
 }
 
 func PushToKijiji() {
-
+	// see https://github.com/jlaffaye/ftp and https://golang.org/pkg/encoding/csv/#pkg-examples
 }
 
 func PushToKijiPowerSports() {
