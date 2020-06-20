@@ -8,9 +8,18 @@ It is written as an extension to [goBlender](https://github.com/tsawler/goblende
 Clone [goBlender](https://github.com/tsawler/goblender), and then clone
 this repository into `./ui/client/clienthandlers`
 
-Add PBS authentication to the `.env` file:
+Add PBS and other authentications to the `.env` file:
 
 ~~~.env
 PBSUSER=username
 PBSPASS=somepassword
+
+CARGURUSUSER=
+CARGURUSPASS=
+
+KIJIJIUSER=
+KIJIJIPASS=
+
+KIJIJIPSUSER=
+KIJIJIPSPASS=
 ~~~
