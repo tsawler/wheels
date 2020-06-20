@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -3502,4 +3503,122 @@ func (m *DBModel) GetAllFinders() ([]clientmodels.Finder, error) {
 	}
 
 	return v, nil
+}
+
+// CarGurus returns slice for car guru csv
+func (m *DBModel) CarGurus() ([][]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var r [][]string
+
+	query := `
+	select
+		437564 as dealer_id,
+		'Jim Gilbert\'s Wheels and Deals' as dealer_name,
+		'402 St. Mary\'s Street, Fredericton NB' as address,
+		'New Brunswick' as dealer_state,
+		'E3A 8H5' as dealer_zip,
+		'5064596832' as dealer_phone_number,
+		'salesmanager@wheelsanddeals.ca' as dealer_crm_email,
+		v.vin,
+		vm.make,
+		vmod.model,
+		v.year,
+		v.trim,
+		(select group_concat(o.option_name SEPARATOR ', ') from options o where o.id in (select option_id from vehicle_options where vehicle_id = v.id)) as options,
+		v.cost as price,
+		v.total_msr as msrp,
+		1 as certified,
+		v.odometer as mileage,
+		REPLACE(strip_tags(v.description), '&nbsp;', ' ') as dealer_comments,
+		stock_no as stock_number,
+		v.transmission,
+	case
+	when (select count(id) from vehicle_images vi where vi.vehicle_id = v.id) = 0 then ''
+		else
+		(select GROUP_CONCAT(CONCAT('https://www.wheelsanddeals.ca/storage/inventory/', v.id, '/',vimages.image) SEPARATOR ',') from vehicle_images vimages where vimages.vehicle_id = v.id order by sort_order)
+			end as image_urls,
+		case
+		when (select count(id) from vehicle_images vi where vi.vehicle_id = v.id) = 0 then 'https://www.wheelsanddeals.ca/vendor/wheelspackage/hug-in-progress.jpg'
+			else
+			(select concat('https://www.wheelsanddeals.ca/storage/inventory/',v.id,'/',vimages.image) as main_image from vehicle_images vimages where vimages.vehicle_id = v.id and sort_order = 1 limit 1)
+				end as main_image,
+					v.exterior_color,
+					'https://www.wheelsanddeals.ca' as dealer_website_url
+
+				from vehicles v
+				left join vehicle_makes vm on (v.vehicle_makes_id = vm.id)
+				left join vehicle_models vmod on (v.vehicle_models_id = vmod.id)
+
+				where v.status = 1 and v.vehicle_type < 7`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return r, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var current []string
+		var id, address, state, zip, phone, email, vin, make, model, year, trim, options string
+		var price, msrp float32
+		var certified, odometer int
+		var stock, comments, transmission, images, mainImage, exterior, website string
+
+		err = rows.Scan(
+			&id,
+			&address,
+			&state,
+			&zip,
+			&phone,
+			&email,
+			&vin,
+			&make,
+			&model,
+			&year,
+			&trim,
+			&options,
+			&price,
+			&msrp,
+			&certified,
+			&odometer,
+			&odometer,
+			&comments,
+			&stock,
+			&transmission,
+			&images,
+			&mainImage,
+			&exterior,
+			&website,
+		)
+		current = append(current, id)
+		current = append(current, address)
+		current = append(current, state)
+		current = append(current, zip)
+		current = append(current, phone)
+		current = append(current, email)
+		current = append(current, vin)
+		current = append(current, make)
+		current = append(current, model)
+		current = append(current, year)
+		current = append(current, trim)
+		current = append(current, options)
+		current = append(current, fmt.Sprintf("%f", price))
+		current = append(current, fmt.Sprintf("%f", msrp))
+		current = append(current, strconv.Itoa(certified))
+		current = append(current, strconv.Itoa(odometer))
+		current = append(current, comments)
+		current = append(current, stock)
+		current = append(current, transmission)
+		current = append(current, images)
+		current = append(current, mainImage)
+		current = append(current, exterior)
+		current = append(current, website)
+
+		r = append(r, current)
+	}
+
+	return r, nil
 }

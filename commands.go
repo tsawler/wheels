@@ -291,8 +291,18 @@ func PullFromPBS() (int, bool) {
 	return count, true
 }
 
-func PushToKijiji() {
+func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
+	PushToKijiji()
+}
+
+func PushToKijiji() [][]string {
 	// see https://github.com/jlaffaye/ftp and https://golang.org/pkg/encoding/csv/#pkg-examples
+
+	feedSlice, err := vehicleModel.CarGurus()
+	if err != nil {
+		fmt.Println(err)
+	}
+	return feedSlice
 }
 
 func PushToKijijiPowerSports() {
