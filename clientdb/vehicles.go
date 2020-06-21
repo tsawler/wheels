@@ -3664,6 +3664,7 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 	return r, nil
 }
 
+// Kijiji gets a slice of records for CSV feed
 func (m *DBModel) Kijiji() ([][]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -3808,6 +3809,7 @@ func (m *DBModel) Kijiji() ([][]string, error) {
 	return r, nil
 }
 
+// KijijiPS gets a slice of records for Kijiji Powersports CSV feed
 func (m *DBModel) KijijiPS() ([][]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
