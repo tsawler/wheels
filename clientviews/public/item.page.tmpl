@@ -7,6 +7,10 @@
 
 {{define "css"}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/videojs-panorama/0.1.7/videojs-panorama.min.css"
+          integrity="sha256-E88tWtq4Yx5cqB1DwdGuITgjObSqh7IJWjIunMteozY=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.8.3/video-js.min.css"
+          integrity="sha256-/fXfq3QrnWyMYmF0zX6ImdI1DTraNCAq1vPofa2rs2w=" crossorigin="anonymous" />
     <style>
         #panorama {
             width: 600px;
@@ -367,8 +371,12 @@
 {{define "js"}}
     {{$item := index .RowSets "item"}}
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.min.js"
-            integrity="sha256-voP3sbDhk+YDZKsGO8dpMGk9qzne1cf3f1CRgjwRnrk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-panorama/0.1.7/videojs-panorama.v5.min.js"
+            integrity="sha256-iSYVHGz6ltpY11CWExXmCj478bxrOyoTVQAVNULib7Y=" crossorigin="anonymous"></script>
+{{/*    <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.5.6/plyr.min.js"*/}}
+{{/*            integrity="sha256-voP3sbDhk+YDZKsGO8dpMGk9qzne1cf3f1CRgjwRnrk=" crossorigin="anonymous"></script>*/}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.8.3/alt/video.core.novtt.min.js"
+            integrity="sha256-ZO+P729wiYeLnTmgkMBXjBK5INc+pgkzYPLybBEUJv8=" crossorigin="anonymous"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

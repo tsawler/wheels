@@ -62,7 +62,7 @@
 
 
     <form method="post"
-          action="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}/{{$v.ID}}"
+          action=""
           id="vehicle-form" novalidate class="needs-validation" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <ul class="nav nav-tabs" id="prefTabs" role="tablist">
@@ -431,6 +431,7 @@
                  id="video-tab-content">
                 <div class="row">
                     <div class="col-md-6">
+
                         {{if gt $v.Video.VideoID 0}}
                             <div class="form-group pt-3">
                                 <video playsinline="playsinline" controls
@@ -440,7 +441,9 @@
                                 </video>
                             </div>
                         {{end}}
+
                         <div class="form-group pt-3">
+
                             <label>Choose a video:</label>
                             <div>
                                 <select class="form-control" name="video_id"
@@ -451,22 +454,33 @@
                                     {{end}}
                                 </select>
                             </div>
+
+
                         </div>
 
+
+
+                        <hr>
+
                         {{if ne $v.Panorama.Panorama ""}}
-                        <div id="panorama"></div>
+                            <div id="panorama"></div>
                         {{end}}
 
                         <div class="form-group pt-3">
                             <label>Panorama:</label>
                             <div>
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="panorama" id="panorama"
+                                    <input type="file" class="custom-file-input" name="panorama" id="panorama_file"
                                            accept="image/*">
-                                    <label class="custom-file-label" for="panorama">Choose file</label>
+                                    <label class="custom-file-label" for="panorama_file">Choose file</label>
                                 </div>
                             </div>
                         </div>
+
+
+
+
+
                     </div>
                 </div>
             </div>
@@ -474,6 +488,7 @@
         <div class="row">
             <div class="col">
                 <hr>
+
                 <div class="btn-group dropup">
                     <a class="btn btn-primary savebtn" href="javascript:" onclick="saveClose()" data-action="close">
                         Save and Close
