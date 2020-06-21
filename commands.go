@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
+	"github.com/tsawler/goblender/pkg/handlers"
 	"github.com/tushar2708/altcsv"
 	"io/ioutil"
 	"log"
@@ -302,6 +303,14 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 
 	err := PushToCarGurus()
 	if err != nil {
+		// audit trail
+		history := handlers.History{
+			UserID:     1,
+			Message:    "Push to CarGurus failed",
+			ChangeType: "page",
+			UserName:   fmt.Sprintf("%s %s", "System", "System"),
+		}
+		repo.AddHistory(history)
 		session.Put(r.Context(), "flash", fmt.Sprintf("Error pushing to CarGurus:", err.Error()))
 		http.Redirect(w, r, lastPage, http.StatusSeeOther)
 		return
@@ -320,6 +329,15 @@ func KijijiFeed(w http.ResponseWriter, r *http.Request) {
 
 	err := PushToKijiji()
 	if err != nil {
+		// audit trail
+		history := handlers.History{
+			UserID:     1,
+			Message:    "Push to Kijiji failed",
+			ChangeType: "page",
+			UserName:   fmt.Sprintf("%s %s", "System", "System"),
+		}
+		repo.AddHistory(history)
+
 		session.Put(r.Context(), "flash", fmt.Sprintf("Error pushing to CarGurus:", err.Error()))
 		http.Redirect(w, r, lastPage, http.StatusSeeOther)
 		return
@@ -338,6 +356,15 @@ func KijijiPSFeed(w http.ResponseWriter, r *http.Request) {
 
 	err := PushToKijijiPowerSports()
 	if err != nil {
+		// audit trail
+		history := handlers.History{
+			UserID:     1,
+			Message:    "Push to Kijiji (PowerSports) failed",
+			ChangeType: "page",
+			UserName:   fmt.Sprintf("%s %s", "System", "System"),
+		}
+		repo.AddHistory(history)
+
 		session.Put(r.Context(), "flash", fmt.Sprintf("Error pushing:", err.Error()))
 		http.Redirect(w, r, lastPage, http.StatusSeeOther)
 		return
@@ -389,6 +416,16 @@ func PushToCarGurus() error {
 	//	errorLog.Println(err)
 	//
 	//}
+
+	// audit trail
+	history := handlers.History{
+		UserID:     1,
+		Message:    "Push to CarGurus complete",
+		ChangeType: "page",
+		UserName:   fmt.Sprintf("%s %s", "System", "System"),
+	}
+	repo.AddHistory(history)
+
 	return nil
 }
 
@@ -435,6 +472,15 @@ func PushToKijiji() error {
 	//
 	//}
 
+	// audit trail
+	history := handlers.History{
+		UserID:     1,
+		Message:    "Push to Kijiji complete",
+		ChangeType: "page",
+		UserName:   fmt.Sprintf("%s %s", "System", "System"),
+	}
+	repo.AddHistory(history)
+
 	return nil
 }
 
@@ -461,6 +507,7 @@ func PushToKijijiPowerSports() error {
 
 	if err := feedWriter.Error(); err != nil {
 		errorLog.Println(err)
+		return err
 	}
 
 	//// FTP the file up to Kijiji
@@ -478,6 +525,15 @@ func PushToKijijiPowerSports() error {
 	//	errorLog.Println(err)
 	//
 	//}
+
+	// audit trail
+	history := handlers.History{
+		UserID:     1,
+		Message:    "Push to Kijiji (PowerSports) complete",
+		ChangeType: "page",
+		UserName:   fmt.Sprintf("%s %s", "System", "System"),
+	}
+	repo.AddHistory(history)
 
 	return nil
 }
