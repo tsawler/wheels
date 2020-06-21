@@ -17,9 +17,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
 
 	// begin test routes (be sure to delete these)
-	mux.Get("/cg", standardMiddleWare.ThenFunc(CarGuruFeed))
-	mux.Get("/k", standardMiddleWare.ThenFunc(KijijiFeed))
-	mux.Get("/kps", standardMiddleWare.ThenFunc(KijijiPSFeed))
+	//mux.Get("/cg", standardMiddleWare.ThenFunc(CarGuruFeed))
+	//mux.Get("/k", standardMiddleWare.ThenFunc(KijijiFeed))
+	//mux.Get("/kps", standardMiddleWare.ThenFunc(KijijiPSFeed))
 	// end test routes
 
 	/*--------------------------------------------------------------------------
