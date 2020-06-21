@@ -8,6 +8,7 @@ import (
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tsawler/goblender/pkg/datatables"
 	"github.com/tsawler/goblender/pkg/forms"
+	"github.com/tsawler/goblender/pkg/handlers"
 	"github.com/tsawler/goblender/pkg/helpers"
 	"github.com/tsawler/goblender/pkg/images"
 	"github.com/tsawler/goblender/pkg/templates"
@@ -172,6 +173,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	oldVideoID := v.Video.VideoID
+	oldValue := v
 
 	form.Required("stock_no", "vin", "cost", "total_msr")
 	form.IsFloat("cost")
@@ -376,6 +378,19 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 			errorLog.Println(err)
 		}
 	}
+
+	authId := app.Session.GetInt(r.Context(), "userID")
+	u, _ := repo.DB.GetUserById(authId)
+
+	history := handlers.History{
+		UserID:     u.ID,
+		Message:    fmt.Sprintf("Edited vehicle id %d, stock no %s", v.ID, v.StockNo),
+		ChangeType: "vehicle",
+		OldValue:   oldValue,
+		NewValue:   v,
+		UserName:   fmt.Sprintf("%s %s", u.FirstName, u.LastName),
+	}
+	repo.AddHistory(history)
 
 	// redirect
 	session.Put(r.Context(), "flash", "Changes saved")

@@ -96,4 +96,16 @@
         </li>
     {{end}}
 
+    {{if hasRole "super" .Auth.ID}}
+        <li id="csv" {{if eq .CurrentSegment "csv"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-bullhorn fa-fw"></i> <span class="nav-label">Push Feeds</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/csv/push-to-car-gurus">Push CarGurus</a></li>
+                <li><a href="/admin/csv/push-to-kijiji">Push Kijiji</a></li>
+                <li><a href="/admin/csv/push-to-kijiji-powersportss">Push Kijiji PowerSports</a></li>
+            </ul>
+        </li>
+    {{end}}
+
 {{end}}

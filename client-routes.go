@@ -102,9 +102,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/inventory/refresh-from-pbs", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(RefreshFromPBS))
 
 	// manually push csv files to remote servers
-	mux.Get("/admin/inventory/push-to-car-gurus", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(CarGuruFeed))
-	mux.Get("/admin/inventory/push-to-kijiji", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(KijijiFeed))
-	mux.Get("/admin/inventory/push-to-kijiji-powersports", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(KijijiPSFeed))
+	mux.Get("/admin/csv/push-to-car-gurus", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(CarGuruFeed))
+	mux.Get("/admin/csv/push-to-kijiji", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(KijijiFeed))
+	mux.Get("/admin/csv/push-to-kijiji-powersports", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(KijijiPSFeed))
 
 	// print window sticker
 	mux.Get("/admin/inventory/print-window-sticker/:ID", dynamicMiddleware.ThenFunc(PrintWindowSticker))
