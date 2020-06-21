@@ -2,9 +2,12 @@
 <!-- start inventory js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Morphext/2.4.4/morphext.min.js"></script>
 <script>
-    let yearsMenu = document.getElementById("year")
-    let makesMenu = document.getElementById("make")
-    let modelsMenu = document.getElementById("model")
+    let elementExists = !! document.getElementById("year");
+    if (elementExists) {
+        let yearsMenu = document.getElementById("year")
+        let makesMenu = document.getElementById("make")
+        let modelsMenu = document.getElementById("model")
+    }
 
     $(document).ready(function () {
         $(".rotator").Morphext({
@@ -14,38 +17,41 @@
         });
         $("[data-hide]").removeClass("hidden");
 
-        yearsMenu.addEventListener("change", function(el){
-            if (this.value > 0) {
-                fetch('/inventory-filter/makes/' + this.value + "/" + document.getElementById("filter_vehicle_type").value)
-                    .then(response => response.json())
-                    .then(result => {
-                        let html = "<option value='0'>All Makes</option>";
-                        document.getElementById("make").innerHTML = "";
-                        result.forEach(function (item) {
-                            console.log(item.id, "->", item.make)
-                            html += "<option value='" + item.id + "'>" + item.make + "</option>";
-                        })
-                        document.getElementById("make").innerHTML = html;
-                        makesMenu.dispatchEvent(new Event("change"))
-                    })
-            }
-        })
 
-        makesMenu.addEventListener("change", function(el){
-            if (this.value > 0) {
-                fetch('/inventory-filter/models/' + this.value + "/" + document.getElementById("filter_vehicle_type").value)
-                    .then(response => response.json())
-                    .then(result => {
-                        let html = "<option value='0'>All models</option>";
-                        document.getElementById("model").innerHTML = "";
-                        result.forEach(function (item) {
-                            console.log(item.id, "->", item.model)
-                            html += "<option value='" + item.id + "'>" + item.model + "</option>";
+        if (elementExists) {
+            yearsMenu.addEventListener("change", function (el) {
+                if (this.value > 0) {
+                    fetch('/inventory-filter/makes/' + this.value + "/" + document.getElementById("filter_vehicle_type").value)
+                        .then(response => response.json())
+                        .then(result => {
+                            let html = "<option value='0'>All Makes</option>";
+                            document.getElementById("make").innerHTML = "";
+                            result.forEach(function (item) {
+                                console.log(item.id, "->", item.make)
+                                html += "<option value='" + item.id + "'>" + item.make + "</option>";
+                            })
+                            document.getElementById("make").innerHTML = html;
+                            makesMenu.dispatchEvent(new Event("change"))
                         })
-                        document.getElementById("model").innerHTML = html;
-                    })
-            }
-        })
+                }
+            })
+
+            makesMenu.addEventListener("change", function (el) {
+                if (this.value > 0) {
+                    fetch('/inventory-filter/models/' + this.value + "/" + document.getElementById("filter_vehicle_type").value)
+                        .then(response => response.json())
+                        .then(result => {
+                            let html = "<option value='0'>All models</option>";
+                            document.getElementById("model").innerHTML = "";
+                            result.forEach(function (item) {
+                                console.log(item.id, "->", item.model)
+                                html += "<option value='" + item.id + "'>" + item.model + "</option>";
+                            })
+                            document.getElementById("model").innerHTML = html;
+                        })
+                }
+            })
+        }
     });
 </script>
 
