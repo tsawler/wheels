@@ -9,6 +9,13 @@ import (
 	"strconv"
 )
 
+const (
+	SOLD    = 0
+	FORSALE = 1
+	PENDING = 2
+	TRADEIN = 3
+)
+
 // DisplayAllVehicleInventory shows all vehicle inventory
 func DisplayAllVehicleInventory(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
@@ -239,6 +246,12 @@ func DisplayOneVehicle(w http.ResponseWriter, r *http.Request) {
 	item, err := vehicleModel.GetVehicleByID(id)
 	if err != nil {
 		fmt.Fprint(w, "custom 404")
+		return
+	}
+
+	if item.Status != FORSALE {
+		// item is sold, or whatever
+		http.Redirect(w, r, "/used-vehicle-inventory", http.StatusMovedPermanently)
 		return
 	}
 
