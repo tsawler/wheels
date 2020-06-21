@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -3562,28 +3561,28 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 
 	for rows.Next() {
 		var current []string
-		var id, address, state, zip, phone, email, vin, make, model, year, trim, options string
+		var id, dealderName, address, state, zip, phone, email, vin, vMake, vModel, year, trim, options string
 		var price, msrp float32
 		var certified, odometer int
 		var stock, comments, transmission, images, mainImage, exterior, website string
 
 		err = rows.Scan(
 			&id,
+			&dealderName,
 			&address,
 			&state,
 			&zip,
 			&phone,
 			&email,
 			&vin,
-			&make,
-			&model,
+			&vMake,
+			&vModel,
 			&year,
 			&trim,
 			&options,
 			&price,
 			&msrp,
 			&certified,
-			&odometer,
 			&odometer,
 			&comments,
 			&stock,
@@ -3600,15 +3599,15 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 		current = append(current, phone)
 		current = append(current, email)
 		current = append(current, vin)
-		current = append(current, make)
-		current = append(current, model)
+		current = append(current, vMake)
+		current = append(current, vModel)
 		current = append(current, year)
 		current = append(current, trim)
 		current = append(current, options)
-		current = append(current, fmt.Sprintf("%f", price))
-		current = append(current, fmt.Sprintf("%f", msrp))
-		current = append(current, strconv.Itoa(certified))
-		current = append(current, strconv.Itoa(odometer))
+		current = append(current, fmt.Sprintf("%.2f", price))
+		current = append(current, fmt.Sprintf("%.2f", msrp))
+		current = append(current, fmt.Sprintf("%d", certified))
+		current = append(current, fmt.Sprintf("%d", odometer))
 		current = append(current, comments)
 		current = append(current, stock)
 		current = append(current, transmission)
@@ -3616,6 +3615,8 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 		current = append(current, mainImage)
 		current = append(current, exterior)
 		current = append(current, website)
+
+		fmt.Println("********** Options", options)
 
 		r = append(r, current)
 	}

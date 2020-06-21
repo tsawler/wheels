@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
+	"github.com/tushar2708/altcsv"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -292,10 +294,31 @@ func PullFromPBS() (int, bool) {
 }
 
 func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
-	PushToKijiji()
+	records := PushToCarGurus()
+
+	//feedWriter := csv.NewWriter(os.Stdout)
+	fileWriter, _ := os.Create("./tmp/car_gurus.csv")
+	feedWriter := altcsv.NewWriter(fileWriter)
+	feedWriter.AllQuotes = true
+
+	for _, record := range records {
+		if err := feedWriter.Write(record); err != nil {
+			log.Fatalln("error writing record to csv:", err)
+		}
+	}
+
+	// Write any buffered data to the underlying writer (standard output).
+	feedWriter.Flush()
+
+	if err := feedWriter.Error(); err != nil {
+		errorLog.Println(err)
+	}
+
+	// FTP the file up to CarGurus
+	w.Write([]byte("Done"))
 }
 
-func PushToKijiji() [][]string {
+func PushToCarGurus() [][]string {
 	// see https://github.com/jlaffaye/ftp and https://golang.org/pkg/encoding/csv/#pkg-examples
 
 	feedSlice, err := vehicleModel.CarGurus()
