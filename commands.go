@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/jlaffaye/ftp"
 	"github.com/joho/godotenv"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tushar2708/altcsv"
@@ -296,8 +297,8 @@ func PullFromPBS() (int, bool) {
 func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 	records := PushToCarGurus()
 
-	//feedWriter := csv.NewWriter(os.Stdout)
-	fileWriter, _ := os.Create("./tmp/car_gurus.csv")
+	fileName := "./tmp/car_gurus.csv"
+	fileWriter, _ := os.Create(fileName)
 	feedWriter := altcsv.NewWriter(fileWriter)
 	feedWriter.AllQuotes = true
 
@@ -315,17 +316,57 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// FTP the file up to CarGurus
-	w.Write([]byte("Done"))
+	err := godotenv.Load("./.env")
+	if err != nil {
+		errorLog.Println("Error loading .env file")
+	}
+
+	// ftp file
+	userName := os.Getenv("CARGURUSUSER")
+	password := os.Getenv("CARGURUSPASS")
+	host := os.Getenv("CARGURUHOST")
+	infoLog.Println(userName, password, host)
+	err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), "./tmp/test.txt", "test.txt")
+	if err != nil {
+		errorLog.Println(err)
+
+	}
+
+	w.Write([]byte("Seems to have worked"))
 }
 
 func PushToCarGurus() [][]string {
 	// see https://github.com/jlaffaye/ftp and https://golang.org/pkg/encoding/csv/#pkg-examples
-
 	feedSlice, err := vehicleModel.CarGurus()
 	if err != nil {
 		fmt.Println(err)
 	}
 	return feedSlice
+}
+
+func PushFTPFile(user, pass, host, fileLoc, fileName string) error {
+	c, err := ftp.Dial(host, ftp.DialWithTimeout(5*time.Second))
+	if err != nil {
+		return err
+	}
+
+	err = c.Login(user, pass)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Open(fileLoc)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	err = c.Stor(fileName, file)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func PushToKijijiPowerSports() {
