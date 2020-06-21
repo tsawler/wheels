@@ -293,10 +293,66 @@ func PullFromPBS() (int, bool) {
 	return count, true
 }
 
+// CarGuruFeed manually pushes to CarGurus
 func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
+	}
+
+	err := PushToCarGurus()
+	if err != nil {
+		session.Put(r.Context(), "flash", fmt.Sprintf("Error pushing to CarGurus:", err.Error()))
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+
+	session.Put(r.Context(), "flash", "Pushed to CarGurus.")
+	http.Redirect(w, r, lastPage, http.StatusSeeOther)
+}
+
+// KijijiFeed manually pushes feed to kijiji
+func KijijiFeed(w http.ResponseWriter, r *http.Request) {
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
+	}
+
+	err := PushToKijiji()
+	if err != nil {
+		session.Put(r.Context(), "flash", fmt.Sprintf("Error pushing to CarGurus:", err.Error()))
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+
+	session.Put(r.Context(), "flash", "Pushed to Kijiji")
+	http.Redirect(w, r, lastPage, http.StatusSeeOther)
+}
+
+// KijijiPSFeed manually pushes feed to kijiji
+func KijijiPSFeed(w http.ResponseWriter, r *http.Request) {
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
+	}
+
+	err := PushToKijijiPowerSports()
+	if err != nil {
+		session.Put(r.Context(), "flash", fmt.Sprintf("Error pushing:", err.Error()))
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+
+	session.Put(r.Context(), "flash", "Pushed PowerSports to Kijiji")
+	http.Redirect(w, r, lastPage, http.StatusSeeOther)
+}
+
+// PushToCarGurus does push of CSV
+func PushToCarGurus() error {
 	records, err := vehicleModel.CarGurus()
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
 
 	fileName := "./tmp/car_gurus.csv"
@@ -315,6 +371,7 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 
 	if err := feedWriter.Error(); err != nil {
 		errorLog.Println(err)
+		return err
 	}
 
 	//// FTP the file up to CarGurus
@@ -332,21 +389,15 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 	//	errorLog.Println(err)
 	//
 	//}
-
-	lastPage := session.GetString(r.Context(), "last-page")
-	if lastPage == "" {
-		lastPage = "/"
-	}
-
-	session.Put(r.Context(), "flash", "Pushed to CarGurus.")
-	http.Redirect(w, r, lastPage, http.StatusSeeOther)
+	return nil
 }
 
-// KijijiFeed manually pushes feed to kijiji
-func KijijiFeed(w http.ResponseWriter, r *http.Request) {
+// PushToKijiji does push of CSV
+func PushToKijiji() error {
 	records, err := vehicleModel.Kijiji()
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
 
 	fileName := "./tmp/Kijiji.csv"
@@ -365,6 +416,7 @@ func KijijiFeed(w http.ResponseWriter, r *http.Request) {
 
 	if err := feedWriter.Error(); err != nil {
 		errorLog.Println(err)
+		return err
 	}
 
 	//// FTP the file up to Kijiji
@@ -383,16 +435,11 @@ func KijijiFeed(w http.ResponseWriter, r *http.Request) {
 	//
 	//}
 
-	lastPage := session.GetString(r.Context(), "last-page")
-	if lastPage == "" {
-		lastPage = "/"
-	}
-
-	session.Put(r.Context(), "flash", "Pushed to Kijiji")
+	return nil
 }
 
-// KijijiPSFeed manually pushes feed to kijiji
-func KijijiPSFeed(w http.ResponseWriter, r *http.Request) {
+// PushToKijijiPowerSports does push of CSV
+func PushToKijijiPowerSports() error {
 	records, err := vehicleModel.KijijiPS()
 	if err != nil {
 		fmt.Println(err)
@@ -432,12 +479,7 @@ func KijijiPSFeed(w http.ResponseWriter, r *http.Request) {
 	//
 	//}
 
-	lastPage := session.GetString(r.Context(), "last-page")
-	if lastPage == "" {
-		lastPage = "/"
-	}
-
-	session.Put(r.Context(), "flash", "Pushed PowerSports to Kijiji")
+	return nil
 }
 
 func CleanImages() {
