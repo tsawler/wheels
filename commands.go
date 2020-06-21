@@ -325,8 +325,7 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 	userName := os.Getenv("CARGURUSUSER")
 	password := os.Getenv("CARGURUSPASS")
 	host := os.Getenv("CARGURUHOST")
-	infoLog.Println(userName, password, host)
-	err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), "./tmp/test.txt", "test.txt")
+	err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "feed.csv")
 	if err != nil {
 		errorLog.Println(err)
 
