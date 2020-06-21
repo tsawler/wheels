@@ -335,11 +335,13 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func PushToCarGurus() [][]string {
+
 	// see https://github.com/jlaffaye/ftp and https://golang.org/pkg/encoding/csv/#pkg-examples
 	feedSlice, err := vehicleModel.CarGurus()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	return feedSlice
 }
 

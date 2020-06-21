@@ -3511,6 +3511,35 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 
 	var r [][]string
 
+	headers := []string{
+		"dealer_id",
+		"dealer_name",
+		"address",
+		"dealer_state",
+		"dealer_zip",
+		"dealer_phone_number",
+		"dealer_crm_email",
+		"vin",
+		"make",
+		"model",
+		"year",
+		"trim",
+		"option",
+		"price",
+		"msrp",
+		"certified",
+		"mileage",
+		"dealer_comments",
+		"stock_number",
+		"transmission",
+		"image_urls",
+		"main_image",
+		"exterior_color",
+		"dealer_website_url",
+	}
+
+	r = append(r, headers)
+
 	query := `
 	select
 		437564 as dealer_id,
@@ -3615,8 +3644,6 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 		current = append(current, mainImage)
 		current = append(current, exterior)
 		current = append(current, website)
-
-		fmt.Println("********** Options", options)
 
 		r = append(r, current)
 	}
