@@ -332,7 +332,7 @@ func PushToKijijiPowerSports() {
 
 }
 
-func PushToCarGurus() {
+func PushToKijiji() {
 
 }
 
