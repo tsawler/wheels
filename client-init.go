@@ -62,7 +62,7 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 	})
 
 	infoLog.Println("Scheduling Push to CarGurus....")
-	_, _ = app.Scheduler.AddFunc("@daily", func() {
+	_, _ = app.Scheduler.AddFunc("0 23 * * ?", func() {
 		err := PushToCarGurus()
 		if err != nil {
 			errorLog.Println("******* Error pushing CSV to CarGurus:", err)
@@ -70,7 +70,7 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 	})
 
 	infoLog.Println("Scheduling Push to Kijiji....")
-	_, _ = app.Scheduler.AddFunc("@daily", func() {
+	_, _ = app.Scheduler.AddFunc("0 22 * * ?", func() {
 		err := PushToKijiji()
 		if err != nil {
 			errorLog.Println("******* Error pushing CSV to Kijiji:", err)
@@ -78,7 +78,7 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 	})
 
 	infoLog.Println("Scheduling Push to Kijiji (PowerSports)....")
-	_, _ = app.Scheduler.AddFunc("@daily", func() {
+	_, _ = app.Scheduler.AddFunc("0 23 * * ?", func() {
 		err := PushToKijijiPowerSports()
 		if err != nil {
 			errorLog.Println("******* Error pushing PowerSports CSV to Kijiji:", err)
