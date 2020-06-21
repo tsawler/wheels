@@ -17,6 +17,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
 
 	mux.Get("/cg", standardMiddleWare.ThenFunc(CarGuruFeed))
+	mux.Get("/k", standardMiddleWare.ThenFunc(KijijiFeed))
 	/*--------------------------------------------------------------------------
 	| TUS web hook
 	|--------------------------------------------------------------------------

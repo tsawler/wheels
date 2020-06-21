@@ -334,14 +334,50 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Seems to have worked"))
 }
 
-func PushToCarGurus() [][]string {
+func KijijiFeed(w http.ResponseWriter, r *http.Request) {
+	records := PushToKijiji()
+	fileName := "./tmp/Kijiji.csv"
+	fileWriter, _ := os.Create(fileName)
+	feedWriter := altcsv.NewWriter(fileWriter)
+	feedWriter.AllQuotes = true
 
-	// see https://github.com/jlaffaye/ftp and https://golang.org/pkg/encoding/csv/#pkg-examples
+	for _, record := range records {
+		if err := feedWriter.Write(record); err != nil {
+			log.Fatalln("error writing record to csv:", err)
+		}
+	}
+
+	// Write any buffered data to the underlying writer (standard output).
+	feedWriter.Flush()
+
+	if err := feedWriter.Error(); err != nil {
+		errorLog.Println(err)
+	}
+
+	//// FTP the file up to Kijiji
+	//err := godotenv.Load("./.env")
+	//if err != nil {
+	//	errorLog.Println("Error loading .env file")
+	//}
+	//
+	//// ftp file
+	//userName := os.Getenv("KIJIJIUSER")
+	//password := os.Getenv("KIJIJIPASS")
+	//host := os.Getenv("KIJIJIHOST")
+	//err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "Kijiji.csv")
+	//if err != nil {
+	//	errorLog.Println(err)
+	//
+	//}
+
+	w.Write([]byte("Seems to have worked"))
+}
+
+func PushToCarGurus() [][]string {
 	feedSlice, err := vehicleModel.CarGurus()
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	return feedSlice
 }
 
@@ -374,8 +410,12 @@ func PushToKijijiPowerSports() {
 
 }
 
-func PushToKijiji() {
-
+func PushToKijiji() [][]string {
+	feedSlice, err := vehicleModel.Kijiji()
+	if err != nil {
+		fmt.Println(err)
+	}
+	return feedSlice
 }
 
 func CleanImages() {

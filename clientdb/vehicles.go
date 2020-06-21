@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -3285,9 +3286,13 @@ func (m *DBModel) AllWordOfMouthPaginated(limit, offset int) ([]clientmodels.Wor
 		if err != nil {
 			return nil, 0, err
 		}
-		// Append it to the slice.
+		// Append it to the slice
 
 		w = append(w, *s)
+	}
+
+	if err = prows.Err(); err != nil {
+		return nil, 0, err
 	}
 
 	return w, num, nil
@@ -3343,6 +3348,10 @@ func (m *DBModel) AllTestimonialsPaginated(limit, offset int) ([]clientmodels.Te
 		// Append it to the slice.
 
 		w = append(w, *s)
+	}
+
+	if err = prows.Err(); err != nil {
+		return nil, 0, err
 	}
 
 	return w, num, nil
@@ -3646,6 +3655,154 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 		current = append(current, website)
 
 		r = append(r, current)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return r, nil
+}
+
+func (m *DBModel) Kijiji() ([][]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var r [][]string
+
+	headers := []string{
+		"dealer_id",
+		"dealer_name",
+		"address",
+		"phone",
+		"postalcode",
+		"email",
+		"id",
+		"vin",
+		"stockid",
+		"is_used",
+		"is_certified",
+		"year",
+		"make",
+		"model",
+		"body",
+		"trim",
+		"transmission",
+		"kilometers",
+		"exterior_color",
+		"price",
+		"model_code",
+		"comments",
+		"drivetrain",
+		"video_url",
+		"images",
+		"category",
+	}
+
+	r = append(r, headers)
+
+	query := `
+	select
+		86450547 as dealer_id,
+		'Jim Gilbert\'s Wheels and Deals' as dealer_name,
+		'402 St. Mary\'s Street, Fredericton NB' as address,
+		'5064596832' as phone,
+		'E3A 8H5' as postalcode,
+		'salesmanager@wheelsanddeals.ca' as email,
+		v.id, vin, stock_no as stockid, used as is_used, 1 as is_certified, year,
+		vm.make, vmod.model, v.body, v.trim, v.transmission, v.odometer as kilometers,
+		v.exterior_color, v.cost as price, '' as model_code,
+		REPLACE(strip_tags(v.description), '&nbsp;', ' ') as comments,
+		v.drive_train as drivetrain, '' as video_url,
+	case
+	when (select count(id) from vehicle_images vi where vi.vehicle_id = v.id) = 0 then ''
+		else
+		(select GROUP_CONCAT(CONCAT('https://www.wheelsanddeals.ca/storage/inventory/', v.id, '/',vimages.image) SEPARATOR '|') from vehicle_images vimages where vimages.vehicle_id = v.id order by sort_order)
+			end as images,
+				0 as category
+
+			from vehicles v
+			left join vehicle_makes vm on (v.vehicle_makes_id = vm.id)
+			left join vehicle_models vmod on (v.vehicle_models_id = vmod.id)
+
+			where v.status = 1 and v.vehicle_type < 7
+			`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return r, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var current []string
+		var id, dealerID, used, certified, year, km, category int
+		var dealerName, address, phone, postalCode, email, vin, stockID, vMake, vModel string
+		var body, trim, comments, transmission, exteriorColor, modelCode, driveTrain, videoURL, images string
+		var price float32
+
+		err = rows.Scan(
+			&dealerID,
+			&dealerName,
+			&address,
+			&phone,
+			&postalCode,
+			&email,
+			&id,
+			&vin,
+			&stockID,
+			&used,
+			&certified,
+			&year,
+			&vMake,
+			&vModel,
+			&body,
+			&trim,
+			&transmission,
+			&km,
+			&exteriorColor,
+			&price,
+			&modelCode,
+			&comments,
+			&driveTrain,
+			&videoURL,
+			&images,
+			&category,
+		)
+
+		current = append(current, strconv.Itoa(dealerID))
+		current = append(current, dealerName)
+		current = append(current, address)
+		current = append(current, phone)
+		current = append(current, postalCode)
+		current = append(current, email)
+		current = append(current, strconv.Itoa(id))
+		current = append(current, vin)
+		current = append(current, stockID)
+		current = append(current, strconv.Itoa(used))
+		current = append(current, strconv.Itoa(certified))
+		current = append(current, strconv.Itoa(year))
+		current = append(current, vMake)
+		current = append(current, vModel)
+		current = append(current, body)
+		current = append(current, trim)
+		current = append(current, transmission)
+		current = append(current, strconv.Itoa(km))
+		current = append(current, exteriorColor)
+		current = append(current, fmt.Sprintf("%.2f", price))
+		current = append(current, modelCode)
+		current = append(current, comments)
+		current = append(current, driveTrain)
+		current = append(current, videoURL)
+		current = append(current, images)
+		current = append(current, strconv.Itoa(category))
+
+		r = append(r, current)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return r, nil
