@@ -16,12 +16,6 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	fileServer = http.FileServer(http.Dir("./ui/static/site-content/"))
 	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
 
-	// begin test routes (be sure to delete these)
-	//mux.Get("/cg", standardMiddleWare.ThenFunc(CarGuruFeed))
-	//mux.Get("/k", standardMiddleWare.ThenFunc(KijijiFeed))
-	//mux.Get("/kps", standardMiddleWare.ThenFunc(KijijiPSFeed))
-	// end test routes
-
 	/*--------------------------------------------------------------------------
 	| TUS web hook
 	|--------------------------------------------------------------------------
@@ -106,6 +100,11 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	// pbs update
 	mux.Get("/admin/inventory/refresh-from-pbs", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(RefreshFromPBS))
+
+	// manually push csv files to remote servers
+	mux.Get("/admin/inventory/push-to-car-gurus", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(CarGuruFeed))
+	mux.Get("/admin/inventory/push-to-kijiji", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(KijijiFeed))
+	mux.Get("/admin/inventory/push-to-kijiji-powersports", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(KijijiPSFeed))
 
 	// print window sticker
 	mux.Get("/admin/inventory/print-window-sticker/:ID", dynamicMiddleware.ThenFunc(PrintWindowSticker))

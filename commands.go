@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/jlaffaye/ftp"
 	"github.com/joho/godotenv"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tushar2708/altcsv"
@@ -295,7 +294,10 @@ func PullFromPBS() (int, bool) {
 }
 
 func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
-	records := PushToCarGurus()
+	records, err := vehicleModel.CarGurus()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fileName := "./tmp/car_gurus.csv"
 	fileWriter, _ := os.Create(fileName)
@@ -315,27 +317,38 @@ func CarGuruFeed(w http.ResponseWriter, r *http.Request) {
 		errorLog.Println(err)
 	}
 
-	// FTP the file up to CarGurus
-	err := godotenv.Load("./.env")
-	if err != nil {
-		errorLog.Println("Error loading .env file")
+	//// FTP the file up to CarGurus
+	//err := godotenv.Load("./.env")
+	//if err != nil {
+	//	errorLog.Println("Error loading .env file")
+	//}
+	//
+	//// ftp file
+	//userName := os.Getenv("CARGURUSUSER")
+	//password := os.Getenv("CARGURUSPASS")
+	//host := os.Getenv("CARGURUHOST")
+	//err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "feed.csv")
+	//if err != nil {
+	//	errorLog.Println(err)
+	//
+	//}
+
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
 	}
 
-	// ftp file
-	userName := os.Getenv("CARGURUSUSER")
-	password := os.Getenv("CARGURUSPASS")
-	host := os.Getenv("CARGURUHOST")
-	err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "feed.csv")
-	if err != nil {
-		errorLog.Println(err)
-
-	}
-
-	w.Write([]byte("Seems to have worked"))
+	session.Put(r.Context(), "flash", "Pushed to CarGurus.")
+	http.Redirect(w, r, lastPage, http.StatusSeeOther)
 }
 
+// KijijiFeed manually pushes feed to kijiji
 func KijijiFeed(w http.ResponseWriter, r *http.Request) {
-	records := PushToKijiji()
+	records, err := vehicleModel.Kijiji()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	fileName := "./tmp/Kijiji.csv"
 	fileWriter, _ := os.Create(fileName)
 	feedWriter := altcsv.NewWriter(fileWriter)
@@ -370,11 +383,21 @@ func KijijiFeed(w http.ResponseWriter, r *http.Request) {
 	//
 	//}
 
-	w.Write([]byte("Seems to have worked"))
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
+	}
+
+	session.Put(r.Context(), "flash", "Pushed to Kijiji")
 }
 
+// KijijiPSFeed manually pushes feed to kijiji
 func KijijiPSFeed(w http.ResponseWriter, r *http.Request) {
-	records := PushToKijijiPowerSports()
+	records, err := vehicleModel.KijijiPS()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	fileName := "./tmp/PowerSportsKijiji.csv"
 	fileWriter, _ := os.Create(fileName)
 	feedWriter := altcsv.NewWriter(fileWriter)
@@ -409,56 +432,12 @@ func KijijiPSFeed(w http.ResponseWriter, r *http.Request) {
 	//
 	//}
 
-	w.Write([]byte("Seems to have worked"))
-}
-
-func PushToCarGurus() [][]string {
-	feedSlice, err := vehicleModel.CarGurus()
-	if err != nil {
-		fmt.Println(err)
-	}
-	return feedSlice
-}
-
-func PushFTPFile(user, pass, host, fileLoc, fileName string) error {
-	c, err := ftp.Dial(host, ftp.DialWithTimeout(5*time.Second))
-	if err != nil {
-		return err
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
 	}
 
-	err = c.Login(user, pass)
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Open(fileLoc)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	err = c.Stor(fileName, file)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func PushToKijijiPowerSports() [][]string {
-	feedSlice, err := vehicleModel.KijijiPS()
-	if err != nil {
-		fmt.Println(err)
-	}
-	return feedSlice
-}
-
-func PushToKijiji() [][]string {
-	feedSlice, err := vehicleModel.Kijiji()
-	if err != nil {
-		fmt.Println(err)
-	}
-	return feedSlice
+	session.Put(r.Context(), "flash", "Pushed PowerSports to Kijiji")
 }
 
 func CleanImages() {
