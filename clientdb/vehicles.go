@@ -4073,7 +4073,7 @@ func (m *DBModel) CopyPosts() error {
 			Active:          old.Active,
 			JS:              "",
 			CSS:             "",
-			MenuColor:       "",
+			MenuColor:       "navbar-light",
 			MenuTransparent: 0,
 			PageStyles:      "",
 			AccessLevel:     old.AccessLevel,
@@ -4089,7 +4089,9 @@ func (m *DBModel) CopyPosts() error {
 		searchMap := make(map[string]template.HTML)
 
 		for _, lang := range languages {
-			contentMap[lang.Code] = template.HTML(old.Content)
+			newHTML := strings.Replace(old.Content, "<blogarchives></blogarchives>", "</div>", -1)
+			newHTML = strings.Replace(newHTML, `<div class="col-md-9" data-gramm="false">`, `<div class="row"><div class="col-md-9">`, 1)
+			contentMap[lang.Code] = template.HTML(newHTML)
 			titleMap[lang.Code] = old.Title
 			previewMap[lang.Code] = ""
 			searchMap[lang.Code] = template.HTML(stripTags.Sanitize(old.Content))
