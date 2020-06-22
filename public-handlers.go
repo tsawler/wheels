@@ -501,7 +501,7 @@ func VehicleFinderPost(w http.ResponseWriter, r *http.Request) {
 
 // OurTeam displays our team page
 func OurTeam(w http.ResponseWriter, r *http.Request) {
-	pg, err := repo.DB.GetPageBySlug("our-team")
+	pg, err := repo.DB.GetPageBySlug("our-staff")
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
