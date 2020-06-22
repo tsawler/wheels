@@ -1,4 +1,4 @@
-drop table page_views;
+rename table page_views to page_views_old;
 
 drop table page_typography;
 
