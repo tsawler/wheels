@@ -17,7 +17,7 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
 
 	// temporary routes
-	mux.Get("/copy-blog", standardMiddleWare.ThenFunc(CopyBlog))
+	//mux.Get("/copy-blog", standardMiddleWare.ThenFunc(CopyBlog))
 
 	/*--------------------------------------------------------------------------
 	| TUS web hook
