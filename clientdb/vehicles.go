@@ -3,8 +3,13 @@ package clientdb
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"github.com/huandu/go-sqlbuilder"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
+	"github.com/tsawler/goblender/pkg/models"
+	"html/template"
 	"strconv"
 	"strings"
 	"time"
@@ -3969,4 +3974,148 @@ func (m *DBModel) KijijiPS() ([][]string, error) {
 	}
 
 	return r, nil
+}
+
+type OldPost struct {
+	ID          int
+	UserID      int
+	BlogID      int
+	Title       string
+	Content     string
+	Thumbnail   string
+	Slug        string
+	Meta        string
+	KeyWords    string
+	PostDate    time.Time
+	Active      int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Preview     string
+	AccessLevel int
+}
+
+// postContentStruct is a struct used to create json content for pages
+type postContentStruct struct {
+	Title   map[string]string        `json:"title"`
+	Content map[string]template.HTML `json:"content"`
+	Preview map[string]template.HTML `json:"preview"`
+	Search  map[string]template.HTML `json:"search"`
+}
+
+func (m *DBModel) CopyPosts() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	stripTags := bluemonday.StrictPolicy()
+
+	stmt := "SELECT id, language, code, active, created_at, updated_at FROM languages ORDER BY language"
+	lRows, err := m.DB.QueryContext(ctx, stmt)
+	if err != nil {
+		return err
+	}
+	defer lRows.Close()
+
+	languages := []*models.Language{}
+	for lRows.Next() {
+		s := &models.Language{}
+		err = lRows.Scan(&s.ID, &s.Language, &s.Code, &s.Active, &s.CreatedAt, &s.UpdatedAt)
+		if err != nil {
+			return err
+		}
+		// Append it to the slice
+		languages = append(languages, s)
+	}
+
+	query := `select id, 1 as user_id, 1 as blog_id, title, content, coalesce(thumbnail, ''), slug, coalesce(meta, ''), 
+			coalesce(keywords, ''),
+ 			post_date, active, created_at, updated_at, coalesce(preview, ''), access_level from wheelsanddeals.posts order by id`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var old OldPost
+		err = rows.Scan(
+			&old.ID,
+			&old.UserID,
+			&old.BlogID,
+			&old.Title,
+			&old.Content,
+			&old.Thumbnail,
+			&old.Slug,
+			&old.Meta,
+			&old.KeyWords,
+			&old.PostDate,
+			&old.Active,
+			&old.CreatedAt,
+			&old.UpdatedAt,
+			&old.Preview,
+			&old.AccessLevel,
+		)
+
+		fmt.Println(old.ID, old.Title)
+
+		var newContent postContentStruct
+
+		p := models.Post{
+			ID:              old.ID,
+			UserID:          old.UserID,
+			BlogID:          old.BlogID,
+			Title:           old.Title,
+			Content:         "",
+			Thumbnail:       old.Thumbnail,
+			Slug:            old.Slug,
+			Meta:            old.Meta,
+			Keywords:        old.KeyWords,
+			PostDate:        old.PostDate,
+			Active:          old.Active,
+			JS:              "",
+			CSS:             "",
+			MenuColor:       "",
+			MenuTransparent: 0,
+			PageStyles:      "",
+			AccessLevel:     old.AccessLevel,
+			CreatedAt:       old.CreatedAt,
+			UpdatedAt:       old.UpdatedAt,
+			SEOImage:        0,
+		}
+
+		// insert new post - first build maps
+		titleMap := make(map[string]string)
+		contentMap := make(map[string]template.HTML)
+		previewMap := make(map[string]template.HTML)
+		searchMap := make(map[string]template.HTML)
+
+		for _, lang := range languages {
+			contentMap[lang.Code] = template.HTML(old.Content)
+			titleMap[lang.Code] = old.Title
+			previewMap[lang.Code] = ""
+			searchMap[lang.Code] = template.HTML(stripTags.Sanitize(old.Content))
+		}
+
+		newContent.Title = titleMap
+		newContent.Content = contentMap
+		newContent.Preview = previewMap
+		newContent.Search = searchMap
+		contentJson, err := json.MarshalIndent(newContent, "", "    ")
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		p.Content = string(contentJson)
+
+		// insert
+		var postStruct = sqlbuilder.NewStruct(new(models.Post))
+		ib := postStruct.InsertInto("posts", p)
+		pquery, args := ib.Build()
+		_, err = m.DB.ExecContext(ctx, pquery, args...)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+	}
+
+	return nil
 }

@@ -1712,3 +1712,11 @@ func DisplayOneFinder(w http.ResponseWriter, r *http.Request) {
 		Form:    forms.New(nil),
 	})
 }
+
+func CopyBlog(w http.ResponseWriter, r *http.Request) {
+	err := vehicleModel.CopyPosts()
+	if err != nil {
+		errorLog.Println(err)
+	}
+	w.Write([]byte("done"))
+}
