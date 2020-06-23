@@ -20,6 +20,8 @@ type DBModel struct {
 	DB *sql.DB
 }
 
+var stripTags = bluemonday.StrictPolicy()
+
 // AllActiveOptions returns slice of all active options
 func (m *DBModel) AllActiveOptions() ([]clientmodels.Option, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -3573,7 +3575,7 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 		v.total_msr as msrp,
 		1 as certified,
 		v.odometer as mileage,
-		REPLACE(strip_tags(v.description), '&nbsp;', ' ') as dealer_comments,
+		REPLACE(v.description, '&nbsp;', ' ') as dealer_comments,
 		stock_no as stock_number,
 		v.transmission,
 	case
@@ -3651,7 +3653,8 @@ func (m *DBModel) CarGurus() ([][]string, error) {
 		current = append(current, fmt.Sprintf("%.2f", msrp))
 		current = append(current, fmt.Sprintf("%d", certified))
 		current = append(current, fmt.Sprintf("%d", odometer))
-		current = append(current, comments)
+		strippedComments := stripTags.Sanitize(comments)
+		current = append(current, strippedComments)
 		current = append(current, stock)
 		current = append(current, transmission)
 		current = append(current, images)
@@ -3718,7 +3721,7 @@ func (m *DBModel) Kijiji() ([][]string, error) {
 		v.id, vin, stock_no as stockid, used as is_used, 1 as is_certified, year,
 		vm.make, vmod.model, v.body, v.trim, v.transmission, v.odometer as kilometers,
 		v.exterior_color, v.cost as price, '' as model_code,
-		REPLACE(strip_tags(v.description), '&nbsp;', ' ') as comments,
+		REPLACE(v.description, '&nbsp;', ' ') as comments,
 		v.drive_train as drivetrain, '' as video_url,
 	case
 	when (select count(id) from vehicle_images vi where vi.vehicle_id = v.id) = 0 then ''
@@ -3798,7 +3801,9 @@ func (m *DBModel) Kijiji() ([][]string, error) {
 		current = append(current, exteriorColor)
 		current = append(current, fmt.Sprintf("%.2f", price))
 		current = append(current, modelCode)
-		current = append(current, comments)
+		// remove tags
+		strippedComments := stripTags.Sanitize(comments)
+		current = append(current, strippedComments)
 		current = append(current, driveTrain)
 		current = append(current, videoURL)
 		current = append(current, images)
@@ -3863,7 +3868,7 @@ func (m *DBModel) KijijiPS() ([][]string, error) {
             v.id, vin, stock_no as stockid, engine, used as is_used,  year,
             vm.make, vmod.model,  v.body, v.trim, v.transmission, v.odometer as kilometers,
             v.exterior_color, v.cost as price, '' as model_code,
-            REPLACE(strip_tags(v.description), '&nbsp;', ' ') as comments, 
+            REPLACE(v.description, '&nbsp;', ' ') as comments, 
             v.drive_train as drivetrain, '' as video_url,
             case 
             when (select count(id) from vehicle_images vi where vi.vehicle_id = v.id) = 0 then ''
@@ -3960,7 +3965,9 @@ func (m *DBModel) KijijiPS() ([][]string, error) {
 		current = append(current, exteriorColor)
 		current = append(current, fmt.Sprintf("%.2f", price))
 		current = append(current, modelCode)
-		current = append(current, comments)
+		// strip html
+		strippedComments := stripTags.Sanitize(comments)
+		current = append(current, strippedComments)
 		current = append(current, driveTrain)
 		current = append(current, videoURL)
 		current = append(current, images)

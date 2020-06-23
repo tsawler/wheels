@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/jlaffaye/ftp"
 	"github.com/joho/godotenv"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tsawler/goblender/pkg/handlers"
@@ -401,21 +402,21 @@ func PushToCarGurus() error {
 		return err
 	}
 
-	//// FTP the file up to CarGurus
-	//err := godotenv.Load("./.env")
-	//if err != nil {
-	//	errorLog.Println("Error loading .env file")
-	//}
-	//
-	//// ftp file
-	//userName := os.Getenv("CARGURUSUSER")
-	//password := os.Getenv("CARGURUSPASS")
-	//host := os.Getenv("CARGURUHOST")
-	//err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "feed.csv")
-	//if err != nil {
-	//	errorLog.Println(err)
-	//
-	//}
+	// FTP the file up to CarGurus
+	err = godotenv.Load("./.env")
+	if err != nil {
+		errorLog.Println("Error loading .env file")
+	}
+
+	// ftp file
+	userName := os.Getenv("CARGURUSUSER")
+	password := os.Getenv("CARGURUSPASS")
+	host := os.Getenv("CARGURUHOST")
+	err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "feed.csv")
+	if err != nil {
+		errorLog.Println(err)
+
+	}
 
 	// audit trail
 	history := handlers.History{
@@ -456,21 +457,21 @@ func PushToKijiji() error {
 		return err
 	}
 
-	//// FTP the file up to Kijiji
-	//err := godotenv.Load("./.env")
-	//if err != nil {
-	//	errorLog.Println("Error loading .env file")
-	//}
-	//
-	//// ftp file
-	//userName := os.Getenv("KIJIJIUSER")
-	//password := os.Getenv("KIJIJIPASS")
-	//host := os.Getenv("KIJIJIHOST")
-	//err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "Kijiji.csv")
-	//if err != nil {
-	//	errorLog.Println(err)
-	//
-	//}
+	// FTP the file up to Kijiji
+	err = godotenv.Load("./.env")
+	if err != nil {
+		errorLog.Println("Error loading .env file")
+	}
+
+	// ftp file
+	userName := os.Getenv("KIJIJIUSER")
+	password := os.Getenv("KIJIJIPASS")
+	host := os.Getenv("KIJIJIHOST")
+	err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "Kijiji.csv")
+	if err != nil {
+		errorLog.Println(err)
+
+	}
 
 	// audit trail
 	history := handlers.History{
@@ -510,21 +511,21 @@ func PushToKijijiPowerSports() error {
 		return err
 	}
 
-	//// FTP the file up to Kijiji
-	//err := godotenv.Load("./.env")
-	//if err != nil {
-	//	errorLog.Println("Error loading .env file")
-	//}
-	//
-	//// ftp file
-	//userName := os.Getenv("KIJIJIPSUSER")
-	//password := os.Getenv("KIJIJIPSPASS")
-	//host := os.Getenv("KIJIJIPSHOST")
-	//err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "Kijiji.csv")
-	//if err != nil {
-	//	errorLog.Println(err)
-	//
-	//}
+	// FTP the file up to Kijiji
+	err = godotenv.Load("./.env")
+	if err != nil {
+		errorLog.Println("Error loading .env file")
+	}
+
+	// ftp file
+	userName := os.Getenv("KIJIJIPSUSER")
+	password := os.Getenv("KIJIJIPSPASS")
+	host := os.Getenv("KIJIJIPSHOST")
+	err = PushFTPFile(userName, password, fmt.Sprintf("%s:21", host), fileName, "Kijiji.csv")
+	if err != nil {
+		errorLog.Println(err)
+
+	}
 
 	// audit trail
 	history := handlers.History{
@@ -534,6 +535,32 @@ func PushToKijijiPowerSports() error {
 		UserName:   fmt.Sprintf("%s %s", "System", "System"),
 	}
 	repo.AddHistory(history)
+
+	return nil
+}
+
+// PushFTPFile uploads a file via ftp
+func PushFTPFile(user, pass, host, fileLoc, fileName string) error {
+	c, err := ftp.Dial(host, ftp.DialWithTimeout(5*time.Second))
+	if err != nil {
+		return err
+	}
+
+	err = c.Login(user, pass)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Open(fileLoc)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	err = c.Stor(fileName, file)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
