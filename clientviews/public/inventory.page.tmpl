@@ -13,6 +13,10 @@
         #compareModal, #qqModal, #tdModal, #sfModal, #qciModal {
             z-index: 20003;
         }
+
+        .rotator-wrapper {
+            height: 3em;
+        }
     </style>
 {{end}}
 
@@ -202,7 +206,8 @@
                         </div>
 
                     </div>
-                    <input type="hidden" id="filter_vehicle_type" name="vehicle_type" value="{{index .IntMap "vehicle-type"}}">
+                    <input type="hidden" id="filter_vehicle_type" name="vehicle_type"
+                           value="{{index .IntMap "vehicle-type"}}">
                 </form>
 
                 <div class="float-right">
@@ -297,19 +302,22 @@
                                    href="#!">Compare checked</a>
                                 <br>
                                 <br>
-                                {{if eq .Used 1}}
+                                {{if eq .Used 0}}
 
                                 {{else if or (eq .VehicleMakesID 89) (eq .VehicleMakesID 47) (eq .VehicleMakesID 90) (eq .VehicleMakesID 30) (eq .VehicleMakesID 39)  }}
                                     <strong>The Jim Gilbert’s PowerSports Advantage:</strong>
-                                    <div data-hide="true" class="hidden">
-                                        <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Parts & Labor,Full Tank of Gas</span>
+                                    <div class="rotator-wrapper">
+                                        <div data-hide="true" class="hidden">
+                                            <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Parts & Labor,Full Tank of Gas</span>
+                                        </div>
                                     </div>
                                 {{else if or (eq .VehicleMakesID 41) (eq .VehicleMakesID 68)}}
-
                                 {{else}}
                                     <strong>The Jim Gilbert’s PowerSports Advantage:</strong>
-                                    <div data-hide="true" class="hidden"> <!-- other powerports -->
-                                        <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Accessories,VIP Discounts & Savings on Parts & Labor,First Service Free or Free Service Kit,Full Tank of Gas</span>
+                                    <div class="rotator-wrapper">
+                                        <div data-hide="true" class="hidden">
+                                            <span class="rotator" style="color: #a94442; font-weight: bold;">VIP Discounts & Savings on Accessories,VIP Discounts & Savings on Parts & Labor,First Service Free or Free Service Kit,Full Tank of Gas</span>
+                                        </div>
                                     </div>
                                 {{end}}
                             </div>
@@ -370,7 +378,6 @@
 
 
 {{define "js"}}
-
     <div class="modal fade" tabindex="-1" role="dialog" id="compareModal">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
@@ -397,11 +404,6 @@
 
 
     <script>
-
-        $(document).ready(function () {
-        });
-
-
         $(".compare-button").click(function () {
             let allValues = [];
             $('.compare:checked').each(function () {
@@ -426,7 +428,7 @@
 
         $(".compare").click(function () {
             var numberOfChecked = $('.compare:checkbox:checked').length;
-            if (numberOfChecked == 3) {
+            if (numberOfChecked === 3) {
                 $('.compare:not(:checked)').attr('disabled', 'disabled');
             } else {
                 $('input.compare').removeAttr('disabled');

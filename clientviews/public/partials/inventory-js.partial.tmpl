@@ -2,14 +2,13 @@
 <!-- start inventory js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Morphext/2.4.4/morphext.min.js"></script>
 <script>
-    let elementExists = !! document.getElementById("year");
-    if (elementExists) {
-        let yearsMenu = document.getElementById("year")
-        let makesMenu = document.getElementById("make")
-        let modelsMenu = document.getElementById("model")
-    }
+    let yearsMenu;
+    let makesMenu;
+    let modelsMenu;
+
 
     $(document).ready(function () {
+        let elementExists = !! document.getElementById("year");
         $(".rotator").Morphext({
             animation: "fadeInDown",
             separator: ",",
@@ -19,6 +18,10 @@
 
 
         if (elementExists) {
+            yearsMenu = document.getElementById("year")
+            makesMenu = document.getElementById("make")
+            modelsMenu = document.getElementById("model")
+
             yearsMenu.addEventListener("change", function (el) {
                 if (this.value > 0) {
                     fetch('/inventory-filter/makes/' + this.value + "/" + document.getElementById("filter_vehicle_type").value)
