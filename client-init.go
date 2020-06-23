@@ -56,45 +56,48 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 	NewClientMiddleware(app)
 	template_data.NewTemplateData(parentDriver.SQL)
 
-	infoLog.Println("Scheduling PBS inventory pull for every 3 hours....")
-	_, _ = app.Scheduler.AddFunc("@every 3h", func() {
-		PullFromPBS()
-	})
+	if app.InProduction {
 
-	infoLog.Println("Scheduling Push to CarGurus for 11:00 PM daily....")
-	_, _ = app.Scheduler.AddFunc("0 23 * * ?", func() {
-		err := PushToCarGurus()
-		if err != nil {
-			errorLog.Println("******* Error pushing CSV to CarGurus:", err)
-		}
-	})
+		infoLog.Println("Scheduling PBS inventory pull for every 3 hours....")
+		_, _ = app.Scheduler.AddFunc("@every 3h", func() {
+			PullFromPBS()
+		})
 
-	infoLog.Println("Scheduling Push to Kijiji for 10:OO PM daily....")
-	_, _ = app.Scheduler.AddFunc("0 22 * * ?", func() {
-		err := PushToKijiji()
-		if err != nil {
-			errorLog.Println("******* Error pushing CSV to Kijiji:", err)
-		}
-	})
+		infoLog.Println("Scheduling Push to CarGurus for 11:00 PM daily....")
+		_, _ = app.Scheduler.AddFunc("0 23 * * ?", func() {
+			err := PushToCarGurus()
+			if err != nil {
+				errorLog.Println("******* Error pushing CSV to CarGurus:", err)
+			}
+		})
 
-	infoLog.Println("Scheduling Push to Kijiji (PowerSports) for 11:00 PM daily....")
-	_, _ = app.Scheduler.AddFunc("0 23 * * ?", func() {
-		err := PushToKijijiPowerSports()
-		if err != nil {
-			errorLog.Println("******* Error pushing PowerSports CSV to Kijiji:", err)
-		}
-	})
+		infoLog.Println("Scheduling Push to Kijiji for 10:OO PM daily....")
+		_, _ = app.Scheduler.AddFunc("0 22 * * ?", func() {
+			err := PushToKijiji()
+			if err != nil {
+				errorLog.Println("******* Error pushing CSV to Kijiji:", err)
+			}
+		})
 
-	infoLog.Println("Scheduling image/video cleanup....")
-	_, _ = app.Scheduler.AddFunc("0 3 * * ?", func() {
-		CleanImages()
-	})
+		infoLog.Println("Scheduling Push to Kijiji (PowerSports) for 11:00 PM daily....")
+		_, _ = app.Scheduler.AddFunc("0 23 * * ?", func() {
+			err := PushToKijijiPowerSports()
+			if err != nil {
+				errorLog.Println("******* Error pushing PowerSports CSV to Kijiji:", err)
+			}
+		})
 
-	_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
-		CleanVideos()
-	})
+		infoLog.Println("Scheduling image/video cleanup....")
+		_, _ = app.Scheduler.AddFunc("0 3 * * ?", func() {
+			CleanImages()
+		})
 
-	_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
-		CleanPanoramas()
-	})
+		_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
+			CleanVideos()
+		})
+
+		_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
+			CleanPanoramas()
+		})
+	}
 }
