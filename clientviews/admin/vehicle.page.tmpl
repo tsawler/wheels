@@ -162,7 +162,7 @@
                                 <label class='text-danger'>{{.}}</label>
                             {{end}}
                             <input class="form-control" id="trim" autocomplete="off" type='text' name='trim'
-                                   value='{{$v.Trim}}' required>
+                                   value='{{$v.Trim}}'>
                             <div class="invalid-feedback">
                                 Please enter a value
                             </div>
@@ -216,7 +216,7 @@
                                 <label class='text-danger'>{{.}}</label>
                             {{end}}
                             <input class="form-control" id="cost" autocomplete="off" type='text'
-                                   name='cost'
+                                   name='cost' required
                                    value='{{$v.Cost}}' required>
                             <div class="invalid-feedback">
                                 Please enter a value
