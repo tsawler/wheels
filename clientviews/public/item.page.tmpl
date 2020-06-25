@@ -8,9 +8,9 @@
 {{define "css"}}
     {{$item := index .RowSets "item"}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
-    <link href="https://vjs.zencdn.net/7.8.2/video-js.css" rel="stylesheet" />
+    <link href="https://vjs.zencdn.net/7.8.2/video-js.css" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/videojs-panorama/0.1.7/videojs-panorama.min.css"
-          integrity="sha256-E88tWtq4Yx5cqB1DwdGuITgjObSqh7IJWjIunMteozY=" crossorigin="anonymous" />
+          integrity="sha256-E88tWtq4Yx5cqB1DwdGuITgjObSqh7IJWjIunMteozY=" crossorigin="anonymous"/>
 
     <style>
         #panorama {
@@ -25,11 +25,13 @@
             width: 100% !important;
             height: 500px !important;
         }
+
         {{else}}
         video, #vehicle-video {
             width: 100% !important;
             height: auto !important;
         }
+
         {{end}}
         #myCarousel .list-inline {
             white-space: nowrap;
@@ -94,7 +96,8 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <video class="video-js" controls autoplay muted playsinline
-                                           poster="/static/site-content/videos/{{$item.Video.Thumb}}" id="vehicle-video">
+                                           poster="/static/site-content/videos/{{$item.Video.Thumb}}"
+                                           id="vehicle-video">
                                         <source type="video/mp4"
                                                 src="/static/site-content/videos/{{$item.Video.FileName}}.mp4"/>
                                     </video>
@@ -227,12 +230,12 @@
 
                             <div class="col-md-6 col-xs-12 text-center">
 
-                                {{if ne $item.HandPicked 1  }}
-                                    <p class="text-danger" style="font-weight: bold">Your Benefits when buying from <br>
-                                        Wheels and Deals Include:
-                                    </p>
-                                    <div data-hide="true" class="hidden">
-                                        <span class="rotator" style="color: #a94442; font-weight: bold;">Full Tank of Gas,WalkaWay Credit &amp; Job Loss Protection,Paint Sealant Shine Guard Protection,No charge Nitrogen for life,Factory Warranty,Carfax History Report,Two Key Guarantee,Fresh MVI 200% above industry Standards,Fully Serviced and Guaranteed,All Fluids inspected and topped up,Refreshed Cabin air filter,Professionaly Detailed,Best in Class Service</span>
+                                {{if eq $item.HandPicked 0  }}
+                                    <strong>The Jim Gilbert’s Advantage:</strong>
+                                    <div class="rotator-wrapper">
+                                        <div data-hide="true" class="hidden">
+                                            <span class="rotator text-danger" style="font-weight: bold;">Two Key Guarantee,Free Full Tank of Gas,Free Nitrogen Tire Program,Free CarFax History Report,Guaranteed MVI,Best in Class Serviced,Professional Detailed,Free Delivery,Singing Huggable Teddy Bear,Yearly Thank you gifts on your birthday</span>
+                                        </div>
                                     </div>
                                 {{end}}
 
@@ -389,13 +392,13 @@
             });
 
             {{if eq $item.Video.Is360  1}}
-                var player = videojs('#vehicle-video');
-                player.panorama({
-                    clickAndDrag: true,
-                    callback: function () {
-                        player.play();
-                    }
-                });
+            var player = videojs('#vehicle-video');
+            player.panorama({
+                clickAndDrag: true,
+                callback: function () {
+                    player.play();
+                }
+            });
             {{end}}
         })
 
