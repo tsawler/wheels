@@ -2827,6 +2827,37 @@ func (m *DBModel) GetOneSalesStaff(id int) (clientmodels.SalesStaff, error) {
 	return o, nil
 }
 
+// GetOneSalesStaffBySlug gets one sales staff by slug
+func (m *DBModel) GetOneSalesStaffBySlug(slug string) (clientmodels.SalesStaff, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var o clientmodels.SalesStaff
+
+	query := `select id, salesperson_name, slug , coalesce(image, ''), coalesce(email, ''), 
+		coalesce(phone, ''), active, created_at, updated_at from sales where slug = ?`
+
+	row := m.DB.QueryRowContext(ctx, query, slug)
+	err := row.Scan(
+		&o.ID,
+		&o.Name,
+		&o.Slug,
+		&o.Image,
+		&o.Email,
+		&o.Phone,
+		&o.Active,
+		&o.CreatedAt,
+		&o.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+		return o, err
+	}
+
+	return o, nil
+}
+
 // UpdateSalesStaff updates staff
 func (m *DBModel) UpdateSalesStaff(o clientmodels.SalesStaff) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

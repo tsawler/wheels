@@ -1713,10 +1713,19 @@ func DisplayOneFinder(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func CopyBlog(w http.ResponseWriter, r *http.Request) {
-	err := vehicleModel.CopyPosts()
+// SalesPage displays sales person page
+func SalesPage(w http.ResponseWriter, r *http.Request) {
+	slug := r.URL.Query().Get(":slug")
+	sales, err := vehicleModel.GetOneSalesStaffBySlug(slug)
 	if err != nil {
 		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
 	}
-	w.Write([]byte("done"))
+
+	rowSets := make(map[string]interface{})
+	rowSets["sales"] = sales
+	helpers.Render(w, r, "sales.page.tmpl", &templates.TemplateData{
+		RowSets: rowSets,
+	})
 }

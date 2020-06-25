@@ -16,9 +16,6 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	fileServer = http.FileServer(http.Dir("./ui/static/site-content/"))
 	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
 
-	// temporary routes
-	//mux.Get("/copy-blog", standardMiddleWare.ThenFunc(CopyBlog))
-
 	/*--------------------------------------------------------------------------
 	| TUS web hook
 	|--------------------------------------------------------------------------
@@ -32,6 +29,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	/*--------------------------------------------------------------------------
 	| Public Routes
 	|--------------------------------------------------------------------------*/
+
+	// sales page
+	mux.Get("/sales/:slug", standardMiddleWare.ThenFunc(SalesPage))
 
 	// vehicle finder
 	mux.Get("/vehicle-finder", standardMiddleWare.ThenFunc(VehicleFinder))
