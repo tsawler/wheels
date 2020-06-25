@@ -82,13 +82,45 @@
                         <div class="row">
                             <div class="col-md-12 mt-5">
                                 {{$item := index .RowSets "item"}}
-                                <h3 class="text-center">
-                                    {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}
-                                    <span class="text-danger">{{formatCurrency $item.Cost}}<sup>*</sup></span>
-                                </h3>
-                                {{if lt $item.TotalMSR $item.Cost}}
-                                    <h5 class="text-center"><em>MSRP {{formatCurrency $item.TotalMSR}}</em></h5>
+
+                                {{if eq $item.HandPicked 0}}
+                                    {{if lt $item.Cost $item.TotalMSR}}
+                                        <h3 class="text-center">
+                                            {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}
+                                        </h3>
+
+                                        {{if eq $item.PriceForDisplay  ""}}
+                                            <h2 class="text-center"><span
+                                                        class="text-danger">${{$item.Cost}}<sup>*</sup></span></h2>
+                                        {{else}}
+                                            <h2 class="text-center">
+                                                <span class="text-danger">{{$item.PriceForDisplay}} OFF NEW MSRP = ${{$item.Cost}}<sup>*</sup></span>
+                                            </h2>
+                                        {{end}}
+
+                                        {{if lt $item.Cost $item.TotalMSR }}
+                                            <h5 class="text-center"><em>MSRP {{formatCurrency $item.TotalMSR}}</em></h5>
+                                        {{end}}
+                                        <hr>
+                                    {{else}}
+                                        <h3 class="text-center">
+                                            {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}
+                                            <span class="text-danger">{{formatCurrency $item.Cost}}<sup>*</sup></span>
+                                        </h3>
+                                        <hr>
+                                    {{end}}
+                                {{else}}
+
+                                    <h3 class="text-center">
+                                        {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} {{$item.Trim}}
+                                        <span class="text-danger">{{formatCurrency $item.Cost}}<sup>*</sup></span>
+                                    </h3>
+                                    <hr>
+
+
                                 {{end}}
+
+
                             </div>
                         </div>
 
