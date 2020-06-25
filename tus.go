@@ -127,6 +127,7 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 					app.ErrorLog.Println("Error deleting info file")
 				}
 			} else if payload.Upload.MetaData.UploadType == "image-manager" {
+				userID, _ := strconv.Atoi(payload.Upload.MetaData.UserID)
 				fileName := payload.Upload.MetaData.FileName
 				dot := strings.LastIndex(fileName, ".")
 				rootName := fileName[0:dot]
@@ -143,12 +144,20 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				// make thumb
 				sourceDir := payload.Upload.MetaData.UploadTo
 				destDir := fmt.Sprintf("%s/.thumb", sourceDir)
-				err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 400, 400)
 
-				err = os.Remove(fmt.Sprintf("%s.info", oldLocation))
-				if err != nil {
-					app.ErrorLog.Println("Error deleting info file")
+				jobData := channel_data.ImageData{
+					UserID:      userID,
+					SourceDir:   sourceDir,
+					DestDir:     destDir,
+					Slugified:   slugified,
+					OldLocation: oldLocation,
 				}
+
+				job := channel_data.ImageProcessingJob{
+					Image: jobData,
+				}
+
+				app.ImageQueue <- job
 			} else if payload.Upload.MetaData.UploadType == "inventory" {
 				vehicleID, _ := strconv.Atoi(payload.Upload.MetaData.ID)
 				_ = helpers.CreateDirIfNotExist(fmt.Sprintf("./ui/static/site-content/inventory/%d", vehicleID))
