@@ -758,40 +758,33 @@
         });
 
         async function confirmDeleteImage(x) {
-            attention.confirm({
-                html: "Are you sure you want to delete this image?",
-                icon: 'warning',
-                callback: function (result) {
-                    if (result !== false) {
-                        let formData = new FormData
-                        formData.append("csrf_token", '{{.CSRFToken}}');
-                        let ajax = new XMLHttpRequest();
-                        ajax.open("POST", "/admin/delete-vehicle-image-json/" + x);
-                        ajax.send(formData);
-                        ajax.onreadystatechange = function () {
-                            if ((ajax.readyState === 4) && (ajax.status === 200)) {
-                                let resp = ajax.response;
-                                let json = JSON.parse(resp);
-                                if (!json.okay) {
-                                    errorAlert("Errors: " + json.message);
-                                } else {
-                                    console.log("refreshing & sorting");
-                                    refreshImages();
-                                    sortList();
-                                    performSort();
-                                    setTimeout(function () {
-                                        refreshImages();
-                                        sortList();
-                                        performSort();
-                                    }, 1000);
-                                }
-                            } else if ((ajax.readyState === 4) && (ajax.status !== 200)) {
-                                errorAlert("Error: Status " + ajax.status);
-                            }
-                        }
+            // confirmation removed as per Dave's request on June 24/2020
+            let formData = new FormData
+            formData.append("csrf_token", '{{.CSRFToken}}');
+            let ajax = new XMLHttpRequest();
+            ajax.open("POST", "/admin/delete-vehicle-image-json/" + x);
+            ajax.send(formData);
+            ajax.onreadystatechange = function () {
+                if ((ajax.readyState === 4) && (ajax.status === 200)) {
+                    let resp = ajax.response;
+                    let json = JSON.parse(resp);
+                    if (!json.okay) {
+                        errorAlert("Errors: " + json.message);
+                    } else {
+                        console.log("refreshing & sorting");
+                        refreshImages();
+                        sortList();
+                        performSort();
+                        setTimeout(function () {
+                            refreshImages();
+                            sortList();
+                            performSort();
+                        }, 1000);
                     }
+                } else if ((ajax.readyState === 4) && (ajax.status !== 200)) {
+                    errorAlert("Error: Status " + ajax.status);
                 }
-            });
+            }
         }
 
         function performSort() {
