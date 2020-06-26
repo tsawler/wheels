@@ -887,6 +887,8 @@ func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 	// delete this image file
 	sourcePath := fmt.Sprintf("./ui/static/site-content/inventory/%d/%s", image.VehicleID, image.Image)
 	_ = os.Remove(sourcePath)
+	sourcePath = fmt.Sprintf("./ui/static/site-content/inventory/%d/thumbs/%s", image.VehicleID, image.Image)
+	_ = os.Remove(sourcePath)
 
 	okay := true
 	message := ""
