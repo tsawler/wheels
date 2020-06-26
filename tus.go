@@ -195,7 +195,6 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				job := VehicleImageProcessingJob{
 					Image: jobData,
 				}
-				infoLog.Println("Sending to queue:", sourceDir, destDir, slugified, so, vehicleID, userID)
 				vehicleImageQueue <- job
 			}
 		}
