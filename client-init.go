@@ -15,6 +15,7 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 var repo *handlers.DBRepo
 var vehicleModel *clientdb.DBModel
+var vehicleImageQueue chan VehicleImageProcessingJob
 
 // ClientInit gives client code access to goBlender configuration
 func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DBRepo) {
@@ -55,6 +56,14 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 	// Create client middleware
 	NewClientMiddleware(app)
 	template_data.NewTemplateData(parentDriver.SQL)
+
+	// create job queue
+	vehicleImageQueue = make(chan VehicleImageProcessingJob, 1)
+	//defer close(vehicleImageQueue)
+
+	infoLog.Println("Starting inventory image dispatcher....")
+	dispatcher := NewVehicleImageDispatcher(vehicleImageQueue, 1)
+	dispatcher.run()
 
 	if app.InProduction {
 

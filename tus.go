@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gosimple/slug"
-	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	channel_data "github.com/tsawler/goblender/pkg/channel-data"
 	"github.com/tsawler/goblender/pkg/config"
 	"github.com/tsawler/goblender/pkg/helpers"
-	"github.com/tsawler/goblender/pkg/images"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -160,6 +158,8 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				app.ImageQueue <- job
 			} else if payload.Upload.MetaData.UploadType == "inventory" {
 				vehicleID, _ := strconv.Atoi(payload.Upload.MetaData.ID)
+				userID, _ := strconv.Atoi(payload.Upload.MetaData.UserID)
+
 				_ = helpers.CreateDirIfNotExist(fmt.Sprintf("./ui/static/site-content/inventory/%d", vehicleID))
 				_ = helpers.CreateDirIfNotExist(fmt.Sprintf("./ui/static/site-content/inventory/%d/thumbs", vehicleID))
 
@@ -178,31 +178,51 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				}
 				so, _ := strconv.Atoi(payload.Upload.MetaData.SortOrder)
 
-				// convert image to 1200x900
+				//// convert image to 1200x900
+				//sourceDir := payload.Upload.MetaData.UploadTo
+				//destDir := payload.Upload.MetaData.UploadTo
+				//err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 1200, 900)
+				//destDir = fmt.Sprintf("%s/thumbs", payload.Upload.MetaData.UploadTo)
+				//err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 320, 240)
+				//
+				//// get current max for sort order
+				//curSort, err := vehicleModel.GetMaxSortOrderForVehicleID(vehicleID)
+				//so = so + curSort
+				//
+				//// write image to db
+				//vi := clientmodels.Image{
+				//	VehicleID: vehicleID,
+				//	Image:     slugified,
+				//	SortOrder: so,
+				//	CreatedAt: time.Now(),
+				//	UpdatedAt: time.Now(),
+				//}
+				//
+				//err = vehicleModel.InsertVehicleImage(vi)
+				//if err != nil {
+				//	app.ErrorLog.Println(err)
+				//	return
+				//}
+
+				// make thumb
 				sourceDir := payload.Upload.MetaData.UploadTo
-				destDir := payload.Upload.MetaData.UploadTo
-				err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 1200, 900)
-				destDir = fmt.Sprintf("%s/thumbs", payload.Upload.MetaData.UploadTo)
-				err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 320, 240)
+				destDir := fmt.Sprintf("%s/.thumb", sourceDir)
 
-				// get current max for sort order
-				curSort, err := vehicleModel.GetMaxSortOrderForVehicleID(vehicleID)
-				so = so + curSort
-
-				// write image to db
-				vi := clientmodels.Image{
-					VehicleID: vehicleID,
-					Image:     slugified,
-					SortOrder: so,
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
+				jobData := VehicleImageData{
+					SourceDir:   sourceDir,
+					DestDir:     destDir,
+					Slugified:   slugified,
+					OldLocation: oldLocation,
+					SortOrder:   so,
+					VehicleID:   vehicleID,
+					UserID:      userID,
 				}
 
-				err = vehicleModel.InsertVehicleImage(vi)
-				if err != nil {
-					app.ErrorLog.Println(err)
-					return
+				job := VehicleImageProcessingJob{
+					Image: jobData,
 				}
+				infoLog.Println("Sending to queue:", sourceDir, destDir, slugified, so, vehicleID, userID)
+				vehicleImageQueue <- job
 			}
 		}
 	}

@@ -459,7 +459,6 @@
                         </div>
 
 
-
                         <hr>
 
                         {{if ne $v.Panorama.Panorama ""}}
@@ -476,9 +475,6 @@
                                 </div>
                             </div>
                         </div>
-
-
-
 
 
                     </div>
@@ -520,6 +516,15 @@
     <script src="/static/js/tus.min.js"></script>
     <script src="/static/js/ts/tail.select.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script>
+        privateChannel.bind('vehicle-image-manager-upload-event', function (data) {
+            console.log("got message from websockets")
+            // refreshFiles();
+            refreshImages();
+            sortList();
+            performSort();
+        });
+    </script>
     <script>
 
         let imageList;
@@ -662,9 +667,9 @@
                     });
                     sortOrder++;
                 }
-                refreshImages();
-                sortList();
-                performSort();
+                // refreshImages();
+                // sortList();
+                // performSort();
             }
         }
 
@@ -721,13 +726,13 @@
                     onSuccess: function () {
                         uploadInProgress = false;
                         totalUploaded = totalUploaded + file.size;
-                        refreshImages();
-                        sortList();
-                        setTimeout(function () {
-                            refreshImages();
-                            sortList();
-                            performSort();
-                        }, 1000);
+                        // refreshImages();
+                        // sortList();
+                        // setTimeout(function () {
+                        //     refreshImages();
+                        //     sortList();
+                        //     performSort();
+                        // }, 1000);
                     }
                 })
                 nextUpload.start();
@@ -767,7 +772,6 @@
                             if ((ajax.readyState === 4) && (ajax.status === 200)) {
                                 let resp = ajax.response;
                                 let json = JSON.parse(resp);
-                                console.log(resp);
                                 if (!json.okay) {
                                     errorAlert("Errors: " + json.message);
                                 } else {
