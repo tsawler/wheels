@@ -178,35 +178,9 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				}
 				so, _ := strconv.Atoi(payload.Upload.MetaData.SortOrder)
 
-				//// convert image to 1200x900
-				//sourceDir := payload.Upload.MetaData.UploadTo
-				//destDir := payload.Upload.MetaData.UploadTo
-				//err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 1200, 900)
-				//destDir = fmt.Sprintf("%s/thumbs", payload.Upload.MetaData.UploadTo)
-				//err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 320, 240)
-				//
-				//// get current max for sort order
-				//curSort, err := vehicleModel.GetMaxSortOrderForVehicleID(vehicleID)
-				//so = so + curSort
-				//
-				//// write image to db
-				//vi := clientmodels.Image{
-				//	VehicleID: vehicleID,
-				//	Image:     slugified,
-				//	SortOrder: so,
-				//	CreatedAt: time.Now(),
-				//	UpdatedAt: time.Now(),
-				//}
-				//
-				//err = vehicleModel.InsertVehicleImage(vi)
-				//if err != nil {
-				//	app.ErrorLog.Println(err)
-				//	return
-				//}
-
 				// make thumb
 				sourceDir := payload.Upload.MetaData.UploadTo
-				destDir := fmt.Sprintf("%s/.thumb", sourceDir)
+				destDir := payload.Upload.MetaData.UploadTo
 
 				jobData := VehicleImageData{
 					SourceDir:   sourceDir,

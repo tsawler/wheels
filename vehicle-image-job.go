@@ -125,15 +125,16 @@ func (w VehicleImageWorker) processImageJob(i VehicleImageData) {
 }
 
 func processUploadedImage(vehicleID, so int, sourceDir, destDir, slugified string) {
-	infoLog.Println("Processing image:", vehicleID, so, sourceDir, destDir)
 	err := images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 1200, 900)
 	if err != nil {
+		app.InfoLog.Println("**** Error resizing big image")
 		app.ErrorLog.Println(err)
 	}
 
 	destDir = fmt.Sprintf("%s/thumbs", destDir)
 	err = images.MakeThumbFromStaticFile(sourceDir, destDir, slugified, 320, 240)
 	if err != nil {
+		app.InfoLog.Println("**** Error resizing thumb image")
 		app.ErrorLog.Println(err)
 	}
 
