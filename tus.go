@@ -18,14 +18,15 @@ import (
 
 // TusMetaData is the metadata
 type TusMetaData struct {
-	FileName   string `json:"filename"`
-	Token      string `json:"token"`
-	FileType   string `json:"file_type"`
-	ID         string `json:"id"`
-	UserID     string `json:"user_id"`
-	UploadType string `json:"upload_type"`
-	UploadTo   string `json:"upload_to"`
-	SortOrder  string `json:"sort_order"`
+	FileName     string `json:"filename"`
+	Token        string `json:"token"`
+	FileType     string `json:"file_type"`
+	ID           string `json:"id"`
+	UserID       string `json:"user_id"`
+	UploadType   string `json:"upload_type"`
+	UploadTo     string `json:"upload_to"`
+	SortOrder    string `json:"sort_order"`
+	ProcessVideo string `json:"process"`
 }
 
 // TusStorage is the storage
@@ -91,12 +92,17 @@ func TusWebHook(app config.AppConfig) http.HandlerFunc {
 				videoID, _ := strconv.Atoi(payload.Upload.MetaData.ID)
 				userID, _ := strconv.Atoi(payload.Upload.MetaData.UserID)
 				target := fmt.Sprintf("%s/%s", app.TusDir, payload.Upload.ID)
+				processVideo := true
+				if payload.Upload.MetaData.ProcessVideo == "0" {
+					processVideo = false
+				}
 
 				jobData := channel_data.VideoData{
-					ID:        videoID,
-					InputPath: target,
-					VideoName: payload.Upload.MetaData.FileName,
-					UserID:    userID,
+					ID:           videoID,
+					InputPath:    target,
+					VideoName:    payload.Upload.MetaData.FileName,
+					UserID:       userID,
+					ProcessVideo: processVideo,
 				}
 
 				job := channel_data.VideoProcessingJob{
