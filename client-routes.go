@@ -16,6 +16,39 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	fileServer = http.FileServer(http.Dir("./ui/static/site-content/"))
 	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
 
+	// 301 redirects
+	mux.Get("/vespa-scooters", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/ebikes/pedego-inventory", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/atv-inventory", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/atvs/brute-force-inventory", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/atvs-teryx", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/sidexsides/teryx-for-sale", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/atv-mules", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/utvs/kawasaki-mules-for-sale", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/jetskis", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/personalwatercraft/new-jetskis-forsale", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/electric-bikes", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/ebikes/pedego-inventory", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/powersports-used-inventory", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/used/used-motorbikes-atvs-wheelers-trailers", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/trailers-new-and-used-inventory", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/newtrailers/boat-stv-utility", http.StatusMovedPermanently)
+	}))
+
 	/*--------------------------------------------------------------------------
 	| TUS web hook
 	|--------------------------------------------------------------------------
