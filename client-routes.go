@@ -17,8 +17,44 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/storage/", http.StripPrefix("/storage/", fileServer))
 
 	// 301 redirects
-	mux.Get("/vespa-scooters", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Get("/kawasaki-dealer-models", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/kawasaki-dealer-models", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/kawasaki-dealer-models", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/kawasaki-dealer-models", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/wheels/atv", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/atvs/brute-force-inventory", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/truck-caps-atv-trailer-boat-trailer-used-powersports-trade-ins", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/used/used-motorbikes-atvs-wheelers-trailers", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/atv-inventory", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/atvs/brute-force-inventory", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/motorcycle-inventory", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/motorcyclesforsale/fredericton", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/ebikes", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/ebikes/pedego-inventory", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/atvs-teryx", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/sidexsides/teryx-for-sale", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/2019-kawasaki-hallway-jim", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/kawasaki-dealer-models", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/vespa-scooters", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/scooters-mopeds/vespa-piaggio-gas-electric", http.StatusMovedPermanently)
 	}))
 
 	mux.Get("/atv-inventory", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +66,10 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	}))
 
 	mux.Get("/atv-mules", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/utvs/kawasaki-mules-for-sale", http.StatusMovedPermanently)
+	}))
+
+	mux.Get("/atvs-mules", dynamicMiddleware.ThenFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "https://powersports.wheelsanddeals.ca/utvs/kawasaki-mules-for-sale", http.StatusMovedPermanently)
 	}))
 
