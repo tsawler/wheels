@@ -565,14 +565,56 @@ func PushFTPFile(user, pass, host, fileLoc, fileName string) error {
 	return nil
 }
 
-func CleanImages() {
+// ManuallyCleanVideos manually cleans videos
+func ManuallyCleanVideos(w http.ResponseWriter, r *http.Request) {
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
+	}
 
+	err := vehicleModel.DeleteUnusedVideos()
+	if err != nil {
+		// audit trail
+		history := handlers.History{
+			UserID:     1,
+			Message:    "Cleaning videos failed",
+			ChangeType: "page",
+			UserName:   fmt.Sprintf("%s %s", "System", "System"),
+		}
+		repo.AddHistory(history)
+
+		session.Put(r.Context(), "flash", fmt.Sprintf("Error cleaning videos: %s", err.Error()))
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
+
+	session.Put(r.Context(), "flash", "Videos cleaned!")
+	http.Redirect(w, r, lastPage, http.StatusSeeOther)
 }
 
-func CleanVideos() {
+// ManuallyCleanImages manually cleans images and panoramas for sold vehicles
+func ManuallyCleanImages(w http.ResponseWriter, r *http.Request) {
+	lastPage := session.GetString(r.Context(), "last-page")
+	if lastPage == "" {
+		lastPage = "/"
+	}
 
-}
+	err := vehicleModel.DeleteUnusedInventoryImages()
+	if err != nil {
+		// audit trail
+		history := handlers.History{
+			UserID:     1,
+			Message:    "Cleaning images failed",
+			ChangeType: "page",
+			UserName:   fmt.Sprintf("%s %s", "System", "System"),
+		}
+		repo.AddHistory(history)
 
-func CleanPanoramas() {
+		session.Put(r.Context(), "flash", fmt.Sprintf("Error cleaning images: %s", err.Error()))
+		http.Redirect(w, r, lastPage, http.StatusSeeOther)
+		return
+	}
 
+	session.Put(r.Context(), "flash", "Images and panoramas cleaned!")
+	http.Redirect(w, r, lastPage, http.StatusSeeOther)
 }

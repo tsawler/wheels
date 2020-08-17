@@ -10,6 +10,8 @@ import (
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tsawler/goblender/pkg/models"
 	"html/template"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -4157,5 +4159,144 @@ func (m *DBModel) CopyPosts() error {
 		}
 	}
 
+	return nil
+}
+
+// DeleteUnusedVideos deletes unused videos/thumbnails
+func (m *DBModel) DeleteUnusedVideos() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	var ids []int
+
+	query := `select id from vehicles where status = 0 and vehicle_type < 7 
+				and id in (select vehicle_id from vehicle_videos)`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i int
+		err = rows.Scan(&i)
+		if err != nil {
+			return err
+		}
+		ids = append(ids, i)
+	}
+
+	type Item struct {
+		VehicleVideoID int
+		VideoID        int
+		FileName       string
+		Thumb          string
+	}
+
+	for _, x := range ids {
+
+		stmt := `select vv.id, v.id as video_id, v.file_name, v.thumb
+					from vehicle_videos vv 
+					left join videos v on (vv.video_id = v.id)
+					where vv.vehicle_id = ?`
+		vRows, err := m.DB.QueryContext(ctx, stmt, x)
+		if err != nil {
+			return err
+		}
+		defer vRows.Close()
+
+		for vRows.Next() {
+			var current Item
+			err = vRows.Scan(
+				&current.VehicleVideoID,
+				&current.VideoID,
+				&current.FileName,
+				&current.Thumb,
+			)
+			if err != nil {
+				return err
+			}
+
+			// delete video files
+			path := fmt.Sprintf("./ui/static/site-content/videos/%s.mp4", current.FileName)
+			err := os.Remove(path)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			// delete thumb
+			path = fmt.Sprintf("./ui/static/site-content/videos/%s", current.Thumb)
+			err = os.Remove(path)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			// update db
+			stmt := `delete from vehicle_videos where vehicle_id = ?`
+			_, err = m.DB.ExecContext(ctx, stmt, x)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// DeleteUnusedInventoryImages deletes images/panoramas for sold vehicles
+func (m *DBModel) DeleteUnusedInventoryImages() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	var ids []int
+
+	query := `select id from vehicles where status = 0`
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var i int
+		err = rows.Scan(&i)
+		if err != nil {
+			return err
+		}
+		ids = append(ids, i)
+	}
+
+	for _, x := range ids {
+		stmt := `delete from vehicle_images where vehicle_id = ?`
+		_, err := m.DB.ExecContext(ctx, stmt, x)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		// delete vehicle images, if any
+		path := fmt.Sprintf("./ui/static/site-content/inventory/%d", x)
+		err = os.RemoveAll(path)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		// delete panorama, if any
+		stmt = `delete from vehicle_panoramas where vehicle_id = ?`
+		_, err = m.DB.ExecContext(ctx, stmt, x)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		files, err := filepath.Glob(fmt.Sprintf("./ui/static/site-content/panoramas%d-*", x))
+		if err != nil {
+			fmt.Println(err)
+		}
+		for _, f := range files {
+			if err := os.Remove(f); err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
 	return nil
 }

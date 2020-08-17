@@ -96,17 +96,14 @@ func ClientInit(conf config.AppConfig, parentDriver *driver.DB, rep *handlers.DB
 			}
 		})
 
-		infoLog.Println("Scheduling image/video cleanup....")
-		_, _ = app.Scheduler.AddFunc("0 3 * * ?", func() {
-			CleanImages()
+		infoLog.Println("Scheduling video cleanup....")
+		_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
+			_ = vehicleModel.DeleteUnusedVideos()
 		})
 
+		infoLog.Println("Scheduling image/panorama cleanup....")
 		_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
-			CleanVideos()
-		})
-
-		_, _ = app.Scheduler.AddFunc("0 4 * * ?", func() {
-			CleanPanoramas()
+			_ = vehicleModel.DeleteUnusedInventoryImages()
 		})
 	}
 }

@@ -106,6 +106,15 @@
                 <li><a href="/admin/csv/push-to-kijiji-powersports">Push Kijiji PowerSports</a></li>
             </ul>
         </li>
+
+        <li id="clean" {{if eq .CurrentSegment "clean"}} class="active" {{end}}>
+            <a href="#!"><i class="fa fa-cogs fa-fw"></i> <span class="nav-label">Clean Media</span> <span
+                        class="fa arrow"></span></a>
+            <ul class="nav nav-second-level collapse">
+                <li><a href="/admin/clean/clean-videos">Clean Vehicle Videos</a></li>
+                <li><a href="/admin/clean/clean-images">Clean Vehicle Images</a></li>
+            </ul>
+        </li>
     {{end}}
 
 {{end}}

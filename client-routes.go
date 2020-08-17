@@ -182,6 +182,9 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	mux.Get("/admin/csv/push-to-kijiji", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(KijijiFeed))
 	mux.Get("/admin/csv/push-to-kijiji-powersports", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(KijijiPSFeed))
 
+	// manually clean up videos, etc.
+	mux.Get("/admin/clean/clean-videos", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(ManuallyCleanVideos))
+	mux.Get("/admin/clean/clean-images", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(ManuallyCleanImages))
 	// print window sticker
 	mux.Get("/admin/inventory/print-window-sticker/:ID", dynamicMiddleware.ThenFunc(PrintWindowSticker))
 
