@@ -2,7 +2,7 @@ package clienthandlers
 
 import (
 	"github.com/tsawler/goblender/client/clienthandlers/clientdb"
-	template_data "github.com/tsawler/goblender/client/clienthandlers/template-data"
+	template_data "github.com/tsawler/goblender/client/clienthandlers/templatedata"
 	"github.com/tsawler/goblender/pkg/config"
 	"github.com/tsawler/goblender/pkg/driver"
 	"github.com/tsawler/goblender/pkg/handlers"

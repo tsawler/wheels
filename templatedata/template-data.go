@@ -1,4 +1,4 @@
-package template_data
+package templatedata
 
 import (
 	"database/sql"
