@@ -181,14 +181,15 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	var oldValue clientmodels.Vehicle
 
 	if vehicleID > 0 {
-		v, err := vehicleModel.GetVehicleByID(vehicleID)
+		veh, err := vehicleModel.GetVehicleByID(vehicleID)
 		if err != nil {
 			errorLog.Println(err)
 			helpers.ClientError(w, http.StatusBadRequest)
 			return
 		}
-		oldVideoID = v.Video.VideoID
-		oldValue = v
+		oldVideoID = veh.Video.VideoID
+		oldValue = veh
+		v = veh
 	}
 
 	form.Required("stock_no", "vin", "cost", "total_msr")
