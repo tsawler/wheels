@@ -162,15 +162,13 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 
 // AddVehicle allows for manually adding a vehicle
 func AddVehicle(w http.ResponseWriter, r *http.Request) {
-	src := r.URL.Query().Get(":SRC")
-	segment := r.URL.Query().Get(":TYPE")
-	category := r.URL.Query().Get(":CATEGORY")
 	stringMap := make(map[string]string)
-	stringMap["segment"] = segment
-	stringMap["src"] = src
-	stringMap["category"] = category
+	stringMap["category"] = "inventory"
+	stringMap["segment"] = "vehicles"
+	stringMap["src"] = "all-vehicles-for-sale"
 
 	var vehicle clientmodels.Vehicle
+	vehicle.Status = 1
 
 	rowSets := make(map[string]interface{})
 	rowSets["vehicle"] = vehicle
