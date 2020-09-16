@@ -160,6 +160,69 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// AddVehicle allows for manually adding a vehicle
+func AddVehicle(w http.ResponseWriter, r *http.Request) {
+	src := r.URL.Query().Get(":SRC")
+	segment := r.URL.Query().Get(":TYPE")
+	category := r.URL.Query().Get(":CATEGORY")
+	stringMap := make(map[string]string)
+	stringMap["segment"] = segment
+	stringMap["src"] = src
+	stringMap["category"] = category
+
+	var vehicle clientmodels.Vehicle
+
+	rowSets := make(map[string]interface{})
+	rowSets["vehicle"] = vehicle
+
+	var years []int
+	for i := (time.Now().Year() + 1); i >= 1900; i-- {
+		years = append(years, i)
+	}
+
+	rowSets["years"] = years
+
+	makes, err := vehicleModel.GetMakes()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["makes"] = makes
+
+	models, err := vehicleModel.GetModelsForMakeID(vehicle.VehicleMakesID)
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["models"] = models
+
+	options, err := vehicleModel.AllActiveOptions()
+	if err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	rowSets["options"] = options
+
+	// add map of options
+	intMap := make(map[string]int)
+	for _, x := range vehicle.VehicleOptions {
+		intMap[fmt.Sprintf("option_%d", x.OptionID)] = 1
+	}
+
+	videos := repo.AdminAllVideos(app)
+	rowSets["videos"] = videos
+
+	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
+		RowSets:   rowSets,
+		IntMap:    intMap,
+		Form:      forms.New(nil),
+		StringMap: stringMap,
+	})
+}
+
 // DisplayVehicleForAdminPost handles post of vehicle
 func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	vehicleID, _ := strconv.Atoi(r.URL.Query().Get(":ID"))
