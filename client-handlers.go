@@ -169,6 +169,7 @@ func AddVehicle(w http.ResponseWriter, r *http.Request) {
 
 	var vehicle clientmodels.Vehicle
 	vehicle.Status = 1
+	vehicle.Used = 1
 
 	rowSets := make(map[string]interface{})
 	rowSets["vehicle"] = vehicle
