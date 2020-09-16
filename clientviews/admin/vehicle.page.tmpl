@@ -50,8 +50,23 @@
 
 {{define "title"}}Inventory Item - GoBlender Admin{{end}}
 
-{{define "admin-title"}}{{$v := index .RowSets "vehicle"}}{{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}, Stock # {{$v.StockNo}}{{end}}
-{{define "content-title"}}{{$v := index .RowSets "vehicle"}}{{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}, Stock # {{$v.StockNo}}{{end}}
+{{define "admin-title"}}
+    {{$v := index .RowSets "vehicle"}}
+    {{if gt $v.ID 0}}
+        {{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}, Stock # {{$v.StockNo}}
+    {{else}}
+        New Item
+    {{end}}
+{{end}}
+
+{{define "content-title"}}
+    {{$v := index .RowSets "vehicle"}}
+        {{if gt $v.ID 0}}
+    {{$v.Year}} {{$v.Make.Make}} {{$v.Model.Model}} {{$v.Trim}}, Stock # {{$v.StockNo}}
+    {{else}}
+        New Item
+    {{end}}
+{{end}}
 
 {{define "content"}}
     {{$v := index .RowSets "vehicle"}}
@@ -70,6 +85,8 @@
                 <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general-tab-content" role="tab"
                    aria-controls="home" aria-selected="true">General</a>
             </li>
+
+            {{if gt $v.ID 0}}
 
             <li class="nav-item">
                 <a class="nav-link" id="detailed-tab" data-toggle="tab" href="#detailed-tab-content" role="tab"
@@ -90,7 +107,7 @@
                 <a class="nav-link" id="video-tab" data-toggle="tab" href="#video-tab-content" role="tab"
                    aria-controls="video/panorama" aria-selected="true">Video/Panorama</a>
             </li>
-
+            {{end}}
 
         </ul>
 
@@ -484,7 +501,7 @@
         <div class="row">
             <div class="col">
                 <hr>
-
+                {{if gt $v.ID 0}}
                 <div class="btn-group dropup">
                     <a class="btn btn-primary savebtn" href="javascript:" onclick="saveClose()" data-action="close">
                         Save and Close
@@ -498,6 +515,9 @@
                         <a class="dropdown-item" href="javascript:" onclick="val()">Save & Continue</a>
                     </div>
                 </div>
+                {{else}}
+                    <a class="btn btn-primary" href="javascript:" onclick="val()">Save & Continue</a>
+                {{end}}
 
                 <a class="btn btn-info"
                    href="/admin/{{index .StringMap "category"}}/{{index .StringMap "segment"}}/{{index .StringMap "src"}}">Cancel</a>
