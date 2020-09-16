@@ -185,11 +185,12 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 	// manually clean up videos, etc.
 	mux.Get("/admin/clean/clean-videos", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(ManuallyCleanVideos))
 	mux.Get("/admin/clean/clean-images", dynamicMiddleware.Append(mw.Auth).Append(mw.SuperRole).ThenFunc(ManuallyCleanImages))
+
 	// print window sticker
 	mux.Get("/admin/inventory/print-window-sticker/:ID", dynamicMiddleware.ThenFunc(PrintWindowSticker))
 
 	// add vehicle manually
-	mux.Get("/admin/:CATEGORY/:TYPE/:SRC/0", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AddVehicle))
+	//mux.Get("/admin/:CATEGORY/:TYPE/:SRC/0", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AddVehicle))
 	//mux.Post("/admin/:CATEGORY/:TYPE/:SRC/0", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(DisplayVehicleForAdminPost))
 
 	// display and edit vehicle/item

@@ -101,75 +101,19 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 	stringMap["src"] = src
 	stringMap["category"] = category
 
-	vehicle, err := vehicleModel.GetVehicleByID(id)
-	if err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
-		return
-	}
-
-	rowSets := make(map[string]interface{})
-	rowSets["vehicle"] = vehicle
-
-	var years []int
-	for i := (time.Now().Year() + 1); i >= 1900; i-- {
-		years = append(years, i)
-	}
-
-	rowSets["years"] = years
-
-	makes, err := vehicleModel.GetMakes()
-	if err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
-		return
-	}
-	rowSets["makes"] = makes
-
-	models, err := vehicleModel.GetModelsForMakeID(vehicle.VehicleMakesID)
-	if err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
-		return
-	}
-	rowSets["models"] = models
-
-	options, err := vehicleModel.AllActiveOptions()
-	if err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
-		return
-	}
-	rowSets["options"] = options
-
-	// add map of options
-	intMap := make(map[string]int)
-	for _, x := range vehicle.VehicleOptions {
-		intMap[fmt.Sprintf("option_%d", x.OptionID)] = 1
-	}
-
-	videos := repo.AdminAllVideos(app)
-	rowSets["videos"] = videos
-
-	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
-		RowSets:   rowSets,
-		IntMap:    intMap,
-		Form:      forms.New(nil),
-		StringMap: stringMap,
-	})
-
-}
-
-// AddVehicle allows for manually adding a vehicle
-func AddVehicle(w http.ResponseWriter, r *http.Request) {
-	stringMap := make(map[string]string)
-	stringMap["category"] = "inventory"
-	stringMap["segment"] = "vehicles"
-	stringMap["src"] = "all-vehicles-for-sale"
-
 	var vehicle clientmodels.Vehicle
-	vehicle.Status = 1
-	vehicle.Used = 1
+
+	if id > 0 {
+		vehicle, err = vehicleModel.GetVehicleByID(id)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+	} else {
+		vehicle.Status = 1
+		vehicle.Used = 1
+	}
 
 	rowSets := make(map[string]interface{})
 	rowSets["vehicle"] = vehicle
@@ -220,6 +164,7 @@ func AddVehicle(w http.ResponseWriter, r *http.Request) {
 		Form:      forms.New(nil),
 		StringMap: stringMap,
 	})
+
 }
 
 // DisplayVehicleForAdminPost handles post of vehicle
@@ -231,14 +176,20 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	segment := form.Get("segment")
 	src := form.Get("src")
 
-	v, err := vehicleModel.GetVehicleByID(vehicleID)
-	if err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
-		return
+	var v clientmodels.Vehicle
+	var oldVideoID int
+	var oldValue clientmodels.Vehicle
+
+	if vehicleID > 0 {
+		v, err := vehicleModel.GetVehicleByID(vehicleID)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		oldVideoID = v.Video.VideoID
+		oldValue = v
 	}
-	oldVideoID := v.Video.VideoID
-	oldValue := v
 
 	form.Required("stock_no", "vin", "cost", "total_msr")
 	form.IsFloat("cost")
@@ -297,6 +248,7 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
 	year, _ := strconv.Atoi(form.Get("year"))
 	v.Year = year
 
@@ -344,126 +296,140 @@ func DisplayVehicleForAdminPost(w http.ResponseWriter, r *http.Request) {
 	action, _ := strconv.Atoi(form.Get("action"))
 	v.Description = form.Get("description")
 
-	err = vehicleModel.UpdateVehicle(v)
-	if err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
+	if vehicleID == 0 {
+		// new vehicle, manually entered
+		id, err := vehicleModel.InsertVehicle(v)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		session.Put(r.Context(), "flash", "Changes saved")
+		http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s/%d", category, segment, src, id), http.StatusSeeOther)
 		return
-	}
+	} else {
+		// updating existing vehicle
+		err := vehicleModel.UpdateVehicle(v)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
 
-	// vehicle options
-	// first delete all options
-	_ = vehicleModel.DeleteAllVehicleOptions(v.ID)
+		// vehicle options
+		// first delete all options
+		_ = vehicleModel.DeleteAllVehicleOptions(v.ID)
 
-	// loop through all posted vars, and add options
-	for key, value := range r.Form {
-		if strings.HasPrefix(key, "option_") {
-			optionID, _ := strconv.Atoi(value[0])
-			o := clientmodels.VehicleOption{
-				VehicleID: v.ID,
-				OptionID:  optionID,
+		// loop through all posted vars, and add options
+		for key, value := range r.Form {
+			if strings.HasPrefix(key, "option_") {
+				optionID, _ := strconv.Atoi(value[0])
+				o := clientmodels.VehicleOption{
+					VehicleID: v.ID,
+					OptionID:  optionID,
+					CreatedAt: time.Now(),
+					UpdatedAt: time.Now(),
+				}
+				err = vehicleModel.InsertVehicleOption(o)
+				if err != nil {
+					errorLog.Println(err)
+				}
+			}
+		}
+
+		// update sort order for images
+		sortList := r.Form.Get("sort_list")
+		var sorted []SortOrder
+
+		err = json.Unmarshal([]byte(sortList), &sorted)
+		if err != nil {
+			app.ErrorLog.Println(err)
+		}
+
+		for _, v := range sorted {
+			imageID, _ := strconv.Atoi(v.ImageID)
+			err := vehicleModel.UpdateSortOrderForImage(imageID, v.StepNumber)
+			if err != nil {
+				app.ErrorLog.Println(err)
+			}
+		}
+
+		// handle video
+		videoID, _ := strconv.Atoi(form.Get("video_id"))
+		if videoID != oldVideoID {
+			if (videoID == 0 && oldVideoID != 0) || (videoID > 0 && oldVideoID != 0) {
+				vv := clientmodels.VehicleVideo{
+					VehicleID: v.ID,
+					VideoID:   videoID,
+					UpdatedAt: time.Now(),
+				}
+				err := vehicleModel.UpdateVideoForVehicle(vv)
+				if err != nil {
+					errorLog.Println("Error updating video:", err)
+				}
+			} else if videoID > 0 {
+				vv := clientmodels.VehicleVideo{
+					VehicleID: v.ID,
+					VideoID:   videoID,
+					UpdatedAt: time.Now(),
+				}
+				err := vehicleModel.InsertVideoForVehicle(vv)
+				if err != nil {
+					errorLog.Println("Error inserting video:", err)
+				}
+			}
+		}
+
+		// handle panorama
+		if form.HasFile("panorama", r) {
+			// we have a panorama
+			fileName, _, _ := helpers.UploadOneFile(r, "./tmp/")
+
+			oldLocation := fmt.Sprintf("./tmp/%s", fileName)
+			newLocation := fmt.Sprintf("./ui/static/site-content/panoramas/%d-%s", vehicleID, fileName)
+
+			err := MoveFile(oldLocation, newLocation)
+			if err != nil {
+				app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
+			}
+
+			// update in DB
+			vp := clientmodels.Panorama{
+				VehicleID: vehicleID,
+				Panorama:  fmt.Sprintf("%d-%s", vehicleID, fileName),
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			}
-			err = vehicleModel.InsertVehicleOption(o)
+
+			v.Panorama = vp
+
+			err = vehicleModel.UpdatePanorama(vp)
 			if err != nil {
 				errorLog.Println(err)
 			}
 		}
-	}
 
-	// update sort order for images
-	sortList := r.Form.Get("sort_list")
-	var sorted []SortOrder
+		authId := app.Session.GetInt(r.Context(), "userID")
+		u, _ := repo.DB.GetUserById(authId)
 
-	err = json.Unmarshal([]byte(sortList), &sorted)
-	if err != nil {
-		app.ErrorLog.Println(err)
-	}
-
-	for _, v := range sorted {
-		imageID, _ := strconv.Atoi(v.ImageID)
-		err := vehicleModel.UpdateSortOrderForImage(imageID, v.StepNumber)
-		if err != nil {
-			app.ErrorLog.Println(err)
+		history := handlers.History{
+			UserID:     u.ID,
+			Message:    fmt.Sprintf("Edited vehicle id %d, stock no %s", v.ID, v.StockNo),
+			ChangeType: "vehicle",
+			OldValue:   oldValue,
+			NewValue:   v,
+			UserName:   fmt.Sprintf("%s %s", u.FirstName, u.LastName),
 		}
-	}
+		repo.AddHistory(history)
 
-	// handle video
-	videoID, _ := strconv.Atoi(form.Get("video_id"))
-	if videoID != oldVideoID {
-		if (videoID == 0 && oldVideoID != 0) || (videoID > 0 && oldVideoID != 0) {
-			vv := clientmodels.VehicleVideo{
-				VehicleID: v.ID,
-				VideoID:   videoID,
-				UpdatedAt: time.Now(),
-			}
-			err := vehicleModel.UpdateVideoForVehicle(vv)
-			if err != nil {
-				errorLog.Println("Error updating video:", err)
-			}
-		} else if videoID > 0 {
-			vv := clientmodels.VehicleVideo{
-				VehicleID: v.ID,
-				VideoID:   videoID,
-				UpdatedAt: time.Now(),
-			}
-			err := vehicleModel.InsertVideoForVehicle(vv)
-			if err != nil {
-				errorLog.Println("Error inserting video:", err)
-			}
+		// redirect
+		session.Put(r.Context(), "flash", "Changes saved")
+		if action == 1 {
+			http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s", category, segment, src), http.StatusSeeOther)
+			return
 		}
+		http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s/%d", category, segment, src, vehicleID), http.StatusSeeOther)
 	}
-
-	// handle panorama
-	if form.HasFile("panorama", r) {
-		// we have a panorama
-		fileName, _, _ := helpers.UploadOneFile(r, "./tmp/")
-
-		oldLocation := fmt.Sprintf("./tmp/%s", fileName)
-		newLocation := fmt.Sprintf("./ui/static/site-content/panoramas/%d-%s", vehicleID, fileName)
-
-		err := MoveFile(oldLocation, newLocation)
-		if err != nil {
-			app.ErrorLog.Println("could not move from", oldLocation, "to", newLocation)
-		}
-
-		// update in DB
-		vp := clientmodels.Panorama{
-			VehicleID: vehicleID,
-			Panorama:  fmt.Sprintf("%d-%s", vehicleID, fileName),
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-
-		v.Panorama = vp
-
-		err = vehicleModel.UpdatePanorama(vp)
-		if err != nil {
-			errorLog.Println(err)
-		}
-	}
-
-	authId := app.Session.GetInt(r.Context(), "userID")
-	u, _ := repo.DB.GetUserById(authId)
-
-	history := handlers.History{
-		UserID:     u.ID,
-		Message:    fmt.Sprintf("Edited vehicle id %d, stock no %s", v.ID, v.StockNo),
-		ChangeType: "vehicle",
-		OldValue:   oldValue,
-		NewValue:   v,
-		UserName:   fmt.Sprintf("%s %s", u.FirstName, u.LastName),
-	}
-	repo.AddHistory(history)
-
-	// redirect
-	session.Put(r.Context(), "flash", "Changes saved")
-	if action == 1 {
-		http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s", category, segment, src), http.StatusSeeOther)
-		return
-	}
-	http.Redirect(w, r, fmt.Sprintf("/admin/%s/%s/%s/%d", category, segment, src, vehicleID), http.StatusSeeOther)
 }
 
 // AllVehicles displays all vehicles
