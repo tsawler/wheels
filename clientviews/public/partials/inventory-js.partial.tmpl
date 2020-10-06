@@ -355,7 +355,8 @@
                 <form id="td-form" class="needs-validation" method="post" action="/wheels/test-drive"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                    <input type="hidden" name="td-vid" id="td-vid">
+                    <input type="hidden" name="vehicle_id" id="td-vid">
+                    <input type="hidden" name="interested" id="td-interested">
                     <div class="form-group">
                         <label for="td-name">Your Name</label>
                         <div class="input-group">
@@ -458,6 +459,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="g-recaptcha mt-5" data-sitekey="{{$recaptchaKey}}"></div>
                 </form>
 
             </div>
@@ -475,6 +478,7 @@
     function openTD(id, item, stockNo) {
         $("#td-interested-in-item").html(item + ", Stock Number: " + stockNo);
         $("#td-vid").val(id);
+        $("#td-interested").val($("#td-interested-in-item").html());
         $('#tdModal').modal({backdrop: true})
     }
 
@@ -486,23 +490,25 @@
         }
         form.addClass('was-validated');
         if (form[0].checkValidity() === true) {
-            let formData = new FormData();
-            formData.append('name', $("#td-name").val());
-            formData.append('email', $("#td-email").val());
-            formData.append('phone', $("#td-phone").val());
-            formData.append('preferred_date', $("#td-date").val());
-            formData.append('preferred_time', $("#td-time").val());
-            formData.append('interested', $("#td-interested-in-item").html());
-            formData.append('vehicle_id', $("#td-vid").val());
-            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
+            let f = document.getElementById("td-form");
+            let formData = new FormData(f);
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
             ajax.open("POST", "/wheels/test-drive");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {
-                    $("#tdModal").modal('hide');
-                    successAlert("Test Drive Request sent!!");
+                    if (ajax.readyState === 4) {
+                        let resp = ajax.response;
+                        let json = JSON.parse(JSON.stringify(resp));
+                        if (!json.ok) {
+                            errorAlert("Invalid form response!");
+                        } else {
+                            $("#tdModal").modal('hide');
+                            successAlert("Test Drive Request sent!!");
+                            resetCaptcha();
+                        }
+                    }
                 }
             }
         }
@@ -533,6 +539,8 @@
                 <form id="sf-form" class="needs-validation" method="post" action="/wheels/send-to-friend"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                    <input type="hidden" name="interested" id="sf-interested">
+                    <input type="hidden" name="url" value="{{.CurrentUrl}}" id="sf-url">
 
                     <div class="form-group">
                         <label for="sf-name">Your Name</label>
@@ -577,6 +585,9 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="g-recaptcha mt-5" data-sitekey="{{$recaptchaKey}}"></div>
+
                 </form>
 
             </div>
@@ -594,6 +605,7 @@
 <script>
     function openSF(id, item, stockNo) {
         $("#sf-interested-in-item").html(item + ", Stock Number: " + stockNo);
+        $("#sf-interested").val(item + ", Stock Number: " + stockNo);
         $('#sfModal').modal({backdrop: true})
     }
 
@@ -605,20 +617,23 @@
         }
         form.addClass('was-validated');
         if (form[0].checkValidity() === true) {
-            let formData = new FormData();
-            formData.append('name', $("#sf-name").val());
-            formData.append('email', $("#sf-email").val());
-            formData.append('interested', $("#sf-interested-in-item").html());
-            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
-            formData.append('url', '{{.CurrentUrl}}');
+            let f = document.getElementById('sf-form')
+            let formData = new FormData(f);
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
             ajax.open("POST", "/wheels/send-to-friend");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {
-                    $("#tdModal").modal('hide');
-                    successAlert("Email sent!!");
+                    let resp = ajax.response;
+                    let json = JSON.parse(JSON.stringify(resp));
+                    if (!json.ok) {
+                        errorAlert("Invalid form response!");
+                    } else {
+                        $("#tdModal").modal('hide');
+                        successAlert("Email sent!!");
+                        resetCaptcha();
+                    }
                 }
             }
         }

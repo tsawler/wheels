@@ -126,6 +126,36 @@ func QuickQuote(w http.ResponseWriter, r *http.Request) {
 
 // TestDrive sends a test drive request
 func TestDrive(w http.ResponseWriter, r *http.Request) {
+	form := forms.New(r.PostForm)
+	form.Required(
+		"g-recaptcha-response",
+	)
+
+	form.RecaptchaValid(r.RemoteAddr)
+	infoLog.Println("response is", form.Valid())
+	if !form.Valid() {
+		theData := JSONResponse{
+			OK:      false,
+			Message: "Form error",
+		}
+
+		// build the json response from the struct
+		out, err := json.MarshalIndent(theData, "", "    ")
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ServerError(w, err)
+			return
+		}
+
+		// send json to client
+		w.Header().Set("Content-Type", "application/json")
+		_, err = w.Write(out)
+		if err != nil {
+			errorLog.Println(err)
+		}
+		return
+	}
+
 	name := r.Form.Get("name")
 	email := r.Form.Get("email")
 	phone := r.Form.Get("phone")
@@ -203,6 +233,35 @@ func TestDrive(w http.ResponseWriter, r *http.Request) {
 
 // SendFriend sends to a friend
 func SendFriend(w http.ResponseWriter, r *http.Request) {
+	form := forms.New(r.PostForm)
+	form.Required(
+		"g-recaptcha-response",
+	)
+
+	form.RecaptchaValid(r.RemoteAddr)
+	infoLog.Println("response is", form.Valid())
+	if !form.Valid() {
+		theData := JSONResponse{
+			OK:      false,
+			Message: "Form error",
+		}
+
+		// build the json response from the struct
+		out, err := json.MarshalIndent(theData, "", "    ")
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ServerError(w, err)
+			return
+		}
+
+		// send json to client
+		w.Header().Set("Content-Type", "application/json")
+		_, err = w.Write(out)
+		if err != nil {
+			errorLog.Println(err)
+		}
+		return
+	}
 	name := r.Form.Get("name")
 	email := r.Form.Get("email")
 	interest := r.Form.Get("interested")
