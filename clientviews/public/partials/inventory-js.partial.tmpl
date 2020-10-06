@@ -1,6 +1,7 @@
 {{define "inventory-js"}}
 <!-- start inventory js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Morphext/2.4.4/morphext.min.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
     let yearsMenu;
     let makesMenu;
@@ -76,7 +77,8 @@
                 <form id="qq-form" class="needs-validation" method="post" action="/wheels/quick-quote"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                    <input type="hidden" name="qq-vid" id="qq-vid">
+                    <input type="hidden" name="vehicle_id-vid" id="qq-vid">
+                    <input type="hidden" name="interested" id="qq-interested">
 
                     <div class="form-group">
                         <label for="qq-name">Your Name</label>
@@ -138,6 +140,10 @@
                             </div>
                         </div>
                     </div>
+
+                    {{$recaptchaKey := index .PreferenceMap "recaptcha-key"}}
+                    <div class="g-recaptcha mt-5" data-sitekey="{{$recaptchaKey}}"></div>
+
                 </form>
 
             </div>
@@ -168,7 +174,8 @@
                 <form id="qci-form" class="needs-validation" method="post" action="/wheels/quick-quote"
                       novalidate>
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                    <input type="hidden" name="qci-vid" id="qci-vid">
+                    <input type="hidden" name="vehicle_id" id="qci-vid">
+                    <input type="hidden" name="interested" id="qci-interested">
 
                     <div class="form-group">
                         <label for="qci-name">My name is:</label>
@@ -223,6 +230,8 @@
                         <textarea id="talkabout" class="form-control" rows="3"></textarea>
                         <span id="qci-interested-in-item"></span>
                     </div>
+
+                    <div class="g-recaptcha mt-5" data-sitekey="{{$recaptchaKey}}"></div>
                 </form>
 
             </div>
@@ -241,13 +250,22 @@
     function openQCI(id, item, stockNo) {
         $("#qci-interested-in-item").html(item + ", Stock Number: " + stockNo);
         $("#qci-vid").val(id)
+        $("#qci-interested").val(item + ", Stock NUmber: " + stockNo);
         $('#qciModal').modal({backdrop: true})
     }
 
     function openQQ(id, item, stockNo) {
         $("#interested-in-item").html(item + ", Stock Number: " + stockNo);
+        $("#qq-interested").val(item + ", Stock NUmber: " + stockNo);
         $("#qq-vid").val(id)
         $('#qqModal').modal({backdrop: true})
+    }
+
+    function resetCaptcha() {
+        grecaptcha.reset(0);
+        grecaptcha.reset(1);
+        grecaptcha.reset(2);
+        grecaptcha.reset(3);
     }
 
     function valQQ() {
@@ -258,22 +276,23 @@
         }
         form.addClass('was-validated');
         if (form[0].checkValidity() === true) {
-            let formData = new FormData();
-            formData.append('name', $("#qq-name").val());
-            formData.append('email', $("#qq-email").val());
-            formData.append('phone', $("#qq-phone").val());
-            formData.append('interested', $("#interested-in-item").html());
-            formData.append('vehicle_id', $("#qq-vid").val());
-            // formData.append("msg", $("#talkabout").val());
-            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
+            let f = document.getElementById('qq-form')
+            let formData = new FormData(f);
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
             ajax.open("POST", "/wheels/quick-quote");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {
-                    $("#qqModal").modal('hide');
-                    successAlert("Quick Quote Request sent!!");
+                    let resp = ajax.response;
+                    let json = JSON.parse(JSON.stringify(resp));
+                    if (!json.ok) {
+                        errorAlert("Invalid form response!");
+                    } else {
+                        $("#qqModal").modal('hide');
+                        successAlert("Quick Quote Request sent!!");
+                        resetCaptcha();
+                    }
                 }
             }
         }
@@ -288,22 +307,23 @@
         form.addClass('was-validated');
         let v = document.getElementById("qci-interested-in-item").innerHTML;
         if (form[0].checkValidity() === true) {
-            let formData = new FormData();
-            formData.append('name', $("#qci-name").val());
-            formData.append('email', $("#qci-email").val());
-            formData.append('phone', $("#qci-phone").val());
-            formData.append('interested', $("#qci-interested-in-item").html());
-            formData.append('vehicle_id', $("#qci-vid").val());
-            formData.append("msg", $("#talkabout").val() + "<br> " + v);
-            formData.append('csrf_token', document.querySelector('meta[name="csrf-token"]').content);
+            let f = document.getElementById('qci-form')
+            let formData = new FormData(f);
             let ajax = new XMLHttpRequest();
             ajax.responseType = "json";
             ajax.open("POST", "/wheels/quick-quote");
             ajax.send(formData);
             ajax.onreadystatechange = function () {
                 if (ajax.readyState === 4) {
-                    $("#qqModal").modal('hide');
-                    successAlert("Quick Quote Request sent!!");
+                    let resp = ajax.response;
+                    let json = JSON.parse(JSON.stringify(resp));
+                    if (!json.ok) {
+                        errorAlert("Invalid form response!");
+                    } else {
+                        $("#qqModal").modal('hide');
+                        successAlert("Quick Quote Request sent!!");
+                        resetCaptcha();
+                    }
                 }
             }
         }
