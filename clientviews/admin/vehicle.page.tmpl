@@ -878,7 +878,8 @@
                 icon: 'question',
                 callback: function (result) {
                     if (result !== false) {
-                        window.location.href = "/admin/inventory/print-window-sticker/" + x;
+                        // window.location.href = "/admin/inventory/print-window-sticker/" + x;
+                        window.open("/admin/inventory/print-window-sticker/" + x, '_blank');
                     }
                 }
             });
