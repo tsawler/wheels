@@ -233,9 +233,15 @@
                                     <img src="/static/site-content/inventory/{{.ID}}/thumbs/{{$img.Image}}"
                                          class="img-fluid" alt="image">
                                 {{else}}
-                                    <img src="/client/static/hug-in-progress.jpg"
-                                         class="img-fluid"
-                                         style="min-width: 300px;">
+                                    {{if gt .VehicleType 7}}
+                                        <img src="/client/static/hug-in-progress.jpg"
+                                             class="img-fluid"
+                                             style="max-width: 250px;">
+                                    {{else}}
+                                        <img src="/client/static/soon.png"
+                                             class="img-fluid"
+                                             style="max-width: 250px;">
+                                    {{end}}
                                 {{end}}
                             </a>
                         </div>

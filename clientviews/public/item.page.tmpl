@@ -135,6 +135,17 @@
                                     </video>
                                 </div>
                             </div>
+                        {{else}}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <video class="video-js" controls autoplay muted playsinline
+                                           poster="/static/site-content/videos/{{$item.Video.Thumb}}"
+                                           id="vehicle-video">
+                                        <source type="video/mp4"
+                                                src="/client/static/soon.mp4"/>
+                                    </video>
+                                </div>
+                            </div>
                         {{end}}
 
                         {{if gt (len $item.Images) 0}}
@@ -191,7 +202,7 @@
                         {{else}}
                             <div class="row">
                                 <div class="col text-center">
-                                    <img src="https://www.wheelsanddeals.ca//vendor/wheelspackage/hug-in-progress.jpg"
+                                    <img src="/client/static/pictures-coming-soon.png"
                                          class="img-fluid" alt="image">
                                 </div>
                             </div>
