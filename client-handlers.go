@@ -155,7 +155,7 @@ func DisplayVehicleForAdmin(w http.ResponseWriter, r *http.Request) {
 		intMap[fmt.Sprintf("option_%d", x.OptionID)] = 1
 	}
 
-	videos := repo.AdminAllVideos(app)
+	videos := repo.AdminAllVideos()
 	rowSets["videos"] = videos
 
 	helpers.Render(w, r, "vehicle.page.tmpl", &templates.TemplateData{
