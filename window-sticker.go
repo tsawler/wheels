@@ -30,8 +30,8 @@ func CreateWindowSticker(v clientmodels.Vehicle) (*gofpdf.Fpdf, error) {
 		pdf.SetFont("Arial", "BI", 16)
 		pdf.Write(0, fmt.Sprintf("%d %s %s %s", v.Year, v.Make.Make, v.Model.Model, v.Trim))
 		pdf.SetX(162)
-		pdf.SetFont("Arial", "BIS", 28)
-		pdf.Write(0, fmt.Sprintf(" $%d  ", int(v.TotalMSR)))
+		//pdf.SetFont("Arial", "BIS", 28)
+		//pdf.Write(0, fmt.Sprintf(" $%d  ", int(v.TotalMSR)))
 
 		// write odometer
 		pdf.SetY(24)
@@ -47,7 +47,8 @@ func CreateWindowSticker(v clientmodels.Vehicle) (*gofpdf.Fpdf, error) {
 		} else {
 			pdf.SetY(22)
 			pdf.SetFont("Arial", "B", 16)
-			pdf.MultiCell(193, 3, fmt.Sprintf("%s OFF NEW MSRP = $%s", v.PriceForDisplay, humanize.Comma(int64(v.Cost))), "", "R", false)
+			//pdf.MultiCell(193, 3, fmt.Sprintf("%s OFF NEW MSRP = $%s", v.PriceForDisplay, humanize.Comma(int64(v.Cost))), "", "R", false)
+			pdf.MultiCell(193, 3, fmt.Sprintf("$%s", humanize.Comma(int64(v.Cost))), "", "R", false)
 		}
 
 		// write options
