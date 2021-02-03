@@ -2,7 +2,7 @@
 
 {{define "title"}}
     {{$item := index .RowSets "item"}}
-    {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}} - {{index .PreferenceMap "org-name"}}
+    {{$item.Year}} {{$item.Make.Make}} {{$item.Model.Model}}
 {{end}}
 
 {{define "css"}}
