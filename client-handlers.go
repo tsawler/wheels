@@ -992,28 +992,34 @@ func PrintAllWindowStickers(w http.ResponseWriter, r *http.Request) {
 		os.Remove(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
 	}
 
-	out := &bytes.Buffer{}
-	if err := finalPDF.Output(out); err != nil {
-		errorLog.Println(err)
-		helpers.ClientError(w, http.StatusBadRequest)
-		return
-	}
-	b := out.Bytes()
+	// create pdf
+	fileName := fmt.Sprintf("./tmp/window-stickers-%s.pdf", time.Now().Format("2006-01-02"))
+	displayName := fmt.Sprintf("window-stickers-%s.pdf", time.Now().Format("2006-01-02"))
+	_ = finalPDF.OutputFileAndClose(fileName)
 
-	w.Header().Set("Content-Type", "application/pdf")
-	w.Header().Set("Content-Disposition", "attachment; filename=all-window-stickers.pdf")
-	w.Header().Set("Expires", "0")
-	w.Header().Set("Content-Transfer-Encoding", "binary")
+	helpers.DownloadStaticFile(w, r, "./tmp/", displayName, displayName)
+	//out := &bytes.Buffer{}
+	//if err := finalPDF.Output(out); err != nil {
+	//	errorLog.Println(err)
+	//	helpers.ClientError(w, http.StatusBadRequest)
+	//	return
+	//}
+	//b := out.Bytes()
+
+	//w.Header().Set("Content-Type", "application/pdf")
+	//w.Header().Set("Content-Disposition", "attachment; filename=all-window-stickers.pdf")
+	//w.Header().Set("Expires", "0")
+	//w.Header().Set("Content-Transfer-Encoding", "binary")
 	//w.Header().Set("Content-Length", strconv.Itoa(b))
-	w.Header().Set("Content-Control", "private, no-transform, no-store, must-revalidate")
+	//w.Header().Set("Content-Control", "private, no-transform, no-store, must-revalidate")
 	//
 	//w.Header().Set("Content-Type", "application/pdf")
 	//w.Header().Set("Content-Disposition", "inline; filename=all-window-stickers.pdf")
 
-	_, err := w.Write(b)
-	if err != nil {
-		errorLog.Println(err)
-	}
+	//_, err := w.Write(b)
+	//if err != nil {
+	//	errorLog.Println(err)
+	//}
 
 }
 
