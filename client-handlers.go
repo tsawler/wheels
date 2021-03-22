@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gosimple/slug"
+	"github.com/phpdave11/gofpdf"
+	"github.com/phpdave11/gofpdf/contrib/gofpdi"
 	"github.com/tsawler/goblender/client/clienthandlers/clientmodels"
 	"github.com/tsawler/goblender/pkg/datatables"
 	"github.com/tsawler/goblender/pkg/forms"
@@ -945,6 +947,64 @@ func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errorLog.Println(err)
 	}
+}
+
+func PrintAllWindowStickers(w http.ResponseWriter, r *http.Request) {
+	// get all vehicles for sale
+
+	allForSale, _ := vehicleModel.GetAllVehiclesForSale()
+
+	finalPDF := gofpdf.New("P", "mm", "Letter", "")
+	finalPDF.SetMargins(10, 13, 10)
+	importer := gofpdi.NewImporter()
+	var t int
+
+	for _, x := range allForSale {
+		if x.VehicleType < 7 {
+			v, err := vehicleModel.GetVehicleByID(x.ID)
+			if err != nil {
+				errorLog.Println(err)
+				helpers.ClientError(w, http.StatusBadRequest)
+				return
+			}
+			pdf, err := CreateWindowSticker(v)
+			if err != nil {
+				errorLog.Println(err)
+				helpers.ClientError(w, http.StatusBadRequest)
+				return
+			}
+
+			err = pdf.OutputFileAndClose(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
+			if err != nil {
+				errorLog.Println(err)
+				helpers.ClientError(w, http.StatusBadRequest)
+				return
+			}
+
+			t = importer.ImportPage(finalPDF, fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID), 1, "/MediaBox")
+			finalPDF.AddPage()
+			importer.UseImportedTemplate(finalPDF, t, 0, 0, 215.9, 0)
+			os.Remove(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
+		}
+
+	}
+
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", "inline; filename=all-window-stickers.pdf")
+
+	out := &bytes.Buffer{}
+	if err := finalPDF.Output(out); err != nil {
+		errorLog.Println(err)
+		helpers.ClientError(w, http.StatusBadRequest)
+		return
+	}
+	b := out.Bytes()
+
+	_, err := w.Write(b)
+	if err != nil {
+		errorLog.Println(err)
+	}
+
 }
 
 // PrintWindowSticker prints a window sticker to pdf (as stream) and downloads it to client
