@@ -1779,6 +1779,236 @@ func (m *DBModel) GetAllVehiclesForSale() ([]clientmodels.Vehicle, error) {
 	return v, nil
 }
 
+// GetAllVehiclesForWindowStickers returns slice of all Vehicles for sale
+func (m *DBModel) GetAllVehiclesForWindowStickers() ([]clientmodels.Vehicle, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var v []clientmodels.Vehicle
+
+	query := `
+select 
+		       v.id, 
+		       stock_no, 
+		       coalesce(cost, 0),
+		       vin, 
+		       coalesce(odometer, 0),
+		       coalesce(year, 0),
+		       coalesce(trim, ''),
+		       vehicle_type,
+		       coalesce(body, ''),
+		       coalesce(seating_capacity,''),
+		       coalesce(drive_train,''),
+		       coalesce(engine,''),
+		       coalesce(exterior_color,''),
+		       coalesce(interior_color,''),
+		       coalesce(transmission,''),
+		       coalesce(options,''),
+		       coalesce(model_number, ''),
+		       coalesce(total_msr,0.0),
+		       v.status,
+		       coalesce(description, ''),
+		       v.vehicle_makes_id,
+		       v.vehicle_models_id,
+		       hand_picked,
+		       used,
+		       coalesce(price_for_display,''),
+		       v.created_at,
+		       v.updated_at, 
+		       case when vehicle_type in (8, 11, 12) then 'ATV'
+		       when vehicle_type = 1 then 'Car'
+		       when vehicle_type = 16 then 'Electric Bike'
+		       when vehicle_type = 13 then 'Jetski'
+		       when vehicle_type = 10 then 'Outboard Motor'
+		       when vehicle_type = 7 then 'Motorcycle'
+		       when vehicle_type = 9 then 'Pontoon Boat'
+		       when vehicle_type = 15 then 'Power Boat'
+		       when vehicle_type = 17 then 'Scooter'
+		       when vehicle_type = 5 then 'SUV'
+		       when vehicle_type = 14 then 'Trailer'
+		       when vehicle_type = 2 then 'Truck'
+		       when vehicle_type = 4 then 'Other'
+		       when vehicle_type = 6 then 'Van'
+		       else 'Other'
+		       end as vehicle_type_string,
+		       	 vm.make,
+		       	 vmod.model
+		from 
+		     vehicles v 
+		      left join vehicle_makes vm on (v.vehicle_makes_id = vm.id)
+		      left join vehicle_models vmod on (v.vehicle_models_id = vmod.id)
+		where
+			v.status = 1
+			and v.vehicle_models_id is not null 
+			and v.vehicle_makes_id is not null
+			and v.vehicle_type < 7
+	   order by vm.make, vmod.model
+		`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+
+	if err != nil {
+		fmt.Println(err)
+		return v, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		c := &clientmodels.Vehicle{}
+		err = rows.Scan(
+			&c.ID,
+			&c.StockNo,
+			&c.Cost,
+			&c.Vin,
+			&c.Odometer,
+			&c.Year,
+			&c.Trim,
+			&c.VehicleType,
+			&c.Body,
+			&c.SeatingCapacity,
+			&c.DriveTrain,
+			&c.Engine,
+			&c.ExteriorColour,
+			&c.InteriorColour,
+			&c.Transmission,
+			&c.Options,
+			&c.ModelNumber,
+			&c.TotalMSR,
+			&c.Status,
+			&c.Description,
+			&c.VehicleMakesID,
+			&c.VehicleModelsID,
+			&c.HandPicked,
+			&c.Used,
+			&c.PriceForDisplay,
+			&c.CreatedAt,
+			&c.UpdatedAt,
+			&c.VehicleTypeString,
+			&c.VehicleMake,
+			&c.VehicleModel,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return v, err
+		}
+
+		// get make
+		vehicleMake := clientmodels.Make{}
+
+		query = `
+			SELECT 
+				id, 
+				make, 
+				created_at, 
+				updated_at 
+			FROM 
+				vehicle_makes 
+			WHERE 
+				id = ?`
+		makeRow := m.DB.QueryRowContext(ctx, query, c.VehicleMakesID)
+
+		err = makeRow.Scan(
+			&vehicleMake.ID,
+			&vehicleMake.Make,
+			&vehicleMake.CreatedAt,
+			&vehicleMake.UpdatedAt)
+		if err != nil {
+			fmt.Println("*** Error getting make:", err)
+			//return v, err
+		}
+		c.Make = vehicleMake
+		c.VehicleMake = vehicleMake.Make
+
+		// get model
+		model := clientmodels.Model{}
+
+		query = `
+			SELECT 
+				id, 
+				model, 
+				vehicle_makes_id,
+				created_at, 
+				updated_at 
+			FROM 
+				vehicle_models 
+			WHERE 
+				id = ?`
+		modelRow := m.DB.QueryRowContext(ctx, query, c.VehicleModelsID)
+
+		err = modelRow.Scan(
+			&model.ID,
+			&model.Model,
+			&model.MakeID,
+			&model.CreatedAt,
+			&model.UpdatedAt)
+		if err != nil {
+			fmt.Println("*** Error getting model:", err)
+			//return v, err
+		}
+		c.Model = model
+		c.VehicleModel = model.Model
+
+		// get images
+		query = `
+			select 
+				id, 
+				vehicle_id,
+				image,
+				created_at,
+				updated_at,
+				sort_order
+			from 
+				vehicle_images 
+			where
+				vehicle_id = ?
+			order by 
+				sort_order asc`
+		iRows, err := m.DB.QueryContext(ctx, query, c.ID)
+		if err != nil {
+			iRows.Close()
+			fmt.Println(err)
+		}
+
+		var vehicleImages []*clientmodels.Image
+
+		for iRows.Next() {
+			o := &clientmodels.Image{}
+			err = iRows.Scan(
+				&o.ID,
+				&o.VehicleID,
+				&o.Image,
+				&o.CreatedAt,
+				&o.UpdatedAt,
+				&o.SortOrder,
+			)
+
+			ph := fmt.Sprintf("https://www.ca/storage/inventory/%d/%s", c.ID, o.Image)
+			o.Image = ph
+
+			if err != nil {
+				fmt.Println(err)
+			} else {
+				vehicleImages = append(vehicleImages, o)
+			}
+
+		}
+		iRows.Close()
+
+		c.Images = vehicleImages
+		iRows.Close()
+
+		current := *c
+
+		v = append(v, current)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return v, nil
+}
+
 // CheckIfVehicleExists checks to see if we have a vehicle, by stock number
 func (m *DBModel) CheckIfVehicleExists(stockNumber string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

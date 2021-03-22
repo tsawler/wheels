@@ -188,7 +188,8 @@ func ClientRoutes(mux *pat.PatternServeMux, standardMiddleWare, dynamicMiddlewar
 
 	// print window sticker
 	mux.Get("/admin/inventory/print-window-sticker/:ID", dynamicMiddleware.ThenFunc(PrintWindowSticker))
-	mux.Get("/admin/inventory/print-all-window-stickers", dynamicMiddleware.ThenFunc(PrintAllWindowStickers))
+	mux.Get("/admin/inventory/print-all-window-stickers", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(PrintAllWindowStickers))
+	mux.Get("/admin/inventory/all-stickers", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(ShowPrintAllWindowStickers))
 
 	// add vehicle manually
 	//mux.Get("/admin/:CATEGORY/:TYPE/:SRC/0", dynamicMiddleware.Append(mw.Auth).Append(InventoryRole).ThenFunc(AddVehicle))

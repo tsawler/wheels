@@ -949,10 +949,16 @@ func VehicleImageDelete(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ShowPrintAllWindowStickers shows print all stickers page
+func ShowPrintAllWindowStickers(w http.ResponseWriter, r *http.Request) {
+	helpers.Render(w, r, "print-all-window-stickers.page.tmpl", &templates.TemplateData{})
+}
+
+// PrintAllWindowStickers prints all window stickers
 func PrintAllWindowStickers(w http.ResponseWriter, r *http.Request) {
 	// get all vehicles for sale
 
-	allForSale, _ := vehicleModel.GetAllVehiclesForSale()
+	allForSale, _ := vehicleModel.GetAllVehiclesForWindowStickers()
 
 	finalPDF := gofpdf.New("P", "mm", "Letter", "")
 	finalPDF.SetMargins(10, 13, 10)
@@ -960,33 +966,30 @@ func PrintAllWindowStickers(w http.ResponseWriter, r *http.Request) {
 	var t int
 
 	for _, x := range allForSale {
-		if x.VehicleType < 7 {
-			v, err := vehicleModel.GetVehicleByID(x.ID)
-			if err != nil {
-				errorLog.Println(err)
-				helpers.ClientError(w, http.StatusBadRequest)
-				return
-			}
-			pdf, err := CreateWindowSticker(v)
-			if err != nil {
-				errorLog.Println(err)
-				helpers.ClientError(w, http.StatusBadRequest)
-				return
-			}
-
-			err = pdf.OutputFileAndClose(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
-			if err != nil {
-				errorLog.Println(err)
-				helpers.ClientError(w, http.StatusBadRequest)
-				return
-			}
-
-			t = importer.ImportPage(finalPDF, fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID), 1, "/MediaBox")
-			finalPDF.AddPage()
-			importer.UseImportedTemplate(finalPDF, t, 0, 0, 215.9, 0)
-			os.Remove(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
+		v, err := vehicleModel.GetVehicleByID(x.ID)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+		pdf, err := CreateWindowSticker(v)
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
 		}
 
+		err = pdf.OutputFileAndClose(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
+		if err != nil {
+			errorLog.Println(err)
+			helpers.ClientError(w, http.StatusBadRequest)
+			return
+		}
+
+		t = importer.ImportPage(finalPDF, fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID), 1, "/MediaBox")
+		finalPDF.AddPage()
+		importer.UseImportedTemplate(finalPDF, t, 0, 0, 215.9, 0)
+		os.Remove(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
 	}
 
 	w.Header().Set("Content-Type", "application/pdf")

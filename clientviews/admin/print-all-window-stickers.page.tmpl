@@ -1,0 +1,27 @@
+{{template "admin-base" .}}
+
+{{define "title"}}Print All Stickers - GoBlender Admin{{end}}
+
+{{define "admin-title"}}Print All Window Stickers{{end}}
+{{define "content-title"}}Print All Window Stickers{{end}}
+
+{{define "content"}}
+    <a class="btn btn-primary" href="javascript:void(0)" onclick="confirmAllWindowStickers()">Print all window stickers</a>
+{{end}}
+
+
+
+{{define "js"}}
+<script>
+    function confirmAllWindowStickers() {
+        attention.confirm({
+            html: "This will create a PDF of all window stickers. Are you sure?",
+            callback: function (result) {
+                if (result !== false) {
+                    window.location.href = '/admin/inventory/print-all-window-stickers'
+                }
+            },
+        })
+    }
+</script>
+{{end}}
