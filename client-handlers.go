@@ -992,9 +992,6 @@ func PrintAllWindowStickers(w http.ResponseWriter, r *http.Request) {
 		os.Remove(fmt.Sprintf("./tmp/sticker-%d.pdf", x.ID))
 	}
 
-	w.Header().Set("Content-Type", "application/pdf")
-	w.Header().Set("Content-Disposition", "inline; filename=all-window-stickers.pdf")
-
 	out := &bytes.Buffer{}
 	if err := finalPDF.Output(out); err != nil {
 		errorLog.Println(err)
@@ -1002,6 +999,16 @@ func PrintAllWindowStickers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	b := out.Bytes()
+
+	w.Header().Set("Content-Type", "application/pdf")
+	w.Header().Set("Content-Disposition", "attachment; filename=all-window-stickers.pdf")
+	w.Header().Set("Expires", "0")
+	w.Header().Set("Content-Transfer-Encoding", "binary")
+	//w.Header().Set("Content-Length", strconv.Itoa(b))
+	w.Header().Set("Content-Control", "private, no-transform, no-store, must-revalidate")
+	//
+	//w.Header().Set("Content-Type", "application/pdf")
+	//w.Header().Set("Content-Disposition", "inline; filename=all-window-stickers.pdf")
 
 	_, err := w.Write(b)
 	if err != nil {
